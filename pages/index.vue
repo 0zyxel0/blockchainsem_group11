@@ -1,77 +1,99 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
+  <v-row>
+    <v-col
+      cols="12"
+      lg="7"
+      xl="6"
+      class="primary d-none d-md-flex align-center justify-center"
+    >
+      <v-container>
+        <div class="pa-10">
+          <v-row justify="center">
+            <v-col cols="8" xl="5">
+              <div>
+                <h2 class="display-1 white--text font-weight-medium">
+                  Blockchain Seminar - Group 14
+                </h2>
+                <h6
+                  class="subtitle-1 mt-4 white--text op-5 font-weight-regular"
+                >
+                  Minting NFTs and NFT Marketplace
+                </h6>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+      </v-container>
+    </v-col>
+    <v-col cols="12" lg="5" xl="6" class="d-flex align-center">
+      <v-card flat>
         <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
+          <v-btn @click="loginMetaMask()" x-large>
+            <v-avatar size="50px" left class="px-2">
+              <img src="/metamask.svg" />
+            </v-avatar>
+            Login With MetaMask
           </v-btn>
-        </v-card-actions>
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>
 </template>
+<script>
+import { mapState } from "vuex";
+export default {
+  layout: "blank",
+  computed: {
+    showUserWallet() {
+      return this.userWalletAddress;
+    },
+    loginCheckStatus() {
+      if (this.metamaskStatus) {
+        return "Login with MetaMask";
+      } else {
+        return "Please Install MetaMask";
+      }
+    },
+  },
+  mounted() {
+    this.checkMetaMask();
+  },
+  methods: {
+    checkMetaMask() {
+      if (typeof window.ethereum !== "undefined") {
+        
+        return;
+      } else {
+        alert("Please Install MetaMask Extension");
+      }
+    },
+    async loginMetaMask() {
+      this.$store.dispatch("modules/profile/GET_USER_WALLETADDRESS");
+      // const accounts = await window.ethereum
+      //   .request({ method: "eth_requestAccounts" })
+      //   .catch((err) => {
+      //     console.error(err.message);
+      //     return;
+      //   });
+      // if (!accounts) {
+      //   console.log("No Accounts Found");
+      //   return;
+      // }
+      // this.userWalletAddress = accounts[0];
+      // this.metamaskLoggedIn = true;
+    },
+    logoutMetaMask() {
+      this.userWalletAddress = null;
+      window.userWalletAddress = null;
+      this.metamaskLoggedIn = false;
+    },
+  },
+  data() {
+    return {
+      metamaskStatus: false,
+      metamaskLoggedIn: false,
+      userWalletAddress: null,
+    };
+  },
+};
+</script>

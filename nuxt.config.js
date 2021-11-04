@@ -1,10 +1,28 @@
 import colors from 'vuetify/es5/util/colors'
 
+const lightTheme = {
+  primary: "#005cb9", // change header color from here || "#1e88e6", "#21c1d6", "#fc4b6c", "#563dea", "#9C27b0", "#ff9800"
+  info: "#21c1d6",
+  success: "#93d500",
+  accent: "#fc4b6c",
+  warning: "#ffb22a",
+  default: "#563dea",
+  background: "EEF5F9",
+};
+const darkTheme = {
+  primary: "#005cb9", // change header color from here || "#1e88e6", "#21c1d6", "#fc4b6c", "#563dea", "#9C27b0", "#ff9800"
+  info: "#21c1d6",
+  success: "#93d500",
+  accent: "#fc4b6c",
+  warning: "#ffb22a",
+  default: "#563dea",
+};
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - bsapp14',
-    title: 'bsapp14',
+    titleTemplate: '%s - Group 14',
+    title: 'Blockchain Seminar App',
     htmlAttrs: {
       lang: 'en'
     },
@@ -26,7 +44,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
   ],
-
+  // Turn Server Side Rendering OFF
+  ssr:false,
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
@@ -44,22 +63,26 @@ export default {
     nftTokenKey: process.env.NFT_API_TOKEN || ""
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-  vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
+   vuetify: {
+    customVariables: ["~/assets/variables.scss"],
+    treeShake: true,
     theme: {
-      dark: true,
+      options: {
+        customProperties: true,
+      },
       themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-        }
-      }
-    }
+        dark: darkTheme,
+        light: lightTheme,
+      },
+      dark: false, // If you want to set dark theme then dark:true else set to false
+    },
+    defaultAssets: {
+      font: {
+        family: "Roboto",
+      },
+    },
+    rtl: false, // If you want to set rtl theme then rtl:true else set to false
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

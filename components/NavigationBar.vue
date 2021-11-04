@@ -10,61 +10,24 @@
         app
         id="main-sidebar"
       >
-        <!-- -USer Area
-        <v-list-item class="profile-bg px-2">
-          <v-list-item-avatar v-if="$auth.user.profile.p_img != null">
-            <img :src="$auth.user.profile.p_img" :lazy-src="'default.png'" />
-          </v-list-item-avatar>
-          <v-list-item-avatar v-else>
-            <img :src="'default.png'" :lazy-src="'default.png'" />
-          </v-list-item-avatar>
-
-          <v-list-item-content v-if="$auth.loggedIn">
-            <v-list-item-title class="white--text text-button">
-              {{ $auth.user.profile.firstname }}
-              {{ $auth.user.profile.lastname }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="blue--text text-caption">
-              {{ $auth.user.email }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
+        <!-- USer Area -->
         <v-divider class="mb-4"></v-divider>
-        <v-list nav dense v-if="$auth.user.meta.role == 'basic'">
-          <div v-if="$auth.user.profile.orgs.length">
-            <div v-for="(link, i) in linksBasic" :key="i">
-              <v-list-item
-                v-if="!link.subLinks"
-                :to="link.to"
-                class="v-list-item"
-                active-class="primary--text text--accent-4"
-              >
-                <v-list-item-icon>
-                  <v-icon>{{ link.icon }}</v-icon>
-                </v-list-item-icon>
+        <v-list nav>
+          <div v-for="(link, i) in linksBasic" :key="i">
+            <v-list-item
+              v-if="!link.subLinks"
+              :to="link.to"
+              class="v-list-item"
+              active-class="primary--text text--accent-4"
+            >
+              <v-list-item-icon>
+                <v-icon>{{ link.icon }}</v-icon>
+              </v-list-item-icon>
 
-                <v-list-item-title v-text="link.text" />
-              </v-list-item>
-            </div>
+              <v-list-item-title v-text="link.text" />
+            </v-list-item>
           </div>
-          <div v-if="!$auth.user.profile.orgs.length">
-            <div v-for="(link, i) in linksOrgEmpty" :key="i">
-              <v-list-item
-                v-if="!link.subLinks"
-                :to="link.to"
-                class="v-list-item"
-                active-class="primary--text text--accent-4"
-              >
-                <v-list-item-icon>
-                  <v-icon>{{ link.icon }}</v-icon>
-                </v-list-item-icon>
-
-                <v-list-item-title v-text="link.text" />
-              </v-list-item>
-            </div>
-          </div>
-        </v-list> -->
-
+        </v-list>
 
         <template v-slot:append>
           <v-divider></v-divider>
@@ -81,20 +44,7 @@
           <span class="title">Blockchain NFTs</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              text
-              icon
-              v-bind="attrs"
-              v-on="on"
-              @click="logoutDialogBox()"
-            >
-              <v-icon>mdi-power</v-icon>
-            </v-btn>
-          </template>
-          <span>Logout</span>
-        </v-tooltip>
+        <v-btn color="error" @click="logoutUser()">Logout</v-btn>
       </v-app-bar>
     </nav>
 
@@ -183,29 +133,39 @@ export default {
     return {
       logoutDialog: false,
       drawer: true,
-
+      linksBasic: [
+        {
+          to: "/profile",
+          icon: "mdi-account",
+          text: "My Profile",
+        },
+        {
+          to: "/marketplace",
+          icon: "mdi-shopping",
+          text: "Marketplace",
+        },
+      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       select: ["English"],
       items: ["English", "French", "German"],
-      versionNo: "1.0.0.0"
+      versionNo: "1.0.0.0",
     };
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    logoutDialogBox() {
-      this.logoutDialog = true;
+    logoutUser() {
+      this.$store.dispatch("modules/profile/SIGNOUT_USER_WALLETADDRESS");
     },
+
     switchTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       let payload = {
-        is_dark: this.$vuetify.theme.dark
+        is_dark: this.$vuetify.theme.dark,
       };
-      this.$store.dispatch("isDark", payload);
-    }
-  }
+    },
+  },
 };
 </script>
 

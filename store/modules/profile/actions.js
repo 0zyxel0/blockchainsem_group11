@@ -16,6 +16,8 @@ export default {
   },
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;
-
+    console.log("Signing out...");
+    commit("CLEAR_USER_WALLETADDRESS");
+    this.$router.push('/');
   }
 };

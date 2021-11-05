@@ -1,15 +1,16 @@
-# Use the official lightweight Node.js 14 image.
+# Use the official lightweight Node.js 16 image.
 # https://hub.docker.com/_/node
-FROM node:14-slim
+FROM node:16-slim
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
 
 # Assign ENV variables
-# Type of Node Environment
+# Bind the App to any IP
 ENV PROJECT_NAME="Blockchain Seminar App"
-ENV NODE_ENV="dev"
-ENV NODE_PORT=8899
+ENV NODE_ENV='prod'
+ENV NUXT_PORT='8899' 
+ENV NUXT_HOST='0.0.0.0'
 
 # Copy application dependency manifests to the container image.
 # A wildcard is used to ensure both package.json AND package-lock.json are copied.
@@ -17,13 +18,16 @@ ENV NODE_PORT=8899
 COPY package*.json ./
 
 # Install production dependencies.
-RUN npm install
+RUN npm install --only=production
 
 # Copy local code to the container image.
 COPY . ./
 
 # Expose the Port Outside the container to the localhost
 EXPOSE 8899
+
+# Build the production Version of the Application
+RUN npm run build
 
 # Run the web service on container startup.
 CMD [ "npm", "start" ]

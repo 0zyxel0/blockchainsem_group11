@@ -52,7 +52,12 @@
         <v-card>
           <v-card-title>Preview Image</v-card-title>
           <v-card-text>
-            <v-img max-height="400" max-width="600" v-if="!imagePreviewUrl" src="https://via.placeholder.com/400" />
+            <v-img
+              max-height="400"
+              max-width="600"
+              v-if="!imagePreviewUrl"
+              src="https://via.placeholder.com/400"
+            />
             <v-img max-height="400" max-width="600" :src="imagePreviewUrl" />
           </v-card-text>
         </v-card>
@@ -82,9 +87,9 @@
   </div>
 </template>
 <script>
-import { NFTStorage, File } from "nft.storage";
 const FormData = require("form-data");
 import NavigationBar from "@/components/NavigationBar";
+import Web3 from "web3";
 export default {
   layout: "default",
   components: {
@@ -101,7 +106,13 @@ export default {
       imageData: null,
     };
   },
+  mounted(){
+    this.createWeb3Object();
+  },
   methods: {
+    createWeb3Object() {
+      const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
+    },
     async uploadFileToIPFS(fileVal) {
       let formData = new FormData();
       formData.append("file", fileVal);
@@ -109,11 +120,12 @@ export default {
       console.log(formData);
       try {
         let myResults = await this.$axios.$post(
-          "https://api.nft.storage/upload",formData,
+          "https://api.nft.storage/upload",
+          formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',            
-              'Authorization': `Bearer ${this.$config.nftTokenKey}`,
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${this.$config.nftTokenKey}`,
             },
           }
         );
@@ -124,6 +136,7 @@ export default {
         console.log(err);
       }
     },
+
     // chooseImage() {
     //   this.$refs.fileInput.click();
     // },

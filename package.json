@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/vuetify": "^1.12.1",
     "@openzeppelin/contracts": "^4.3.2",
     "axios": "^0.24.0",
+    "chai": "^4.3.4",
     "core-js": "^3.15.1",
     "form-data": "^4.0.0",
     "nft.storage": "^3.3.0",
@@ -19,7 +21,5 @@
     "vuetify": "^2.5.5",
     "web3": "^1.6.0"
   },
-  "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.1"
-  }
+  "devDependencies": {}
 }

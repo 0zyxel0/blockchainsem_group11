@@ -12,7 +12,7 @@ export default {
     }
     console.log("Accounts: " + accounts[0]);
     commit("SET_USER_WALLETADDRESS", accounts[0]);
-    this.$router.push('/dashboard');
+    this.$router.push('/marketplace');
   },
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;

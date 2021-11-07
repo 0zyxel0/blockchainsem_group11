@@ -45,7 +45,7 @@ export default {
   plugins: [
   ],
   // Turn Server Side Rendering OFF
-  ssr:false,
+  ssr: false,
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
@@ -58,13 +58,15 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: ['@nuxtjs/axios'],
 
+  // To Connect the API Layer to VUE UI
+  serverMiddleware: ["~/api/index.js"],
+
   publicRuntimeConfig: {
     // baseURL: process.env.BASE_URL || 'https://nuxtjs.org'
     nftTokenKey: process.env.NFT_API_TOKEN || ""
   },
-  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
-   vuetify: {
+  // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
+  vuetify: {
     customVariables: ["~/assets/variables.scss"],
     treeShake: true,
     theme: {

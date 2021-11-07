@@ -60,28 +60,17 @@ export default {
   },
   methods: {
     checkMetaMask() {
-      if (typeof window.ethereum !== "undefined") {
-        
+      if (typeof window.ethereum !== "undefined") {        
         return;
       } else {
         alert("Please Install MetaMask Extension");
       }
     },
     async loginMetaMask() {
-      this.$store.dispatch("modules/profile/GET_USER_WALLETADDRESS");
-      // const accounts = await window.ethereum
-      //   .request({ method: "eth_requestAccounts" })
-      //   .catch((err) => {
-      //     console.error(err.message);
-      //     return;
-      //   });
-      // if (!accounts) {
-      //   console.log("No Accounts Found");
-      //   return;
-      // }
-      // this.userWalletAddress = accounts[0];
-      // this.metamaskLoggedIn = true;
+      this.$store.dispatch("modules/profile/GET_USER_WALLETADDRESS");     
+
     },
+    
     logoutMetaMask() {
       this.userWalletAddress = null;
       window.userWalletAddress = null;

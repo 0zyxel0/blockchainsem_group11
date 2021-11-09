@@ -14,7 +14,7 @@ contract NFTFactory is ERC721URIStorage {
     constructor() ERC721("Blockchain GRP14", "BKGPR") {
     }
     //@dev Function for minting
-    function createToken(string memory tokenURI) public returns (uint) {
+    function mintToken(string memory tokenURI) public returns (uint) {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);

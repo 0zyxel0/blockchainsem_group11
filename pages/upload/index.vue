@@ -1,6 +1,9 @@
 <template>
   <div id="upload-page">
-    <NavigationBar></NavigationBar>
+    <NavigationBar
+      v-if="userWalletAddress"
+      :userWalletAddress="userWalletAddress"
+    ></NavigationBar>
     <v-row>
       <v-col>
         <v-row
@@ -21,25 +24,6 @@
                 />
               </v-card-text> </v-card></v-col
         ></v-row>
-        <v-row
-          ><v-col>
-            <v-card>
-              <v-card-title>Options</v-card-title>
-              <v-card-text>
-                <v-row
-                  ><v-col
-                    ><v-btn
-                      block
-                      color="primary"
-                      @click="uploadFileToIPFS(imageData)"
-                      >Upload</v-btn
-                    ></v-col
-                  ></v-row
-                >
-              </v-card-text>
-            </v-card></v-col
-          ></v-row
-        >
       </v-col>
       <v-col>
         <v-row>
@@ -83,13 +67,35 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-btn block color="success" @click="getCurrentAccount()"
-                      >Get Account</v-btn
+                    <v-row
+                      ><v-col>
+                        <v-card flat>
+                          <v-card-title>Options</v-card-title>
+                          <v-card-text>
+                            <v-row
+                              ><v-col
+                                ><v-btn
+                                  block
+                                  color="primary"
+                                  @click="uploadFileToIPFS(imageData)"
+                                  >Upload</v-btn
+                                >
+                                </v-col>
+                                </v-row
+                            ><v-row>
+                              <v-col>
+                                <v-btn
+                                  block
+                                  color="success"
+                                  @click="minfUserNFT()"
+                                  >Mint NFT</v-btn
+                                ></v-col
+                              ></v-row>
+                          </v-card-text>
+                        </v-card></v-col
+                      ></v-row
                     >
-                    <v-btn block color="success" @click="minfUserNFT()"
-                      >Mint NFT</v-btn
-                    ></v-col
-                  ></v-row
+                  </v-col></v-row
                 >
               </v-card-text>
             </v-card>
@@ -100,8 +106,6 @@
   </div>
 </template>
 <script>
-var Web3 = require('web3');
-let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
 const FormData = require("form-data");
 const Contract = require("web3-eth-contract");
 const NFTMinterABI = require("../../build/contracts/NFTFactory.json");
@@ -111,6 +115,7 @@ export default {
   components: {
     NavigationBar: NavigationBar,
   },
+  middleware: "checkWalletAddress",
   data() {
     return {
       imageData: null,
@@ -136,7 +141,7 @@ export default {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${this.$config.nftTokenKey}`,
+              Authorization: `Bearer ${this.$config.NTF_IPFS_TOKEN}`,
             },
           }
         );
@@ -150,25 +155,20 @@ export default {
         console.log(err);
       }
     },
-    async getCurrentAccount() {
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-      console.log(`User Address ${accounts[0]}`);
-      return accounts[0];
-    },
-    async minfUserNFT() {
-
+    async mintUserNFT(userFileURI) {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
       console.log(`Calling Contract`);
-      let mintContract = new Contract(NFTMinterABI.abi,"0x3cD64490d27306F758d70D75c19394e598F5C746");
-      
+      let mintContract = new Contract(
+        NFTMinterABI.abi,
+        toString(this.$config.NTF_IPFS_TOKEN)
+      );
+
       mintContract.setProvider(web3.currentProvider);
       console.log(mintContract);
       mintContract.methods
-        .createToken("tdbtgdfgbdgfbb")
+        .mintToken(userFileURI)
         .send({ from: accounts[0] })
         .then((response) => {
           console.log(response);

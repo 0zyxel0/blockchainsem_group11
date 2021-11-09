@@ -56,14 +56,19 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ['@nuxtjs/axios'],
+  modules: ['@nuxtjs/axios', '@nuxtjs/toast','@nuxtjs/axios'],
 
-  // To Connect the API Layer to VUE UI
+  // To Connect the API Layer to the Frontend
   serverMiddleware: ["~/api/index.js"],
 
   publicRuntimeConfig: {
-    // baseURL: process.env.BASE_URL || 'https://nuxtjs.org'
-    nftTokenKey: process.env.NFT_API_TOKEN || ""
+    axios:{
+      baseURL: process.env.APIBASE_URL || "http://localhost:8899",
+    },
+    
+    NTF_IPFS_TOKEN: process.env.NTF_IPFS_TOKEN || "",
+    NFT_MINTING_CONTRACT: process.env.NFT_MINTING_CONTRACT || "",
+    NFT_TRADING_CONTRACT: process.env.NFT_TRADING_CONTRACT || "",
   },
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
@@ -89,5 +94,20 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  // Toast Config
+
+  toast: {
+    position: 'top-right',
+    register: [ // Register custom toasts
+      {
+        name: 'my-error',
+        message: 'Oops...Something went wrong',
+        options: {
+          type: 'error'
+        }
+      }
+    ]
   }
 }

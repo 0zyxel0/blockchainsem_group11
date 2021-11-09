@@ -80,8 +80,7 @@
                                   @click="uploadFileToIPFS(imageData)"
                                   >Upload</v-btn
                                 >
-                                </v-col>
-                                </v-row
+                              </v-col> </v-row
                             ><v-row>
                               <v-col>
                                 <v-btn
@@ -90,7 +89,8 @@
                                   @click="minfUserNFT()"
                                   >Mint NFT</v-btn
                                 ></v-col
-                              ></v-row>
+                              ></v-row
+                            >
                           </v-card-text>
                         </v-card></v-col
                       ></v-row
@@ -146,6 +146,12 @@ export default {
           }
         );
         if (myResults) {
+          console.log("IPFS upload completed");
+          console.log(myResults);
+          let userItem = await this.$axios.$post(`/api/v1/item/save`, myResults);
+          if (userItem) {
+            console.log(userItem.data.value);
+          }
           // Save State
           // Save To Temporary Database
           // Remove When Minted

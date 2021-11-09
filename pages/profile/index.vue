@@ -9,7 +9,6 @@
         <h1>Profile Page</h1>
       </v-col>
     </v-row>
-
     <v-divider></v-divider>
     <v-row>
       <v-col>
@@ -61,7 +60,7 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 export default {
   layout: "default",
   components: {
-    NavigationBarL: NavigationBar,
+    NavigationBar: NavigationBar,
   },
   middleware: "checkWalletAddress",
   computed: {
@@ -71,7 +70,7 @@ export default {
   },
   mounted() {},
   methods: {
-    async initializeConnection() {},  
+    async initializeConnection() {},
     goToUploader() {
       this.$router.push("/upload");
     },

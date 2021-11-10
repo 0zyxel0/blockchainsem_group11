@@ -1,8 +1,6 @@
 <template>
   <div id="upload-page">
     <NavigationBar
-      v-if="userWalletAddress"
-      :userWalletAddress="userWalletAddress"
     ></NavigationBar>
     <v-row>
       <v-col>

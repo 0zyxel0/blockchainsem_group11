@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
+import jwt_decode from "jwt-decode";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const { uuid } = require('uuidv4');
 export default {
   async LOGIN_USER_WALLET({ commit }) {
-
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     const walletAddr = await signer.getAddress();
@@ -21,15 +20,15 @@ export default {
           userSignature: signature
         };
         let myVerification = await this.$axios.$post("/api/v1/auth/verification", payload);
-        if(myVerification){
-          console.log(myVerification.payload);
+        if (myVerification) {          
+          commit("SET_USER_DATA", jwt_decode(myVerification.payload.token));
+          commit("SET_USER_TOKEN", myVerification.payload.token);
+          commit("SET_USER_WALLETADDRESS", walletAddr);
+          this.$router.push('/marketplace');
         }
-        commit("SET_USER_DATA", myVerification.payload);
-        commit("SET_USER_WALLETADDRESS", walletAddr);
-        this.$router.push('/marketplace');
+       
+       
       }
-
-
     }
   },
   async GET_USER_CREDITS({ commit }) {
@@ -44,5 +43,5 @@ export default {
     console.log("Signing out...");
     commit("CLEAR_USER_WALLETADDRESS");
     this.$router.push('/');
-  }
+  },
 };

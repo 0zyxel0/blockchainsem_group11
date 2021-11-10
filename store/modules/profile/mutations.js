@@ -7,5 +7,8 @@ export default {
     },
     SET_USER_DATA(state, payload){
         state.user = payload;
+    },
+    SET_USER_TOKEN(state, payload){
+        state.token = payload;
     }
 }

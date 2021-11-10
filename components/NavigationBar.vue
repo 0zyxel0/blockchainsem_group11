@@ -44,8 +44,6 @@
           <span class="title">Blockchain NFTs</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        {{ userWalletAddress }}
-        <v-spacer></v-spacer>
         <v-btn color="error" @click="logoutUser()">Logout</v-btn>
       </v-app-bar>
     </nav>
@@ -131,9 +129,6 @@
 </template>
 <script>
 export default {
-  props: {
-    userWalletAddress: { type: String},
-  },
   data() {
     return {
       logoutDialog: false,

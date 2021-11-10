@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 const jwt = require("jsonwebtoken");
 import { ethers } from 'ethers';
 const Joi = require("joi");
+const axios = require("axios");
 // Import Schemas
 const NFTSchema = require("../models/NFTSchema");
 const UserSchema = require("../models/UserSchema");
@@ -91,8 +92,11 @@ module.exports.createUserNonce = async function (req, res) {
           .json(formResponse("success", { nonce: myUser.nonce }, null));
       }
     } else {
+      // Generate A Random User Display Image
+      let avatarHash = nanoid(4);
       let myUser = new UserSchema({
         walletAddr: req.body.walletAddr,
+        displayImg: `https://avatars.dicebear.com/api/adventurer-neutral/${avatarHash}.svg`,
         nonce: nanoid(25),
       });
       let curUser = await myUser.save();
@@ -130,14 +134,14 @@ module.exports.verifyAuthentication = async (req, res) => {
       myResult.nonce = nanoid(25);
       await myResult.save();
 
-      // Return JWT 
+      // Return JWT to user
       const userToken = jwt.sign({
         aud: "authenticated",
         exp: Math.floor((Date.now() / 1000) + (60 * 60)),
-        sub: { id: myResult._id, displayName: myResult.displayName, displayImg: myResult.displayImg }
+        sub: { id: myResult._id, walletAddr: walletAddr, displayName: myResult.displayName, displayImg: myResult.displayImg, isDark: myResult.isDark }
       }, process.env.JWT_TOKEN_SECRET);
 
-      return res.status(200).json(formResponse("success", { data: myResult, token: userToken }, null));
+      return res.status(200).json(formResponse("success", { token: userToken }, null));
     }
 
 

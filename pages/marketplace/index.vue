@@ -1,9 +1,6 @@
 <template>
   <div id="marketPlace">
-    <NavigationBar
-      v-if="userWalletAddress"
-      :userWalletAddress="userWalletAddress"
-    ></NavigationBar>
+    <NavigationBar></NavigationBar>
     <v-row>
       <v-col><h1>Marketplace</h1></v-col>
     </v-row>

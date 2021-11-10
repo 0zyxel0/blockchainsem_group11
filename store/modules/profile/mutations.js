@@ -4,5 +4,8 @@ export default {
     },
     CLEAR_USER_WALLETADDRESS(state){
         state.userWalletAddress = null;
+    },
+    SET_USER_DATA(state, payload){
+        state.user = payload;
     }
 }

@@ -11,13 +11,20 @@ export default {
       console.log("No Accounts Found");
       return;
     } else {
-      console.log("My Wallet: ", walletAddr);
 
       let myResult = await this.$axios.$post("/api/v1/auth/nonce", { walletAddr: walletAddr });
       if (myResult) {
-        console.log(myResult);
-        const signature = await signer.signMessage(`Sign Your One Time Token : ${myResult.payload.nonce}`);
-        console.log(`signature: `, signature);
+        const signature = await signer.signMessage(myResult.payload.nonce);
+        const payload = {
+          walletAddr: walletAddr,
+          userNonce: myResult.payload.nonce,
+          userSignature: signature
+        };
+        let myVerification = await this.$axios.$post("/api/v1/auth/verification", payload);
+        if(myVerification){
+          console.log(myVerification.payload);
+        }
+        commit("SET_USER_DATA", myVerification.payload);
         commit("SET_USER_WALLETADDRESS", walletAddr);
         this.$router.push('/marketplace');
       }

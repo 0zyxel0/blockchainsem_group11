@@ -1,11 +1,13 @@
+import { nanoid } from "nanoid";
+const jwt = require("jsonwebtoken");
+import { ethers } from 'ethers';
+const Joi = require("joi");
 // Import Schemas
 const NFTSchema = require("../models/NFTSchema");
 const UserSchema = require("../models/UserSchema");
-import { nanoid } from "nanoid";
 const logger = require("../logger");
 const { formResponse } = require("../helpers/formResponse");
-const jsonwebtoken = require("jsonwebtoken");
-const bycrypt = require("bycrypt");
+
 module.exports.test = function (req, res) {
   return res.status(200).json("hello world");
 };
@@ -79,7 +81,7 @@ module.exports.createUserNonce = async function (req, res) {
       let updateVal = { nonce: nanoid(25) };
       let configVal = { new: true };
       logger.info(`[createUserNonce] Updating User One Time Nonce`);
-      let myUser = await User.findOneAndUpdate(filterVal, updateVal, configVal);
+      let myUser = await UserSchema.findOneAndUpdate(filterVal, updateVal, configVal);
       if (myUser) {
         logger.info(
           `[createUserNonce] Successfully Updated User Record. Returning New Nonce`
@@ -108,8 +110,37 @@ module.exports.createUserNonce = async function (req, res) {
 module.exports.verifyAuthentication = async (req, res) => {
   try {
     // Verify User Authentication
-    let userNonce;
-    let userSignature;
+    let walletAddr = req.body.walletAddr;
+    let userNonce = req.body.userNonce;
+    let userSignature = req.body.userSignature;
+    // Verify The Nonce and Signature of the user for authentication
+    let verifiedSigner = ethers.utils.verifyMessage(userNonce, userSignature);
+    if (verifiedSigner !== walletAddr) {
+      logger.warn("[verifyAuthentication] User Signature Mismatch")
+      return res.status(409).json(formResponse("error", null, "Invalid User Signature"));
+    }
+
+    let filterVal = { walletAddr: walletAddr, nonce: userNonce };
+    let myResult = await UserSchema.findOne(filterVal);
+    if (!myResult) {
+      return res.status(404).json(formResponse("error", null, "Error In User Authentication"));
+    }
+    if (myResult) {
+      // Update The One Time Nonce to a new value
+      myResult.nonce = nanoid(25);
+      await myResult.save();
+
+      // Return JWT 
+      const userToken = jwt.sign({
+        aud: "authenticated",
+        exp: Math.floor((Date.now() / 1000) + (60 * 60)),
+        sub: { id: myResult._id, displayName: myResult.displayName, displayImg: myResult.displayImg }
+      }, process.env.JWT_TOKEN_SECRET);
+
+      return res.status(200).json(formResponse("success", { data: myResult, token: userToken }, null));
+    }
+
+
   } catch (err) {
     console.log(err);
     return res.status(400).json(formResponse("error", null, err));

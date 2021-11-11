@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
-const jwt = require("jsonwebtoken");
 import { ethers } from 'ethers';
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const axios = require("axios");
 // Import Schemas
@@ -9,28 +9,65 @@ const UserSchema = require("../models/UserSchema");
 const logger = require("../logger");
 const { formResponse } = require("../helpers/formResponse");
 
-module.exports.test = function (req, res) {
-  return res.status(200).json("hello world");
-};
-
 module.exports.saveUnmintedItem = async function (req, res) {
+  logger.info(`[saveUnmintedItem] Saving Unminted Item`)
+  // Create Validation Schema
+  const mintValidationSchema = Joi.object({
+    owner: Joi.string().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    price: Joi.number().required()
+  });
+
+  const isValidated = mintValidationSchema.validate({
+    owner: req.user.sub.walletAddr,
+    title: req.body.title,
+    description: req.body.description,
+    price: req.body.price,
+  });
+
+  // Throw validation error
+  if (isValidated.error != null) {
+    logger.error(
+      `[saveUnmintedItem] ${JSON.stringify(isValidated.error.details)}`
+    );
+    return res
+      .status(400)
+      .json(formResponse("fail", null, isValidated.error.details));
+  }
   try {
     // logger.info(`Saving Unminted Item For User : ${req.user.walletAddr}`);
     let myNFT = new NFTSchema({
-      owner: req.user,
-      nftval: req.body.value,
-      nftUri: `ipfs://${req.body.value.cid}`,
-      amount: 50,
+      owner: isValidated.value.owner,
+      nftval: req.body.ipfsVal.value,
+      nftUri: `https://${req.body.ipfsVal.value.cid}.ipfs.dweb.link/${req.body.filename}`,
+      filename: req.body.filename,
+      meta: {
+        title: isValidated.value.title,
+        description: isValidated.value.description,
+        price: isValidated.value.price
+      },
+      isMinted: false,
+      isMarket: false
     });
 
     let myResult = await myNFT.save();
     if (myResult) {
-      logger.info("[saveUnmintedItem] Saving Unminted Item");
+      logger.info("[saveUnmintedItem] Successfully Uploaded Item");
       console.log(myResult);
+      let ipfsResult = {
+        id: myResult._id,
+        owner: myResult.owner,
+        nftUri: myResult.nftUri,
+        meta: myResult.meta,
+        isMinted: myResult.isMinted,
+        isMarket: myResult.isMarket,
+        createdAt: myResult.createdAt
+      };
+      return res.status(201).json(formResponse("success", ipfsResult, null));
     }
-
-    return res.status(200).json(req.body);
   } catch (err) {
+    logger.error(err);
     return res.status(400).json(formResponse("error", null, err));
   }
 };
@@ -43,8 +80,19 @@ module.exports.getItemMetadata = async function (req, res) {
 };
 module.exports.getUserUnmintedItems = async function (req, res) {
   try {
+    logger.info(`[getUserUnmintedItems] Requesting User Unminted Items`);
+
+    let myResult = await NFTSchema.find({ owner: req.user.sub.walletAddr, isMinted: false });
+    if (myResult.length > 0) {
+      logger.info("[getUserUnmintedItems] Successfully retrieved User Unminted Items");
+      return res.status(200).json(formResponse('success', myResult, null));
+    } else {
+      logger.warn("[getUserUnmintedItems] Retrieved 0 Unminted Items");
+      return res.status(200).json(formResponse('success', [], null));
+    }
+
   } catch (err) {
-    return res.status(400).json(formResponse("error", null, err));
+    return res.status(401).json(formResponse("error", null, err));
   }
 };
 /**
@@ -61,13 +109,6 @@ module.exports.deleteUserUnmintedItems = async function (req, res) {
   }
 };
 
-module.exports.login = async function (req, res) {
-  try {
-    let walletAddr = req.body.walletAddr;
-  } catch (err) {
-    return res.status(400).json(formResponse("error", null, err));
-  }
-};
 
 module.exports.createUserNonce = async function (req, res) {
   try {
@@ -147,6 +188,43 @@ module.exports.verifyAuthentication = async (req, res) => {
 
   } catch (err) {
     console.log(err);
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+module.exports.updateDisplayName = async function (req, res) {
+  try {
+    const userValidationSchema = Joi.object({
+      walletAddr: Joi.string().required(),
+      displayName: Joi.string().required(),
+    });
+
+    const isValidated = userValidationSchema.validate({
+      walletAddr: req.user.sub.walletAddr,
+      displayName: req.body.displayName,
+    });
+
+    // Throw validation error
+    if (isValidated.error != null) {
+      logger.error(
+        `[updateDisplayName] ${JSON.stringify(isValidated.error.details)}`
+      );
+      return res
+        .status(400)
+        .json(formResponse("fail", null, isValidated.error.details));
+    }
+
+    let filterVal = { walletAddr: isValidated.value.walletAddr };
+    let updateVal = { displayName: isValidated.value.displayName };
+    let configVal = { new: true };
+
+    let myResult = await UserSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info("[updateDisplayName] Successfully Updated User Display Name");
+      return res.status(201).json(formResponse('success', myResult, null));
+    }
+  } catch (err) {
+    logger.error(err);
     return res.status(400).json(formResponse("error", null, err));
   }
 };

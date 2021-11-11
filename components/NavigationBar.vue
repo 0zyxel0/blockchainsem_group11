@@ -150,7 +150,7 @@ export default {
       rightDrawer: false,
       select: ["English"],
       items: ["English", "French", "German"],
-      versionNo: "1.0.0.0",
+      versionNo: this.$config.APP_VERSION,
     };
   },
   mounted() {},

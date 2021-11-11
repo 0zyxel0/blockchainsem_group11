@@ -6,6 +6,8 @@ const UserSchema = new Schema(
         displayName: { type: "String", default: null },
         displayImg: { type: "String", default: null },
         isDark: { type: "Boolean", default: false },
+        unmintedNft: { type: "Number", default: 0 },
+        ownedNft: { type: "Number", default: 0 },
         nonce: { type: "String", default: null },
     }, { timestamps: true },
     { collection: "users" }

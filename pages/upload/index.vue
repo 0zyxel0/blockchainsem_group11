@@ -1,7 +1,6 @@
 <template>
   <div id="upload-page">
-    <NavigationBar
-    ></NavigationBar>
+    <NavigationBar></NavigationBar>
     <v-row>
       <v-col>
         <v-row
@@ -9,19 +8,47 @@
             ><v-card>
               <v-card-title>Preview Image</v-card-title>
               <v-card-text>
-                <v-img
-                  max-height="400"
-                  max-width="600"
-                  v-if="!imagePreviewUrl"
-                  src="https://via.placeholder.com/400x600"
-                />
-                <v-img
-                  max-height="400"
-                  max-width="600"
-                  :src="imagePreviewUrl"
-                />
+                <v-row>
+                  <v-col>
+                    <v-img
+                      max-height="400"
+                      max-width="800"
+                      v-if="!imagePreviewUrl"
+                      contain
+                      src="https://via.placeholder.com/800x400"
+                    />
+                    <v-img
+                      max-height="400"
+                      max-width="800"
+                      contain
+                      :src="imagePreviewUrl"
+                    /> </v-col
+                ></v-row>
               </v-card-text> </v-card></v-col
         ></v-row>
+        <v-row v-if="uploadedSuccessfully">
+          <v-col>
+            <v-card>
+              <v-card-subtitle>Metadata To Be Minted</v-card-subtitle>
+              <v-card-text>
+                <v-list-item three-line>
+                  <v-list-item-content>
+                    <v-list-item-title
+                      >Title :
+                      {{ currentMetadata.meta.title }}</v-list-item-title
+                    >
+                    <v-list-item-subtitle>
+                      Description : {{ currentMetadata.meta.description }}
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      File URI : {{ currentMetadata.nftUri }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
         <v-row>
@@ -44,7 +71,11 @@
                     <v-subheader>Title</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-text-field></v-text-field>
+                    <v-text-field
+                      v-model="imageUploadDetails.title"
+                      :rules="titleRules"
+                      required
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -52,15 +83,21 @@
                     <v-subheader>Description</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-text-field></v-text-field>
+                    <v-text-field
+                      :rules="descriptionRules"
+                      v-model="imageUploadDetails.description"
+                      required
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
-                    <v-subheader>Amount To Sell</v-subheader>
+                    <v-subheader>Price To Sell</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-text-field></v-text-field>
+                    <v-text-field
+                      v-model="imageUploadDetails.price"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -71,15 +108,23 @@
                           <v-card-title>Options</v-card-title>
                           <v-card-text>
                             <v-row
-                              ><v-col
-                                ><v-btn
+                              ><v-col>
+                                <v-btn color="primary" block v-if="isLoading">
+                                  <v-progress-circular
+                                    indeterminate
+                                    color="red"
+                                  ></v-progress-circular
+                                ></v-btn>
+
+                                <v-btn
+                                  v-else
                                   block
                                   color="primary"
                                   @click="uploadFileToIPFS(imageData)"
                                   >Upload</v-btn
                                 >
                               </v-col> </v-row
-                            ><v-row>
+                            ><v-row v-if="uploadedSuccessfully">
                               <v-col>
                                 <v-btn
                                   block
@@ -117,6 +162,16 @@ export default {
   data() {
     return {
       imageData: null,
+      isLoading: false,
+      uploadedSuccessfully: false,
+      currentMetadata: {},
+      imageUploadDetails: {
+        title: null,
+        desciption: null,
+        price: 0,
+      },
+      titleRules: [(v) => !!v || "Title is required"],
+      descriptionRules: [(v) => !!v || "Description is required"],
     };
   },
   computed: {
@@ -126,10 +181,12 @@ export default {
     },
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
+      userToken: (state) => state.modules.profile.token,
     }),
   },
   methods: {
     async uploadFileToIPFS(payload) {
+      this.isLoading = true;
       let formData = new FormData();
       formData.append("file", payload);
       try {
@@ -145,15 +202,33 @@ export default {
         );
         if (myResults) {
           console.log("IPFS upload completed");
-          console.log(myResults);
-          let userItem = await this.$axios.$post(`/api/v1/item/save`, myResults);
+          let payloadVal = {
+            title: this.imageUploadDetails.title,
+            description: this.imageUploadDetails.description,
+            price: this.imageUploadDetails.price,
+            filename: this.imageData.name,
+            ipfsVal: myResults,
+          };
+          let app = this;
+          let userItem = await this.$axios.$post(
+            `/api/v1/item/save`,
+            payloadVal,
+            {
+              headers: {
+                Authorization: `Bearer ${app.userToken}`,
+              },
+            }
+          );
           if (userItem) {
-            console.log(userItem.data.value);
+            console.log(userItem);
+            this.$toast.success("Successfully Uploaded File").goAway(2000);
+            this.isLoading = false;
+            this.uploadedSuccessfully = true;
+            this.currentMetadata = userItem.payload;
           }
           // Save State
           // Save To Temporary Database
           // Remove When Minted
-          console.log(myResults.data);
         }
       } catch (err) {
         console.log(err);

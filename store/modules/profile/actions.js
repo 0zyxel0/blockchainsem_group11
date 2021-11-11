@@ -20,14 +20,14 @@ export default {
           userSignature: signature
         };
         let myVerification = await this.$axios.$post("/api/v1/auth/verification", payload);
-        if (myVerification) {          
+        if (myVerification) {
           commit("SET_USER_DATA", jwt_decode(myVerification.payload.token));
           commit("SET_USER_TOKEN", myVerification.payload.token);
           commit("SET_USER_WALLETADDRESS", walletAddr);
           this.$router.push('/marketplace');
         }
-       
-       
+
+
       }
     }
   },
@@ -38,10 +38,25 @@ export default {
     // console.log("Current Block: ", currentBlock);
 
   },
+  async GET_USER_UNMINTED({ commit, state }) {
+    try {
+      let myResult = await this.$axios.$get(`/api/v1/user/unminted`, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      commit("SET_USER_NFT_UNMINTED", myResult.payload);
+    } catch (err) {
+      console.log(err);
+    }
+  },
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;
     console.log("Signing out...");
     commit("CLEAR_USER_WALLETADDRESS");
     this.$router.push('/');
   },
+  UPDATE_DISPLAY_NAME({ commit }, { displayName }) {
+    commit("SET_USER_DISPLAY_NAME", displayName);
+  }
 };

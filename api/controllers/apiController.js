@@ -102,9 +102,41 @@ module.exports.getUserUnmintedItems = async function (req, res) {
  * @param {*} res 
  * @returns 
  */
-module.exports.deleteUserUnmintedItems = async function (req, res) {
+module.exports.mintingAssets = async function (req, res) {
   try {
+    logger.info(`[mintingAssets] Updating Unmited User Status`);
+    // Create Validation Schema
+    const mintValidationSchema = Joi.object({
+      owner: Joi.string().required(),
+      nftid: Joi.string().required(),
+    });
+
+    const isValidated = mintValidationSchema.validate({
+      owner: req.user.sub.walletAddr,
+      nftid: req.body.nftid,
+    });
+
+    // Throw validation error
+    if (isValidated.error != null) {
+      logger.error(
+        `[saveUnmintedItem] ${JSON.stringify(isValidated.error.details)}`
+      );
+      return res
+        .status(400)
+        .json(formResponse("fail", null, isValidated.error.details));
+    }
+
+    let filterVal = { owner: isValidated.value.owner, _id: isValidated.value.nftid, isMinted: false };
+    let updateVal = { isMinted: true };
+    let configVal = { new: true };
+    let myResult = await NFTSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info(`[mintingAssets] Successfully updated Unminted User Asset`);
+      return res.status(200).json(formResponse("success", myResult, null));
+    }
+
   } catch (err) {
+    logger.error("[mintingAssets] Error in Updating Unminted Asset Record");
     return res.status(400).json(formResponse("error", null, err));
   }
 };
@@ -225,6 +257,43 @@ module.exports.updateDisplayName = async function (req, res) {
     }
   } catch (err) {
     logger.error(err);
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+module.exports.getUserMintedItems = async function (req, res) {
+  try {
+    // Create Validation Schema
+    const mintValidationSchema = Joi.object({
+      owner: Joi.string().required()
+    });
+
+    const isValidated = mintValidationSchema.validate({
+      owner: req.user.sub.walletAddr
+    });
+
+    // Throw validation error
+    if (isValidated.error != null) {
+      logger.error(
+        `[saveUnmintedItem] ${JSON.stringify(isValidated.error.details)}`
+      );
+      return res
+        .status(400)
+        .json(formResponse("fail", null, isValidated.error.details));
+    }
+
+    logger.info(`[getUserMintedItems] Requesting User Minted Items`);
+    let myResult = await NFTSchema.find({ owner: isValidated.value.owner, isMinted: true });
+    if (myResult.length > 0) {
+      logger.info("[getUserUnmintedItems] Successfully retrieved Minted Items");
+      return res.status(200).json(formResponse("success", myResult, null));
+    } else {
+      logger.info("[getUserUnmintedItems] User Has No Minted Items");
+      return res.status(200).json(formResponse("success", [], null));
+    }
+  }
+  catch (err) {
+    logger.error("[getUserMintedItems] Error in Retreiving User Minted Assets");
     return res.status(400).json(formResponse("error", null, err));
   }
 };

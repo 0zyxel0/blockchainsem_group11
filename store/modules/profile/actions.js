@@ -50,6 +50,18 @@ export default {
       console.log(err);
     }
   },
+  async GET_USER_MINTED({ commit, state }) {
+    try {
+      let myResult = await this.$axios.$get(`/api/v1/user/minted`, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      commit("SET_USER_NFT_MINTED", myResult.payload);
+    } catch (err) {
+      console.log(err);
+    }
+  },
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;
     console.log("Signing out...");

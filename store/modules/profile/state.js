@@ -2,7 +2,8 @@ export default () => ({
     userWalletAddress:null,
     userNFT:[], 
     userNFTUnminted:[],
-    userNFTMarker:[],
+    userNFTMinted:[],
+    userNFTMarker:[], //?
     user:null,
     token:null,
 });

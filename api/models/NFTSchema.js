@@ -10,7 +10,7 @@ const metaSchema = new Schema({
 });
 
 const NFTSchema = new Schema(
-  {
+  {    
     owner: { type: "String", required: true },
     nftval: {},
     nftUri: { type: String },

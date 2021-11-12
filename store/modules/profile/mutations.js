@@ -20,5 +20,8 @@ export default {
     SET_USER_NFT_UNMINTED(state, payload) {
         state.userNFTUnminted = payload;
     },
+    SET_USER_NFT_MINTED(state, payload) {
+        state.userNFTMinted = payload;
+    }
 
 }

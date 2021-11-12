@@ -82,12 +82,11 @@
                 class="d-flex child-flex"
                 cols="4"
               >
+              <v-card cols="2" max-width="250">
                 <v-img
                   :src="n.nftUri"
                   :lazy-src="n.nftUri"
-                  :aspect-ratio="16 / 9"
-                  max-height="150"
-                  max-width="250"
+                  :aspect-ratio="1.75"
                   class="grey lighten-2"
                 >
                   <template v-slot:placeholder>
@@ -103,6 +102,8 @@
                     </v-row>
                   </template>
                 </v-img>
+                <v-card-title><v-btn @click="goToAssetProfile(n._id)">View</v-btn></v-card-title>
+              </v-card>
               </v-col>
             </v-row>
           </v-card-text>
@@ -159,6 +160,7 @@ export default {
       userDisplayName: (state) => state.modules.profile.user.sub.displayName,
       userTheme: (state) => state.modules.profile.user.sub.isDark,
       userNFTUnminted: (state) => state.modules.profile.userNFTUnminted,
+      userNFTMinted: (state) => state.modules.profile.user.userNFTMinted,
     }),
   },
   mounted() {
@@ -167,7 +169,12 @@ export default {
   methods: {
     async initializeAssets() {
       this.$store.dispatch("modules/profile/GET_USER_UNMINTED");
+      this.$store.dispatch("modules/profile/GET_USER_MINTED");
     },
+    goToAssetProfile(payload){
+      this.$router.push(`/nfts/${payload}`);
+      console.log(payload);
+      },
     goToUploader() {
       this.$router.push("/upload");
     },

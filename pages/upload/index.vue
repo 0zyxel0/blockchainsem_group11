@@ -129,7 +129,7 @@
                                 <v-btn
                                   block
                                   color="success"
-                                  @click="minfUserNFT()"
+                                  @click="mintUserNFT(currentMetadata.nftUri)"
                                   >Mint NFT</v-btn
                                 ></v-col
                               ></v-row
@@ -149,9 +149,11 @@
   </div>
 </template>
 <script>
+import { ethers } from "ethers";
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 const FormData = require("form-data");
-const Contract = require("web3-eth-contract");
-const NFTMinterABI = require("../../build/contracts/NFTFactory.json");
+// const Contract = require("web3-eth-contract");
+const NFTMinterABI = require("../../build/contracts/NFTMinter.json");
 import NavigationBar from "@/components/NavigationBar";
 import { mapState } from "vuex";
 export default {
@@ -235,23 +237,32 @@ export default {
       }
     },
     async mintUserNFT(userFileURI) {
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-      console.log(`Calling Contract`);
-      let mintContract = new Contract(
+      var contract = new ethers.Contract(
+        this.$config.NFT_MINTING_CONTRACT,
         NFTMinterABI.abi,
-        toString(this.$config.NTF_IPFS_TOKEN)
+        provider.getSigner()
       );
+      let triggerContract = contract.createToken(userFileURI);
+      triggerContract.then(function (transaction) {
+        console.log(transaction);
+      });
+      // const accounts = await window.ethereum.request({
+      //   method: "eth_accounts",
+      // });
+      // console.log(`Calling Contract`);
+      // let mintContract = new Contract(
+      //   NFTMinterABI.abi,
+      //   toString(this.$config.NFT_MINTING_CONTRACT)
+      // );
 
-      mintContract.setProvider(web3.currentProvider);
-      console.log(mintContract);
-      mintContract.methods
-        .mintToken(userFileURI)
-        .send({ from: accounts[0] })
-        .then((response) => {
-          console.log(response);
-        });
+      // mintContract.setProvider(web3.currentProvider);
+      // console.log(mintContract);
+      // mintContract.methods
+      //   .mintToken(userFileURI)
+      //   .send({ from: accounts[0] })
+      //   .then((response) => {
+      //     console.log(response);
+      //   });
     },
   },
 };

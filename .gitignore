@@ -88,3 +88,6 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# disregard build file for truffle
+/build

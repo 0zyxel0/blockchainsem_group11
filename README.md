@@ -6,6 +6,14 @@
 # install dependencies
 $ npm install
 
+# Run Truffle Migrate
+truffle migrate
+
+# Additional Steps in Ganache or Remix
+# Get Contract Address of the Deployed Contracts
+# Place the contract Address in the ENV file for each contract.
+
+
 # serve with hot reload at localhost:3000
 $ npm run dev
 

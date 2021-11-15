@@ -16,10 +16,10 @@
         ></UserProfileBox>
       </v-col>
       <v-col cols="8">
-        <v-row>
+        <!-- <v-row>
           <v-col>
             <v-card>
-              <v-card-subtitle>NFT Owned</v-card-subtitle>
+              <v-card-subtitle>Minted Owned</v-card-subtitle>
               <v-card-text></v-card-text> </v-card
           ></v-col>
           <v-col>
@@ -37,7 +37,7 @@
               <v-card-subtitle>Sold</v-card-subtitle>
               <v-card-text></v-card-text> </v-card
           ></v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
           <v-col>
             <v-card>
@@ -53,10 +53,8 @@
                     <ProfileDisplayNameBox></ProfileDisplayNameBox
                   ></v-col>
                   <v-col
-                    ><v-btn x-large block color="error"
-                      >Change Avatar</v-btn
-                    ></v-col
-                  >
+                    ><v-btn x-large block color="error">Change Avatar</v-btn>
+                  </v-col>
                 </v-row>
               </v-card-text>
             </v-card></v-col
@@ -69,42 +67,33 @@
       <v-col>
         <v-card>
           <v-card-title
-            >Unminted Assets
+            >Recent Unminted Assets
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row v-if="userNFTUnminted.length > 0">
-              <v-col
+            <v-row row wrap v-if="userNFTUnminted.length > 0">
+              <AssetBoxComponent
                 v-for="n in userNFTUnminted"
                 :key="n._id"
-                class="d-flex child-flex"
-                cols="4"
+                :assetTitle="n.title"
+                :imageUri="n.nftUri"
               >
-              <v-card cols="2" max-width="250">
-                <v-img
-                  :src="n.nftUri"
-                  :lazy-src="n.nftUri"
-                  :aspect-ratio="1.75"
-                  class="grey lighten-2"
-                >
-                  <template v-slot:placeholder>
-                    <v-row
-                      class="fill-height ma-0"
-                      align="center"
-                      justify="center"
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col
+                      ><v-btn
+                        @click="goToAssetProfile(n._id)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn></v-col
                     >
-                      <v-progress-circular
-                        indeterminate
-                        color="grey lighten-5"
-                      ></v-progress-circular>
-                    </v-row>
-                  </template>
-                </v-img>
-                <v-card-title><v-btn @click="goToAssetProfile(n._id)">View</v-btn></v-card-title>
-              </v-card>
-              </v-col>
+                  </v-row>
+                </template>
+              </AssetBoxComponent>
             </v-row>
           </v-card-text>
         </v-card>
@@ -115,7 +104,25 @@
       <v-col>
         <v-card>
           <v-card-title>
-            Owned NFT
+            Minted Assets
+            <v-spacer></v-spacer>
+            <v-btn color="primary">See All</v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row>
+             
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title>
+            Owned Assets
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
           </v-card-title>
@@ -145,12 +152,14 @@ import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
 import UserProfileBox from "@/components/UserProfileBox";
 import ProfileDisplayNameBox from "@/components/ProfileDisplayNameBox";
+import AssetBoxComponent from "@/components/AssetBoxComponent";
 export default {
   layout: "default",
   components: {
     NavigationBar: NavigationBar,
     UserProfileBox: UserProfileBox,
     ProfileDisplayNameBox: ProfileDisplayNameBox,
+    AssetBoxComponent: AssetBoxComponent,
   },
   middleware: "checkWalletAddress",
   computed: {
@@ -171,10 +180,10 @@ export default {
       this.$store.dispatch("modules/profile/GET_USER_UNMINTED");
       this.$store.dispatch("modules/profile/GET_USER_MINTED");
     },
-    goToAssetProfile(payload){
+    goToAssetProfile(payload) {
       this.$router.push(`/nfts/${payload}`);
       console.log(payload);
-      },
+    },
     goToUploader() {
       this.$router.push("/upload");
     },

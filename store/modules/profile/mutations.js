@@ -22,6 +22,9 @@ export default {
     },
     SET_USER_NFT_MINTED(state, payload) {
         state.userNFTMinted = payload;
+    }, 
+    SET_NFT_DETAILS(state, payload) {
+        state.nftDetails = payload;
     }
 
 }

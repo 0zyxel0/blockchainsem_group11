@@ -4,10 +4,34 @@
     <v-row>
       <v-col><h1>NFT Details</h1></v-col>
     </v-row>
-    <v-divider> </v-divider>
     <v-row>
       <v-col>
-      Details
+        <v-card>
+          <v-card-text>
+            <v-img
+              max-height="400"
+              max-width="800"
+              contain
+              :src="nftDetails.nftUri"
+            />
+            <v-list-item three-line>
+              <v-list-item-content>
+                <v-list-item-title>Title : {{nftDetails.meta.title}}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{nftDetails.meta.description}}
+                </v-list-item-subtitle>             
+              </v-list-item-content>
+            </v-list-item>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card>
+          <v-card-text>
+            <div>Owner : {{ userWalletAddress }}</div>
+            <v-btn color="success">Mint</v-btn>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </div>
@@ -23,19 +47,23 @@ export default {
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
+      nftDetails: (state) => state.modules.profile.nftDetails
     }),
-
   },
   mounted() {
+    this.initializeData();
   },
   components: {
     NavigationBar: NavigationBar,
   },
   data() {
-    return {
-    };
+    return {};
   },
-  methods: {  
+  methods: {
+    initializeData() {
+      let payload = this.$route.params.id;
+      this.$store.dispatch("modules/profile/GET_NFT_DETAILS", payload);
+    },
   },
 };
 </script>

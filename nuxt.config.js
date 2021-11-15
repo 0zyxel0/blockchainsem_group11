@@ -65,7 +65,7 @@ export default {
     axios:{
       baseURL: process.env.APIBASE_URL || "http://localhost:8899",
     },
-    
+    APP_VERSION: process.env.APP_VERSION || "no version",
     NTF_IPFS_TOKEN: process.env.NTF_IPFS_TOKEN || "",
     NFT_MINTING_CONTRACT: process.env.NFT_MINTING_CONTRACT || "",
     NFT_TRADING_CONTRACT: process.env.NFT_TRADING_CONTRACT || "",

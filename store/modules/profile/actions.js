@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import jwt_decode from "jwt-decode";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
+const NFT_CONTRACT_ABI = require("./../../../build/contracts/NFT.json");
+const NFTAUCTION_CONTRACT_ABI = require("./../../../build/contracts/NFTAuction.json");
 export default {
   async LOGIN_USER_WALLET({ commit }) {
     await provider.send("eth_requestAccounts", []);
@@ -30,6 +32,23 @@ export default {
 
       }
     }
+  },
+  async GET_NFT_DETAILS({ commit, state }, nftid) {
+    try {
+      let myResult = await this.$axios.$post("/api/v1/item/detail", { nftid: nftid }, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (myResult) {
+        console.log(myResult);
+        commit("SET_NFT_DETAILS", myResult.payload);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
   },
   async GET_USER_CREDITS({ commit }) {
     let currentBlock = await provider.getBlockNumber();
@@ -70,5 +89,30 @@ export default {
   },
   UPDATE_DISPLAY_NAME({ commit }, { displayName }) {
     commit("SET_USER_DISPLAY_NAME", displayName);
-  }
+  },
+  async MINT_USER_ASSET({ state }, { nftid, userFileURI }) {
+    try {
+      console.log(nftid, userFileURI);
+      let contract = new ethers.Contract(
+        this.$config.NFT_MINTING_CONTRACT,
+        NFT_CONTRACT_ABI.abi,
+        provider.getSigner()
+      );
+      let mintContract = await contract.mintToken(userFileURI);
+      mintContract.then(response => {
+        console.log(response);
+        this.$axios.$put(
+          "/api/v1/item/mint",
+          { nftid: nftid },
+          {
+            headers: {
+              Authorization: `Bearer ${state.token}`,
+            },
+          }
+        );
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  },
 };

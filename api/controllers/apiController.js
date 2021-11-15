@@ -74,6 +74,41 @@ module.exports.saveUnmintedItem = async function (req, res) {
 
 module.exports.getItemMetadata = async function (req, res) {
   try {
+    logger.info("[getItemMetadata] Requesting NFT Details");
+    // Create Validation Schema
+    const mintValidationSchema = Joi.object({
+      owner: Joi.string().required(),
+      nftid: Joi.string().required(),
+    });
+
+    const isValidated = mintValidationSchema.validate({
+      owner: req.user.sub.walletAddr,
+      nftid: req.body.nftid
+    });
+
+    // Throw validation error
+    if (isValidated.error != null) {
+      logger.error(
+        `[getItemMetadata] ${JSON.stringify(isValidated.error.details)}`
+      );
+      return res
+        .status(400)
+        .json(formResponse("fail", null, isValidated.error.details));
+    }
+
+    let filterVal = {
+      owner: isValidated.value.owner,
+      _id: isValidated.value.nftid
+    };
+    let myResult = await NFTSchema.findOne(filterVal);
+    if (myResult) {
+      logger.info("[getItemMetadata] Successfully Retrieved Item Details");
+      return res.status(200).json(formResponse("success", myResult, null));
+    }
+    if(!myResult){
+      logger.info("[getItemMetadata] Failure to retrieve Item Details");
+      return res.status(404).json(formResponse("error", null, "Item Details Not Found"))
+    }
   } catch (err) {
     return res.status(400).json(formResponse("error", null, err));
   }

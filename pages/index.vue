@@ -45,7 +45,6 @@
   </v-row>
 </template>
 <script>
-import { ethers } from "ethers";
 import { mapState } from "vuex";
 export default {
   layout: "blank",

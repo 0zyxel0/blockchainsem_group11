@@ -1,8 +1,8 @@
-var NFTMarket = artifacts.require('NFTMarket.sol');
-var NFTMinter = artifacts.require('NFTMinter.sol');
+var NFTAuction = artifacts.require('NFTAuction.sol');
+var NFT = artifacts.require('NFT.sol');
 
 module.exports = function(deployer){
-    deployer.deploy(NFTMarket).then(function(){
-        return deployer.deploy(NFTMinter, NFTMarket.address);
+    deployer.deploy(NFTAuction).then(function(){
+        return deployer.deploy(NFT, NFTAuction.address);
     });
 }

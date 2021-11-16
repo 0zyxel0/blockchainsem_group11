@@ -141,7 +141,22 @@
       <v-col>
         <v-card>
           <v-card-title
-            >NFT in Marketplace
+            >NFT in Auction
+            <v-spacer></v-spacer>
+            <v-btn color="primary">See All</v-btn>
+            <v-btn @click="testGet()">test</v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text></v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+        <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title
+            >NFT You Are Bidding On
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
             <v-btn @click="testGet()">test</v-btn>

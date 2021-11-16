@@ -56,7 +56,7 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ['@nuxtjs/axios', '@nuxtjs/axios',
+  modules: ['@nuxtjs/axios',
 
     ["vue-toastification/nuxt", {
       timeout: 1500,

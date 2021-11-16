@@ -6,11 +6,7 @@
     </v-row>
     <v-divider> </v-divider>
     <v-row>
-      <v-col>Current Block Count : {{ latestBlock }}</v-col>
-    </v-row>
-    <v-row>
       <v-col>
-        <AssetBoxComponent></AssetBoxComponent>
       </v-col>
     </v-row>
   </div>

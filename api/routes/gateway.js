@@ -6,7 +6,9 @@ const { checkToken } = require("../middleware/checkToken");
 const router = new Router();
 // Initialize Controller Files
 const apiController = require("../controllers/apiController");
+router.get("/v1/user/minted/recent", checkToken, apiController.getRecentUserMintedItems);
 router.get("/v1/user/minted", checkToken, apiController.getUserMintedItems);
+router.get("/v1/user/unminted/recent", checkToken, apiController.getUserRecentUnmintedItems);
 router.get("/v1/user/unminted", checkToken, apiController.getUserUnmintedItems);
 router.put("/v1/user/changename", checkToken, apiController.updateDisplayName);
 router.post("/v1/item/detail", checkToken, apiController.getItemMetadata);

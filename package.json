@@ -32,7 +32,7 @@
     "nft.storage": "^3.3.0",
     "nuxt": "^2.15.7",
     "uuidv4": "^6.2.12",
-    "vue-toasted": "^1.1.28",
+    "vue-toastification": "^1.7.14",
     "vuetify": "^2.5.5",
     "web3": "^1.6.0",
     "winston": "^3.3.3"

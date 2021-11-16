@@ -16,6 +16,8 @@ const NFTSchema = new Schema(
     nftUri: { type: String },
     filename: {type: String,required: true},
     meta: metaSchema,
+    contractid: { type: String, default:"no contractid"},
+    tokenid:{ type: Number, default:0},
     isMinted: { type: Boolean, default: false },
     isMarket: { type: Boolean, default: false }
   },

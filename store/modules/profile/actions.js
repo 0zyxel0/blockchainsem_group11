@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+const Web3 = require('web3');
 import jwt_decode from "jwt-decode";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const NFT_CONTRACT_ABI = require("./../../../build/contracts/NFT.json");
@@ -57,33 +58,34 @@ export default {
     // console.log("Current Block: ", currentBlock);
 
   },
-  async GET_USER_UNMINTED({ commit, state }) {
+  // This Function will be retrieving data to list all recent unminted NFTs of the user limited to 5
+  async GET_RECENT_UNMINTED_NFT({ commit, state }) {
+    try {
+      let myResult = await this.$axios.$get(`/api/v1/user/unminted/recent`, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      commit("SET_USER_RECENT_UNMINTED_NFT", myResult.payload);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  // This Function will be retrieving data to list all unminted NFTs of the user
+  async GET_ALL_UNMINTED_NFT({ commit, state }) {
     try {
       let myResult = await this.$axios.$get(`/api/v1/user/unminted`, {
         headers: {
           Authorization: `Bearer ${state.token}`,
         },
       });
-      commit("SET_USER_NFT_UNMINTED", myResult.payload);
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  async GET_USER_MINTED({ commit, state }) {
-    try {
-      let myResult = await this.$axios.$get(`/api/v1/user/minted`, {
-        headers: {
-          Authorization: `Bearer ${state.token}`,
-        },
-      });
-      commit("SET_USER_NFT_MINTED", myResult.payload);
+      commit("SET_USER_UNMINTED_NFT", myResult.payload);
     } catch (err) {
       console.log(err);
     }
   },
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;
-    console.log("Signing out...");
     commit("CLEAR_USER_WALLETADDRESS");
     this.$router.push('/');
   },
@@ -92,27 +94,93 @@ export default {
   },
   async MINT_USER_ASSET({ state }, { nftid, userFileURI }) {
     try {
-      console.log(nftid, userFileURI);
       let contract = new ethers.Contract(
         this.$config.NFT_MINTING_CONTRACT,
         NFT_CONTRACT_ABI.abi,
         provider.getSigner()
       );
-      let mintContract = await contract.mintToken(userFileURI);
-      mintContract.then(response => {
-        console.log(response);
-        this.$axios.$put(
-          "/api/v1/item/mint",
-          { nftid: nftid },
-          {
-            headers: {
-              Authorization: `Bearer ${state.token}`,
-            },
+      let myResult = await contract.mintToken(userFileURI);
+      if (myResult) {
+        console.log("Minted Results");
+        console.log(myResult);
+        await provider.waitForTransaction(myResult.hash);
+        const receipt = await provider.getTransactionReceipt(myResult.hash);
+        let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
+        let platformItem = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT, NFTAUCTION_CONTRACT_ABI.abi, provider.getSigner());
+        let platformResult = await platformItem.createItem(myResult.to, lastTokenId);
+        if (platformResult) {
+          // Update Backend Unminted Record
+          console.log("Creating Platform Asset");
+          console.log(platformResult);
+          let backendResult = await this.$axios.$put(
+            "/api/v1/item/mint",
+            { nftid: nftid, tokenid: lastTokenId },
+            {
+              headers: {
+                Authorization: `Bearer ${state.token}`,
+              },
+            }
+          );
+          if (backendResult) {
+            return "Success";
           }
-        );
-      });
+
+        }
+      }
     } catch (err) {
       console.log(err);
     }
   },
+  CLEAR_CURRENT_NFT_META({ commit }) {
+    commit("CLEAR_NFT_DETAILS");
+  },
+   // This Function will be retrieving data to list all recent minted NFTs of the user limited to 5
+  async GET_RECENT_MINTED_NFT({ commit, state }) {
+    try {
+      let myResult = await this.$axios.$get("/api/v1/user/minted/recent", {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      if (myResult) {
+        commit("SET_USER_RECENT_MINTED_NFT", myResult.payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+   // This Function will be retrieving data to list all minted NFTs of the user
+  async GET_ALL_MINTED_NFT({ commit, state }) {
+    try {
+      let myResult = await this.$axios.$get("/api/v1/user/minted", {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      if (myResult) {
+        commit("SET_USER_MINTED_NFT", myResult.payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  async TEST_CHAIN({ commit, state }) {
+    try{
+      let contract = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider
+      );
+      let myResult = await contract.getNFTItems();
+      if(myResult){
+        console.log("ALL NFTS");
+        console.log(myResult);
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+  }
 };

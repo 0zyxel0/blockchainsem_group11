@@ -56,19 +56,25 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ['@nuxtjs/axios', '@nuxtjs/toast','@nuxtjs/axios'],
+  modules: ['@nuxtjs/axios', '@nuxtjs/axios',
+
+    ["vue-toastification/nuxt", {
+      timeout: 1500,
+      draggable: false
+    }]
+  ],
 
   // To Connect the API Layer to the Frontend
   serverMiddleware: ["~/api/index.js"],
 
   publicRuntimeConfig: {
-    axios:{
+    axios: {
       baseURL: process.env.APIBASE_URL || "http://localhost:8899",
     },
     APP_VERSION: process.env.APP_VERSION || "no version",
     NTF_IPFS_TOKEN: process.env.NTF_IPFS_TOKEN || "",
     NFT_MINTING_CONTRACT: process.env.NFT_MINTING_CONTRACT || "",
-    NFT_TRADING_CONTRACT: process.env.NFT_TRADING_CONTRACT || "",
+    NFT_AUCTION_CONTRACT: process.env.NFT_AUCTION_CONTRACT || "",
   },
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {

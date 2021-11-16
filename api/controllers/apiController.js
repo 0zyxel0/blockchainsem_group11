@@ -105,7 +105,7 @@ module.exports.getItemMetadata = async function (req, res) {
       logger.info("[getItemMetadata] Successfully Retrieved Item Details");
       return res.status(200).json(formResponse("success", myResult, null));
     }
-    if(!myResult){
+    if (!myResult) {
       logger.info("[getItemMetadata] Failure to retrieve Item Details");
       return res.status(404).json(formResponse("error", null, "Item Details Not Found"))
     }
@@ -113,6 +113,27 @@ module.exports.getItemMetadata = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+
+module.exports.getUserRecentUnmintedItems = async function (req, res) {
+  try {
+    logger.info(`[getUserRecentUnmintedItems] Requesting User Unminted Items`);
+
+    let myResult = await NFTSchema.find({ owner: req.user.sub.walletAddr, isMinted: false }).sort({ 'date': -1 }).limit(5).exec();
+    if (myResult.length > 0) {
+      logger.info("[getUserRecentUnmintedItems] Successfully retrieved User Recent Unminted Items");
+      return res.status(200).json(formResponse('success', myResult, null));
+    } else {
+      logger.warn("[getUserRecentUnmintedItems] Retrieved 0 Unminted Items");
+      return res.status(200).json(formResponse('success', [], null));
+    }
+
+  } catch (err) {
+    return res.status(401).json(formResponse("error", null, err));
+  }
+};
+
+
 module.exports.getUserUnmintedItems = async function (req, res) {
   try {
     logger.info(`[getUserUnmintedItems] Requesting User Unminted Items`);
@@ -144,17 +165,19 @@ module.exports.mintingAssets = async function (req, res) {
     const mintValidationSchema = Joi.object({
       owner: Joi.string().required(),
       nftid: Joi.string().required(),
+      tokenid: Joi.number().required()
     });
 
     const isValidated = mintValidationSchema.validate({
       owner: req.user.sub.walletAddr,
       nftid: req.body.nftid,
+      tokenid: req.body.tokenid
     });
 
     // Throw validation error
     if (isValidated.error != null) {
       logger.error(
-        `[saveUnmintedItem] ${JSON.stringify(isValidated.error.details)}`
+        `[mintingAssets] ${JSON.stringify(isValidated.error.details)}`
       );
       return res
         .status(400)
@@ -162,7 +185,7 @@ module.exports.mintingAssets = async function (req, res) {
     }
 
     let filterVal = { owner: isValidated.value.owner, _id: isValidated.value.nftid, isMinted: false };
-    let updateVal = { isMinted: true };
+    let updateVal = { isMinted: true, tokenid: isValidated.value.tokenid };
     let configVal = { new: true };
     let myResult = await NFTSchema.findOneAndUpdate(filterVal, updateVal, configVal);
     if (myResult) {
@@ -295,6 +318,50 @@ module.exports.updateDisplayName = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+
+module.exports.getRecentUserMintedItems = async function (req, res) {
+  try {
+    // Create Validation Schema
+    const mintValidationSchema = Joi.object({
+      owner: Joi.string().required()
+    });
+
+    const isValidated = mintValidationSchema.validate({
+      owner: req.user.sub.walletAddr
+    });
+
+    // Throw validation error
+    if (isValidated.error != null) {
+      logger.error(
+        `[getRecentUserMintedItems] ${JSON.stringify(isValidated.error.details)}`
+      );
+      return res
+        .status(400)
+        .json(formResponse("fail", null, isValidated.error.details));
+    }
+
+    logger.info(`[getRecentUserMintedItems] Requesting User Minted Items`);
+    let myResult = await NFTSchema.find({ owner: isValidated.value.owner, isMinted: true }).sort({ 'date': -1 }).limit(5).exec();
+    if (myResult.length > 0) {
+      logger.info("[getRecentUserMintedItems] Successfully retrieved Minted Items");
+      return res.status(200).json(formResponse("success", myResult, null));
+    } else {
+      logger.info("[getRecentUserMintedItems] User Has No Minted Items");
+      return res.status(200).json(formResponse("success", [], null));
+    }
+  }
+  catch (err) {
+    logger.error("[getLimitedUserMintedItems] Error in Retreiving User Minted Assets");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+
+
+
+
+
 
 module.exports.getUserMintedItems = async function (req, res) {
   try {

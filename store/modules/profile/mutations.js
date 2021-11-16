@@ -4,6 +4,8 @@ export default {
     },
     CLEAR_USER_WALLETADDRESS(state) {
         state.userWalletAddress = null;
+        state.user = null;
+        state.token = null;
     },
     SET_USER_DATA(state, payload) {
         state.user = payload;
@@ -17,13 +19,22 @@ export default {
     SET_USER_NFT(state, payload) {
         state.userNFT = payload;
     },
-    SET_USER_NFT_UNMINTED(state, payload) {
+    SET_USER_UNMINTED_NFT(state, payload) {
         state.userNFTUnminted = payload;
     },
-    SET_USER_NFT_MINTED(state, payload) {
+    SET_USER_RECENT_UNMINTED_NFT(state, payload) {
+        state.userRecentUnminted = payload;
+    },
+    SET_USER_RECENT_MINTED_NFT(state, payload) {
+        state.userRecentMinted = payload;
+    },
+    SET_USER_MINTED_NFT(state, payload) {
         state.userNFTMinted = payload;
-    }, 
+    },
     SET_NFT_DETAILS(state, payload) {
+        state.nftDetails = payload;
+    },
+    CLEAR_NFT_DETAILS(state, payload) {
         state.nftDetails = payload;
     }
 

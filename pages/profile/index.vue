@@ -73,9 +73,9 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-if="userNFTUnminted.length > 0">
+            <v-row row wrap v-if="userRecentNFTUnminted">
               <AssetBoxComponent
-                v-for="n in userNFTUnminted"
+                v-for="n in userRecentNFTUnminted"
                 :key="n._id"
                 :assetTitle="n.title"
                 :imageUri="n.nftUri"
@@ -104,30 +104,35 @@
       <v-col>
         <v-card>
           <v-card-title>
-            Minted Assets
-            <v-spacer></v-spacer>
-            <v-btn color="primary">See All</v-btn>
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text>
-            <v-row>
-             
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title>
             Owned Assets
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
-          <v-card-text></v-card-text>
+          <v-card-text>
+            <v-row row wrap v-if="userRecentNFTMinted">
+              <AssetBoxComponent
+                v-for="n in userRecentNFTMinted"
+                :key="n._id"
+                :assetTitle="n.title"
+                :imageUri="n.nftUri"
+              >
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col
+                      ><v-btn
+                        @click="goToAssetProfile(n._id)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn></v-col
+                    >
+                  </v-row>
+                </template>
+              </AssetBoxComponent>
+            </v-row>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -139,6 +144,7 @@
             >NFT in Marketplace
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
+            <v-btn @click="testGet()">test</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text></v-card-text>
@@ -168,8 +174,10 @@ export default {
       userAvatar: (state) => state.modules.profile.user.sub.displayImg,
       userDisplayName: (state) => state.modules.profile.user.sub.displayName,
       userTheme: (state) => state.modules.profile.user.sub.isDark,
-      userNFTUnminted: (state) => state.modules.profile.userNFTUnminted,
-      userNFTMinted: (state) => state.modules.profile.user.userNFTMinted,
+      userRecentNFTUnminted: (state) =>
+        state.modules.profile.userRecentUnminted,
+      userRecentNFTMinted: (state) =>
+        state.modules.profile.userRecentMinted,
     }),
   },
   mounted() {
@@ -177,16 +185,18 @@ export default {
   },
   methods: {
     async initializeAssets() {
-      this.$store.dispatch("modules/profile/GET_USER_UNMINTED");
-      this.$store.dispatch("modules/profile/GET_USER_MINTED");
+      this.$store.dispatch("modules/profile/GET_RECENT_UNMINTED_NFT");
+      this.$store.dispatch("modules/profile/GET_RECENT_MINTED_NFT");
     },
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/${payload}`);
-      console.log(payload);
     },
     goToUploader() {
       this.$router.push("/upload");
     },
+    testGet(){
+      this.$store.dispatch("modules/profile/TEST_CHAIN");
+    }
   },
 };
 </script>

@@ -206,7 +206,6 @@ export default {
           }
         );
         if (myResults) {
-          console.log("IPFS upload completed");
           let payloadVal = {
             title: this.imageUploadDetails.title,
             description: this.imageUploadDetails.description,
@@ -225,15 +224,11 @@ export default {
             }
           );
           if (userItem) {
-            console.log(userItem);
-            this.$toast.success("Successfully Uploaded File").goAway(2000);
+            this.$toast.success("Successfully Uploaded File");
             this.isLoading = false;
             this.uploadedSuccessfully = true;
             this.currentMetadata = userItem.payload;
-          }
-          // Save State
-          // Save To Temporary Database
-          // Remove When Minted
+          }         
         }
       } catch (err) {
         console.log(err);

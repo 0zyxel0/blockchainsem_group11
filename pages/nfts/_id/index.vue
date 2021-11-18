@@ -31,10 +31,24 @@
         <v-card>
           <v-card-title>Owner : {{ userWalletAddress }}</v-card-title>
           <v-card-actions>
+            <v-btn color="primary" block v-if="isLoading">
+              <v-progress-circular
+                indeterminate
+                color="red"
+              ></v-progress-circular
+            ></v-btn>
             <v-btn
+              v-else
               color="success"
               block
-              @click="mintUserNFT(nftDetails._id, nftDetails.nftUri)"
+              @click="
+                mintUserNFT(
+                  nftDetails._id,
+                  nftDetails.nftUri,
+                  nftDetails.meta.title,
+                  nftDetails.meta.description
+                )
+              "
               >Mint NFT</v-btn
             >
           </v-card-actions>
@@ -77,20 +91,25 @@ export default {
   data() {
     return {
       dataReady: false,
+      isLoading: false,
     };
   },
   methods: {
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
-    mintUserNFT(nftid, tokenUri) {
-      console.log(nftid, tokenUri);
+    mintUserNFT(nftid, userFileURI, nftTitle, nftDescription) {
+      console.log(nftid, userFileURI);
+      this.isLoading = true;
       this.$store
         .dispatch("modules/profile/MINT_USER_ASSET", {
-          nftid: nftid,
-          userFileURI: tokenUri,
+          nftid,
+          userFileURI,
+          nftTitle,
+          nftDescription,
         })
         .then((response) => {
+          this.isLoading = false;
           this.$router.push("/profile");
         });
     },

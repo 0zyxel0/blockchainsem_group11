@@ -54,9 +54,6 @@ export default {
   async GET_USER_CREDITS({ commit }) {
     let currentBlock = await provider.getBlockNumber();
     console.log(currentBlock);
-    // let currentBlock = await provider.getBalance("ethers.eth")
-    // console.log("Current Block: ", currentBlock);
-
   },
   // This Function will be retrieving data to list all recent unminted NFTs of the user limited to 5
   async GET_RECENT_UNMINTED_NFT({ commit, state }) {
@@ -92,7 +89,7 @@ export default {
   UPDATE_DISPLAY_NAME({ commit }, { displayName }) {
     commit("SET_USER_DISPLAY_NAME", displayName);
   },
-  async MINT_USER_ASSET({ state }, { nftid, userFileURI }) {
+  async MINT_USER_ASSET({ state }, { nftid, userFileURI , nftTitle, nftDescription}) {
     try {
       let contract = new ethers.Contract(
         this.$config.NFT_MINTING_CONTRACT,
@@ -107,7 +104,7 @@ export default {
         const receipt = await provider.getTransactionReceipt(myResult.hash);
         let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
         let platformItem = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT, NFTAUCTION_CONTRACT_ABI.abi, provider.getSigner());
-        let platformResult = await platformItem.createItem(myResult.to, lastTokenId);
+        let platformResult = await platformItem.createItem(myResult.to, lastTokenId, nftTitle, nftDescription);
         if (platformResult) {
           // Update Backend Unminted Record
           console.log("Creating Platform Asset");
@@ -124,7 +121,7 @@ export default {
           if (backendResult) {
             return "Success";
           }
-
+          this.$router.push("/profile");
         }
       }
     } catch (err) {

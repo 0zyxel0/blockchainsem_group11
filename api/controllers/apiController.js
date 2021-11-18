@@ -16,14 +16,12 @@ module.exports.saveUnmintedItem = async function (req, res) {
     owner: Joi.string().required(),
     title: Joi.string().required(),
     description: Joi.string().required(),
-    price: Joi.number().required()
   });
 
   const isValidated = mintValidationSchema.validate({
     owner: req.user.sub.walletAddr,
     title: req.body.title,
     description: req.body.description,
-    price: req.body.price,
   });
 
   // Throw validation error
@@ -44,8 +42,7 @@ module.exports.saveUnmintedItem = async function (req, res) {
       filename: req.body.filename,
       meta: {
         title: isValidated.value.title,
-        description: isValidated.value.description,
-        price: isValidated.value.price
+        description: isValidated.value.description,      
       },
       isMinted: false,
       isMarket: false

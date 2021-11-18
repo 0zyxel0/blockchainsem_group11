@@ -90,16 +90,7 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <v-row>
-                  <v-col cols="4">
-                    <v-subheader>Price To Sell</v-subheader>
-                  </v-col>
-                  <v-col cols="8">
-                    <v-text-field
-                      v-model="imageUploadDetails.price"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
+        
                 <v-row>
                   <v-col>
                     <v-row
@@ -132,7 +123,9 @@
                                   @click="
                                     mintUserNFT(
                                       currentMetadata.id,
-                                      currentMetadata.nftUri
+                                      currentMetadata.nftUri,
+                                      currentMetadata.meta.title,
+                                      currentMetadata.meta.description
                                     )
                                   "
                                   >Mint NFT</v-btn
@@ -173,7 +166,6 @@ export default {
       imageUploadDetails: {
         title: null,
         desciption: null,
-        price: 0,
       },
       titleRules: [(v) => !!v || "Title is required"],
       descriptionRules: [(v) => !!v || "Description is required"],
@@ -209,7 +201,7 @@ export default {
           let payloadVal = {
             title: this.imageUploadDetails.title,
             description: this.imageUploadDetails.description,
-            price: this.imageUploadDetails.price,
+  
             filename: this.imageData.name,
             ipfsVal: myResults,
           };
@@ -234,10 +226,14 @@ export default {
         console.log(err);
       }
     },
-    async mintUserNFT(nftid, userFileURI) {     
+    async mintUserNFT(nftid, userFileURI, nftTitle, nftDescription) {
       this.$store.dispatch("modules/profile/MINT_USER_ASSET", {
         nftid,
         userFileURI,
+        nftTitle, 
+        nftDescription
+      }).then(response => {
+        this.$router.push("/profile");
       });
     },
   },

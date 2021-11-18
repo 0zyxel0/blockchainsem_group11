@@ -104,6 +104,7 @@ export default {
         const receipt = await provider.getTransactionReceipt(myResult.hash);
         let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
         let platformItem = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT, NFTAUCTION_CONTRACT_ABI.abi, provider.getSigner());
+        console.log(myResult.to );
         let platformResult = await platformItem.createItem(myResult.to, lastTokenId, nftTitle, nftDescription);
         if (platformResult) {
           // Update Backend Unminted Record

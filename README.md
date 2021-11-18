@@ -9,11 +9,13 @@
 
 
 ## Prerequisite<a name="section1"></a>
-  -[truffle](https://trufflesuite.com/truffle) (For Migrating the Contract) 
+  - **[truffle](https://trufflesuite.com/truffle)**
+      (For Migrating the Contract) 
   
-  -[ganache](https://trufflesuite.com/ganache) (Run the test  Ethereum blockchain)
+  - **[ganache](https://trufflesuite.com/ganache)**
+       (Run the test  Ethereum blockchain)
   
-  -[nodejs](https://nodejs.org/en/)
+  - **[nodejs](https://nodejs.org/en/)**
 ## General information<a name="section2"></a>
 This repository is NFT minter and Auction house to sell and buy UZHETH ethereum NFT. 
 

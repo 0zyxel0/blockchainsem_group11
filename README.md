@@ -1,6 +1,6 @@
 # bsapp14
 ## Overview
-1. [prerequisite](#section1)
+1. [Prerequisite](#section1)
 2. [General information](#section2)
 3. [Launch & Deployment](#section3)
 4. [Live Demo](#section4)

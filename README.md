@@ -1,77 +1,64 @@
 # bsapp14
+## Overview
+1. [prerequisite](#section1)
+2. [General information](#section2)
+3. [Launch & Deployment](#section3)
+4. [Live Demo](#section4)
+5. [NFT Contracts](#section5)
+6. [Acknowledgment](#section6)
 
-## Build Setup
 
+## prerequisite<a name="section1"></a>
+  -[truffle](https://trufflesuite.com/truffle) (For Migrating the Contract) 
+  
+  -[ganache](https://trufflesuite.com/ganache) (Run the test  Ethereum blockchain)
+  
+  -[nodejs](https://nodejs.org/en/)
+## General information<a name="section2"></a>
+This repository is NFT minter and Auction house to sell and buy UZHETH ethereum. 
+## Launch & Deployment<a name="section3"></a>
+### Install dependencies
 ```bash
-# install dependencies
+
 $ npm install
+```
+This command has to be run before starting the application for the first time. It will install further dependencies besides Node.js.
 
-# Run Truffle Migrate
-truffle migrate
+### Run Truffle Migrate
+```bash
+$ truffle migrate
+```
+This commmand complies the contract. ganache should be running in backgroup.
 
-# Additional Steps in Ganache or Remix
-# Get Contract Address of the Deployed Contracts
-# Place the contract Address in the ENV file for each contract.
+### Additional Steps in Ganache or Remix
+ Copy the  Contract Address of the Deployed Contracts in the .ENV file for each contract.
 
 
-# serve with hot reload at localhost:3000
+### Run the Server for Development
+```bash
 $ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
 ```
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
-## Special Directories
-
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
-
-### `assets`
-
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
-
-### `components`
-
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be reused and imported into your pages, layouts and even other components.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
-
-### `layouts`
-
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
+### For Production Build
+```bash
+$ npm run build
+$ npm run start
+```
 
 
-### `pages`
+This project use nuxtjs, for more details please check out [here](https://nuxtjs.org)
 
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory and setup Vue Router automatically.
+## Live Demo<a name="section4"></a>
+Click [here](https://blockchain-proj-bweyis5hma-uc.a.run.app/) for Live demo
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
+## NFT Contracts <a name="section5"></a>
+In this project we have  two contracts:
+- **[NFT](https://github.com/0zyxel0/blockchainsem_group11/blob/master/contracts/NFT.sol)**:
+ Used to mint Token in this contract
 
-### `plugins`
-
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application. This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
-
-### `static`
-
-This directory contains your static files. Each file inside this directory is mapped to `/`.
-
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/static).
-
-### `store`
-
-This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+- **[NFTAuction](https://github.com/0zyxel0/blockchainsem_group11/blob/master/contracts/NFTAuction.sol)**: 
+  For adding the NFT to action, tranfer the NFT and Bidding on NFT.
+  
+## Acknowledgment <a name="section6"></a>
+We thank the Seminar Blockchain Programming Team HS21 for all the support and advice during this course.

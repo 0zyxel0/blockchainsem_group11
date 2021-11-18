@@ -17,7 +17,7 @@
   
   - **[nodejs](https://nodejs.org/en/)**
 ## General information<a name="section2"></a>
-This repository is NFT minter and Auction house to sell and buy UZHETH ethereum NFT. 
+This repository is NFT minter and Auction house to sell and buy [UZHETH](https://gitlab.uzh.ch/luca.ambrosini/go-ethereum/-/wikis/home) ethereum NFT. 
 
 ## Launch & Deployment<a name="section3"></a>
 ### Install dependencies

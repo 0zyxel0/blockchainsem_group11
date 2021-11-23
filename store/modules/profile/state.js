@@ -5,6 +5,7 @@ export default () => ({
     userRecentMinted:[],
     userNFTUnminted:[],
     userNFTMinted:[],    
+    userOwnedNFT:[],
     user:null,
     token:null,
 });

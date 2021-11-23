@@ -139,7 +139,7 @@ contract NFTAuction is ReentrancyGuard {
         ERC721(idToNFTItem[_itemId].nftContract).transferFrom(msg.sender, address(this), idToNFTItem[_itemId].tokenId);
         payable(owner).transfer(auctionPrice);
         emit AuctionCreated(auctionId,_itemId,_startPrice, endOfAuction);
-
+        
     } 
 
     // Get all Auctions, that you are not the previous owner of (ended and not ended):

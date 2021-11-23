@@ -6,18 +6,17 @@ const metaSchema = new Schema({
   description: { type: String, default: "no description" },
   price: { type: Number, default: 0 },
   amount: { type: Number, default: 1 },
-
 });
 
 const NFTSchema = new Schema(
-  {    
-    owner: { type: "String", required: true },
+  {
+    owner: { type: "String" },
     nftval: {},
     nftUri: { type: String },
-    filename: {type: String,required: true},
+    filename: { type: String, required: true },
     meta: metaSchema,
-    contractid: { type: String, default:"no contractid"},
-    tokenid:{ type: Number, default:0},
+    contractid: { type: String },
+    tokenid: { type: Number, default: 0 },
     isMinted: { type: Boolean, default: false },
     isMarket: { type: Boolean, default: false }
   },

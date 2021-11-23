@@ -6,6 +6,8 @@
         :lazy-src="imageUri"
         aspect-ratio="1"
         contain
+        min-height="150"
+        mmin-width="250"
         max-height="150"
         max-width="250"
         class="grey lighten-2"

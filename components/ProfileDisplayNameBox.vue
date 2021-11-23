@@ -78,7 +78,7 @@ export default {
           }
         );
         if (myResult) {
-          this.$toast.success("Successfully Updated Display Name").goAway(2000);
+          this.$toast.success("Successfully Updated Display Name");
           this.dialog = false;
           this.$store.dispatch("modules/profile/UPDATE_DISPLAY_NAME", {
             displayName: myResult.payload.displayName,

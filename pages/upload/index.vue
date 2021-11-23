@@ -98,7 +98,7 @@
                         <v-card flat>
                           <v-card-title>Options</v-card-title>
                           <v-card-text>
-                            <v-row
+                            <v-row v-if="!uploadedSuccessfully"
                               ><v-col>
                                 <v-btn color="primary" block v-if="isLoading">
                                   <v-progress-circular
@@ -117,7 +117,15 @@
                               </v-col> </v-row
                             ><v-row v-if="uploadedSuccessfully">
                               <v-col>
+                                <v-btn color="primary" block v-if="isMintLoading">
+                                  <v-progress-circular
+                                    indeterminate
+                                    color="red"
+                                  ></v-progress-circular
+                                ></v-btn>
+
                                 <v-btn
+                                  v-else
                                   block
                                   color="success"
                                   @click="
@@ -161,6 +169,7 @@ export default {
     return {
       imageData: null,
       isLoading: false,
+      isMintLoading:false,
       uploadedSuccessfully: false,
       currentMetadata: {},
       imageUploadDetails: {
@@ -227,12 +236,14 @@ export default {
       }
     },
     async mintUserNFT(nftid, userFileURI, nftTitle, nftDescription) {
+      this.isMintLoading = true;
       this.$store.dispatch("modules/profile/MINT_USER_ASSET", {
         nftid,
         userFileURI,
         nftTitle, 
         nftDescription
       }).then(response => {
+        this.isMintLoading = false;
         this.$router.push("/profile");
       });
     },

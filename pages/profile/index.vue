@@ -15,29 +15,7 @@
           :walletAddr="userWalletAddress"
         ></UserProfileBox>
       </v-col>
-      <v-col cols="8">
-        <!-- <v-row>
-          <v-col>
-            <v-card>
-              <v-card-subtitle>Minted Owned</v-card-subtitle>
-              <v-card-text></v-card-text> </v-card
-          ></v-col>
-          <v-col>
-            <v-card>
-              <v-card-subtitle>NFT Being Sold</v-card-subtitle>
-              <v-card-text></v-card-text> </v-card
-          ></v-col>
-          <v-col>
-            <v-card>
-              <v-card-subtitle>Not Minted</v-card-subtitle>
-              <v-card-text></v-card-text> </v-card
-          ></v-col>
-          <v-col>
-            <v-card>
-              <v-card-subtitle>Sold</v-card-subtitle>
-              <v-card-text></v-card-text> </v-card
-          ></v-col>
-        </v-row> -->
+      <v-col cols="8">      
         <v-row>
           <v-col>
             <v-card>
@@ -52,9 +30,9 @@
                   <v-col>
                     <ProfileDisplayNameBox></ProfileDisplayNameBox
                   ></v-col>
-                  <v-col
+                  <!-- <v-col
                     ><v-btn x-large block color="error">Change Avatar</v-btn>
-                  </v-col>
+                  </v-col> -->
                 </v-row>
               </v-card-text>
             </v-card></v-col
@@ -69,7 +47,7 @@
           <v-card-title
             >Recent Unminted Assets
             <v-spacer></v-spacer>
-            <v-btn color="primary">See All</v-btn>
+            <v-btn color="primary" @click="goToAllUnminted()">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
@@ -84,7 +62,7 @@
                   <v-row>
                     <v-col
                       ><v-btn
-                        @click="goToAssetProfile(n._id)"
+                        @click="goToUnmintedAsset(n._id)"
                         color="primary"
                         block
                       >
@@ -106,13 +84,13 @@
           <v-card-title>
             Owned Assets
             <v-spacer></v-spacer>
-            <v-btn color="primary">See All</v-btn>
+            <v-btn color="primary" @click="goToAllOwned()">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-if="userRecentNFTMinted">
+            <v-row row wrap v-if="userOwnedNFT">
               <AssetBoxComponent
-                v-for="n in userRecentNFTMinted"
+                v-for="n in userOwnedNFT"
                 :key="n._id"
                 :assetTitle="n.title"
                 :imageUri="n.nftUri"
@@ -144,7 +122,6 @@
             >NFT in Auction
             <v-spacer></v-spacer>
             <v-btn color="primary">See All</v-btn>
-            <v-btn @click="testGet()">test</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text></v-card-text>
@@ -158,8 +135,7 @@
           <v-card-title
             >NFT You Are Bidding On
             <v-spacer></v-spacer>
-            <v-btn color="primary">See All</v-btn>
-            <v-btn @click="testGet()">test</v-btn>
+            <v-btn color="primary" @click="testGet()">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text></v-card-text>
@@ -191,8 +167,8 @@ export default {
       userTheme: (state) => state.modules.profile.user.sub.isDark,
       userRecentNFTUnminted: (state) =>
         state.modules.profile.userRecentUnminted,
-      userRecentNFTMinted: (state) =>
-        state.modules.profile.userRecentMinted,
+      userOwnedNFT: (state) =>
+        state.modules.profile.userOwnedNFT,
     }),
   },
   mounted() {
@@ -201,16 +177,25 @@ export default {
   methods: {
     async initializeAssets() {
       this.$store.dispatch("modules/profile/GET_RECENT_UNMINTED_NFT");
-      this.$store.dispatch("modules/profile/GET_RECENT_MINTED_NFT");
+      this.$store.dispatch("modules/profile/GET_USER_OWNED_NFT");
     },
     goToAssetProfile(payload) {
-      this.$router.push(`/nfts/${payload}`);
+      this.$router.push(`/nfts/owned/${payload}`);
+    },
+    goToUnmintedAsset(payload) {
+      this.$router.push(`/nfts/unminted/${payload}`);
     },
     goToUploader() {
       this.$router.push("/upload");
     },
+    goToAllUnminted() {
+      this.$router.push("/nfts/unminted");
+    },
+    goToAllOwned(){
+      this.$router.push("/nfts/owned");
+    },
     testGet(){
-      this.$store.dispatch("modules/profile/TEST_CHAIN");
+      this.$store.dispatch("modules/profile/CREATE_USER_AUCTION_NFT");
     }
   },
 };

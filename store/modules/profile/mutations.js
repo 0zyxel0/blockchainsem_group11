@@ -36,6 +36,9 @@ export default {
     },
     CLEAR_NFT_DETAILS(state, payload) {
         state.nftDetails = payload;
+    },
+    SET_USER_OWNED_NFT(state, payload) {
+        state.userOwnedNFT = payload;
     }
 
 }

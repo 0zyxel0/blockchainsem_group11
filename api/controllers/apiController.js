@@ -42,7 +42,7 @@ module.exports.saveUnmintedItem = async function (req, res) {
       filename: req.body.filename,
       meta: {
         title: isValidated.value.title,
-        description: isValidated.value.description,      
+        description: isValidated.value.description,
       },
       isMinted: false,
       isMarket: false
@@ -354,11 +354,21 @@ module.exports.getRecentUserMintedItems = async function (req, res) {
   }
 };
 
-
-
-
-
-
+module.exports.getNFTByTokenId = async function (req, res) {
+  try {
+    let myResult = await NFTSchema.find({ tokenid: {$in: req.body.tokenList} });
+    if (myResult.length > 0) {
+      logger.info("[getNFTByTokenId] Successfully retrieved NFT Items");
+      return res.status(200).json(formResponse("success", myResult, null));
+    } else {
+      logger.info("[getNFTByTokenId] User Has Token Items");
+      return res.status(200).json(formResponse("success", [], null));
+    }
+  } catch (err) {
+    logger.error("[getNFTByTokenId] Error in Retreiving NFT Items");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
 
 module.exports.getUserMintedItems = async function (req, res) {
   try {

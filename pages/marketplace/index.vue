@@ -2,24 +2,23 @@
   <div id="marketPlace">
     <NavigationBar></NavigationBar>
     <v-row>
-      <v-col><h1>Auction House </h1></v-col>
+      <v-col><h1>Auction House</h1></v-col>
     </v-row>
     <v-divider> </v-divider>
     <v-row>
-      <v-col>
-      </v-col>
+      <v-col> </v-col>
     </v-row>
-        <v-row>
+    <v-row>
       <v-col>
         <v-card>
           <v-card-title
-            >Bid now 
+            >Bid now
             <v-spacer></v-spacer>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap >
-              <AuctionItemComponent>
+            <v-row row wrap>
+              <!-- <AuctionItemComponent>
                 <template v-slot:asset-options>
                   <v-row>
                     <v-col
@@ -32,14 +31,14 @@
                     >
                   </v-row>
                 </template>
-              </AuctionItemComponent>
+              </AuctionItemComponent> -->
             </v-row>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
 
-            <v-row>
+    <v-row>
       <v-col>
         <v-card>
           <v-card-title
@@ -48,8 +47,8 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-             <v-row row wrap >
-              <AuctionItemComponent>
+            <v-row row wrap>
+              <!-- <AuctionItemComponent>
                 <template v-slot:asset-options>
                   <v-row>
                     <v-col
@@ -57,7 +56,7 @@
                     >
                   </v-row>
                 </template>
-              </AuctionItemComponent>
+              </AuctionItemComponent> -->
             </v-row>
           </v-card-text>
         </v-card>
@@ -78,8 +77,7 @@ export default {
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
-      biddingNFTAction: (state) =>
-        state.modules.marketplace.biddingNFTAction,
+      biddingNFTAction: (state) => state.modules.marketplace.biddingNFTAction,
     }),
 
     latestBlock() {
@@ -106,22 +104,21 @@ export default {
         this.curBlockCount = currentBlock;
       }
     },
-     async getAuction() {
-    try {
-      let contract = new ethers.Contract(
-        this.$config.NFT_AUCTION_CONTRACT,
-        NFTAUCTION_CONTRACT_ABI.abi,
-        provider
-      );
-      let myResult = await contract.getAllAuctions();
-      if (myResult) {
-          console.log(myResult)
+    async getAuction() {
+      try {
+        let contract = new ethers.Contract(
+          this.$config.NFT_AUCTION_CONTRACT,
+          NFTAUCTION_CONTRACT_ABI.abi,
+          provider
+        );
+        let myResult = await contract.getAllAuctions();
+        if (myResult) {
+          console.log(myResult);
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
-    }
-  }
+    },
   },
- 
 };
 </script>

@@ -1,9 +1,12 @@
 import { ethers } from 'ethers';
+const utils = require('ethers').utils;
 const Web3 = require('web3');
+const _ = require('lodash');
 import jwt_decode from "jwt-decode";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const NFT_CONTRACT_ABI = require("./../../../build/contracts/NFT.json");
 const NFTAUCTION_CONTRACT_ABI = require("./../../../build/contracts/NFTAuction.json");
+
 export default {
   async LOGIN_USER_WALLET({ commit }) {
     await provider.send("eth_requestAccounts", []);
@@ -89,7 +92,7 @@ export default {
   UPDATE_DISPLAY_NAME({ commit }, { displayName }) {
     commit("SET_USER_DISPLAY_NAME", displayName);
   },
-  async MINT_USER_ASSET({ state }, { nftid, userFileURI , nftTitle, nftDescription}) {
+  async MINT_USER_ASSET({ state }, { nftid, userFileURI, nftTitle, nftDescription }) {
     try {
       let contract = new ethers.Contract(
         this.$config.NFT_MINTING_CONTRACT,
@@ -104,7 +107,7 @@ export default {
         const receipt = await provider.getTransactionReceipt(myResult.hash);
         let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
         let platformItem = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT, NFTAUCTION_CONTRACT_ABI.abi, provider.getSigner());
-        console.log(myResult.to );
+        console.log(myResult.to);
         let platformResult = await platformItem.createItem(myResult.to, lastTokenId, nftTitle, nftDescription);
         if (platformResult) {
           // Update Backend Unminted Record
@@ -132,7 +135,7 @@ export default {
   CLEAR_CURRENT_NFT_META({ commit }) {
     commit("CLEAR_NFT_DETAILS");
   },
-   // This Function will be retrieving data to list all recent minted NFTs of the user limited to 5
+  // This Function will be retrieving data to list all recent minted NFTs of the user limited to 5
   async GET_RECENT_MINTED_NFT({ commit, state }) {
     try {
       let myResult = await this.$axios.$get("/api/v1/user/minted/recent", {
@@ -148,7 +151,7 @@ export default {
     }
   },
 
-   // This Function will be retrieving data to list all minted NFTs of the user
+  // This Function will be retrieving data to list all minted NFTs of the user
   async GET_ALL_MINTED_NFT({ commit, state }) {
     try {
       let myResult = await this.$axios.$get("/api/v1/user/minted", {
@@ -164,21 +167,71 @@ export default {
     }
   },
 
-  async TEST_CHAIN({ commit, state }) {
-    try{
+  async UPDATE_USER_DISPLAY_NAME({ commit, state }) {
+    try {
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  async GET_USER_OWNED_NFT({ commit, state }) {
+    try {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
         provider
       );
-      let myResult = await contract.getNFTItems();
-      if(myResult){
-        console.log("ALL NFTS");
+      let tempList = [];
+      let myResult = await contract.getAllNFTOwned();
+      if (myResult) {
         console.log(myResult);
+        _.filter(myResult, function (filIterator) {
+          tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
+        });
+
+        let propagationResult = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        });
+
+        if (propagationResult.payload.length > 0) {
+          commit("SET_USER_OWNED_NFT", propagationResult.payload);
+        }
+        else {
+          commit("SET_USER_OWNED_NFT", []);
+        }
       }
 
-    }catch(err){
+
+    } catch (err) {
       console.log(err);
     }
-  }
+  },
+
+  async CREATE_USER_AUCTION_NFT({ state, commit }, { nftId, startPrice, bidDuration }) {
+    try {
+      let contractViewer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider);
+
+      let contractPayer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider.getSigner());
+
+      let viewResult = await contractViewer.getAuctionPrice();
+      if (viewResult) {
+        console.log(`Current Auction Price : ${parseFloat(utils.formatEther(viewResult._hex))}`);
+        let payContract = await contractPayer.createAuction(nftId, startPrice, bidDuration, { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) });
+        if (payContract) {
+          console.log(payContract);
+          this.$toast.success("Successfully Auctioned NFT");
+          this.$router.push("/profile");
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
 };

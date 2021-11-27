@@ -19,7 +19,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="!n.ended"
+                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -27,7 +27,7 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="n.ended"
+                :ended="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
                 :tokenID="n.nft.tokenId"
               >
@@ -62,7 +62,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="n.ended"
+                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -70,8 +70,9 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="n.ended"
+                :ended="!getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
+                :tokenID="n.nft.tokenId"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -89,6 +90,7 @@
 <script>
 import { ethers } from "ethers";
 import { mapState } from "vuex";
+import moment from "moment";
 import NavigationBar from "@/components/NavigationBar";
 import AssetBoxComponent from "@/components/AuctionItemComponent";
 import BiddingComponents from "@/components/BiddingComponents";
@@ -150,6 +152,14 @@ export default {
         console.log(err);
       }
     },
+    getItemisEnded(auctionEndTime,ended)
+    {
+      var auctionEnddate = new Date(auctionEndTime * 1000);
+      var currentdate = new Date();
+     
+      return auctionEnddate>currentdate && !ended
+    
+    }
   },
 };
 </script>

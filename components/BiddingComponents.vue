@@ -3,10 +3,13 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on, attrs }">
         <v-row>
-          <v-col>
+          <v-col align="center" justify="center">
             <v-btn color="primary" dark v-bind="attrs" v-on="on" >
               Bid Now
             </v-btn>
+          </v-col>
+            <v-col>
+           
           </v-col>
         </v-row>
       </template>

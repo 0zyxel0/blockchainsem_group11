@@ -20,7 +20,7 @@
       </v-img>
       <v-card-subtitle class="pb-0"> </v-card-subtitle>
       <v-card-text class="text--primary">
-        <div>
+        <div v-if="ended">
           <no-ssr>
             <flip-countdown
               :deadline="getEndDate()"

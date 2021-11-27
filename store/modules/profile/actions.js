@@ -239,7 +239,8 @@ export default {
       let viewResult = await contractViewer.getAuctionPrice();
       if (viewResult) {
         console.log(`Current Auction Price : ${parseFloat(utils.formatEther(viewResult._hex))}`);
-        let payContract = await contractPayer.createAuction(nftId, startPrice, bidDuration, { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) });
+        let contractOptions = { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) };
+        let payContract = await contractPayer.createAuction(nftId, startPrice, bidDuration, contractOptions);
         if (payContract) {
           console.log(payContract);
           this.$toast.success("Successfully Auctioned NFT");
@@ -261,14 +262,19 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllAuctionsOwned();
       if (myResult) {
-        
-        _.filter(myResult, function (filIterator) {        
-          tempList.push({tokenid:Web3.utils.hexToNumber(filIterator.nft.tokenId._hex),isEnded:filIterator.ended});
+
+        _.filter(myResult, function (filIterator) {
+          if (!filIterator.ended == true)
+            tempList.push(Web3.utils.hexToNumber(filIterator.nft.tokenId._hex));
         });
-        console.log(tempList);
-        
-        
-       
+        let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        });
+        if (myMetaResults) {
+          console.log(myMetaResults.payload);
+        }
       }
     } catch (err) {
       console.log(err);

@@ -56,7 +56,7 @@
                 v-for="n in userRecentNFTUnminted"
                 :key="n._id"
                 :assetTitle="n.meta.title"
-                :assetDesc="n.meta.description"                
+                :assetDesc="n.meta.description"
                 :imageUri="n.nftUri"
               >
                 <template v-slot:asset-options>
@@ -126,7 +126,32 @@
             <v-btn color="primary">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
-          <v-card-text></v-card-text>
+          <v-card-text>
+            <v-row row wrap v-if="userOwnedNFT">
+              <AssetBoxComponent
+                v-for="n in userOwnedNFT"
+                :key="n._id"
+                :assetTitle="n.title"
+                :assetDesc="n.description"
+                :imageUri="n.nftUri"
+              >
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col
+                      >              
+                      <v-btn
+                        @click="goToAssetProfile(n.tokenid)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn></v-col
+                    >
+                  </v-row>
+                </template>
+              </AssetBoxComponent>
+            </v-row>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>

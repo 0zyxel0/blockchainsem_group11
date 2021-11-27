@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+const itemLiked = new Schema({
+    tokenid: { type: String },
+});
+
 const UserSchema = new Schema(
     {
         walletAddr: { type: "String", required: true },
@@ -9,6 +14,7 @@ const UserSchema = new Schema(
         unmintedNft: { type: "Number", default: 0 },
         ownedNft: { type: "Number", default: 0 },
         nonce: { type: "String", default: null },
+        likedNFT: [itemLiked],
     }, { timestamps: true },
     { collection: "users" }
 );

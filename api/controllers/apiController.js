@@ -439,3 +439,35 @@ module.exports.getUserMintedItems = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+module.exports.saveLikeNFTItem = async function (req, res) {
+  try {
+    let filterVal = { tokenid: req.body.tokenid };
+    let updateVal = { $inc: { likes: 1 } };
+    let configVal = { new: true };
+    let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info("[saveLikeNFTItem] Successfully Updated Likes");
+      return res.status(201).json(formResponse("success", myResult, null));
+    }
+  } catch (err) {
+    logger.error("[saveLikeNFTItem] Error in Updating NFT Asset Likes");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+module.exports.saveDislikeNFTItem = async function (req, res) {
+  try {
+    let filterVal = { tokenid: req.body.tokenid };
+    let updateVal = { $inc: { likes: -1 } };
+    let configVal = { new: true };
+    let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info("[saveLikeNFTItem] Successfully Updated Likes");
+      return res.status(201).json(formResponse("success", myResult, null));
+    }
+  } catch (err) {
+    logger.error("[saveLikeNFTItem] Error in Updating NFT Asset Likes");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};

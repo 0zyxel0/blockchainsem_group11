@@ -19,7 +19,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="!n.ended"
+                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -27,20 +27,21 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="n.ended"
+                :ended="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
+                :tokenID="n.nft.tokenId"
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    <v-col
-                      ><v-btn
-                        color="primary"
+                    <v-col align="center" justify="center" >
+                      <BiddingComponents
+                      
                         block
-                        @click="bidOnItem(n.auctionId.toString(), bidPrice)"
+                        :auctionId="n.auctionId.toString()"
+                        :highestBid="n.highestBid.toString()"
                       >
-                        Bid
-                      </v-btn></v-col
-                    >
+                      </BiddingComponents>
+                    </v-col>
                   </v-row>
                 </template>
               </AuctionItemComponent>
@@ -61,7 +62,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="n.ended"
+                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -69,8 +70,9 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="n.ended"
+                :ended="!getItemisEnded(n.auctionEndTime.toString(),n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
+                :tokenID="n.nft.tokenId"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -88,10 +90,14 @@
 <script>
 import { ethers } from "ethers";
 import { mapState } from "vuex";
+import moment from "moment";
 import NavigationBar from "@/components/NavigationBar";
 import AssetBoxComponent from "@/components/AuctionItemComponent";
+import BiddingComponents from "@/components/BiddingComponents";
+
 const NFTAUCTION_CONTRACT_ABI = require("./../../build/contracts/NFTAuction.json");
 const provider = new ethers.providers.Web3Provider(window.ethereum);
+
 export default {
   layout: "default",
   middleware: "checkWalletAddress",
@@ -113,12 +119,12 @@ export default {
   components: {
     NavigationBar: NavigationBar,
     AssetBoxComponent: AssetBoxComponent,
+    BiddingComponents: BiddingComponents,
   },
   data() {
     return {
       curBlockCount: 0,
       biddingNFT: [],
-      bidPrice: 0,
     };
   },
   methods: {
@@ -133,32 +139,27 @@ export default {
         let contract = new ethers.Contract(
           this.$config.NFT_AUCTION_CONTRACT,
           NFTAUCTION_CONTRACT_ABI.abi,
-          provider
+          provider.getSigner()
         );
-        let myResult = await contract.getAllAuctionsOwned();
+        let myResult = await contract.getAllAuctions();
+
         if (myResult) {
-          console.log(myResult[0]);
+          console.log("Get All Auctions");
+          console.log(myResult);
           this.biddingNFT = myResult;
         }
       } catch (err) {
         console.log(err);
       }
     },
-    async bidOnItem(auctionId, bidPrice) {
-      try {
-        let contract = new ethers.Contract(
-          this.$config.NFT_AUCTION_CONTRACT,
-          NFTAUCTION_CONTRACT_ABI.abi,
-          provider.getSigner()
-        );
-        let myResult = await contract.BidOnAuctionItem(auctionId);
-        if (myResult) {
-          console.log(myResult);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
+    getItemisEnded(auctionEndTime,ended)
+    {
+      var auctionEnddate = new Date(auctionEndTime * 1000);
+      var currentdate = new Date();
+     
+      return auctionEnddate>currentdate && !ended
+    
+    }
   },
 };
 </script>

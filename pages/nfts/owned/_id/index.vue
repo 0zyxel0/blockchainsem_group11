@@ -12,15 +12,15 @@
               max-height="400"
               max-width="800"
               contain
-              :src="nftDetails.nftUri"
+              :src="curNFTMeta.nftUri"
             />
             <v-list-item three-line>
               <v-list-item-content>
                 <v-list-item-title
-                  >Title : {{ nftDetails.meta.title }}</v-list-item-title
+                  >Title : {{ curNFTMeta.title }}</v-list-item-title
                 >
                 <v-list-item-subtitle>
-                  Description : {{ nftDetails.meta.description }}
+                  Description : {{ curNFTMeta.description }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -70,7 +70,7 @@
               block
               dark
               @click="
-                auctionNFT(nftDetails.tokenid, offerPrice, startOfferTime)
+                auctionNFT(curNFTMeta.tokenid, offerPrice, startOfferTime)
               "
               >Auction Item</v-btn
             >
@@ -99,7 +99,7 @@ export default {
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
-      nftDetails: (state) => state.modules.profile.nftDetails,
+      curNFTMeta: (state) => state.modules.profile.curNFTMeta,
     }),
   },
   mounted() {
@@ -152,9 +152,9 @@ export default {
       try {
         let payload = this.$route.params.id;
         this.$store
-          .dispatch("modules/profile/GET_NFT_DETAILS", payload)
+          .dispatch("modules/profile/GET_NFT_METADATA", payload)
           .then((response) => {
-            if (this.nftDetails) {
+            if (this.curNFTMeta) {
               this.dataReady = true;
             }
           });

@@ -15,7 +15,7 @@
           :walletAddr="userWalletAddress"
         ></UserProfileBox>
       </v-col>
-      <v-col cols="8">      
+      <v-col cols="8">
         <v-row>
           <v-col>
             <v-card>
@@ -55,7 +55,8 @@
               <AssetBoxComponent
                 v-for="n in userRecentNFTUnminted"
                 :key="n._id"
-                :assetTitle="n.title"
+                :assetTitle="n.meta.title"
+                :assetDesc="n.meta.description"                
                 :imageUri="n.nftUri"
               >
                 <template v-slot:asset-options>
@@ -82,7 +83,7 @@
       <v-col>
         <v-card>
           <v-card-title>
-            Owned Assets
+            My NFTs
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="goToAllOwned()">See All</v-btn>
           </v-card-title>
@@ -93,13 +94,14 @@
                 v-for="n in userOwnedNFT"
                 :key="n._id"
                 :assetTitle="n.title"
+                :assetDesc="n.description"
                 :imageUri="n.nftUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
                     <v-col
                       ><v-btn
-                        @click="goToAssetProfile(n._id)"
+                        @click="goToAssetProfile(n.tokenid)"
                         color="primary"
                         block
                       >
@@ -128,7 +130,7 @@
         </v-card>
       </v-col>
     </v-row>
-
+    <!-- 
         <v-row>
       <v-col>
         <v-card>
@@ -141,7 +143,7 @@
           <v-card-text></v-card-text>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
   </div>
 </template>
 <script>
@@ -167,8 +169,7 @@ export default {
       userTheme: (state) => state.modules.profile.user.sub.isDark,
       userRecentNFTUnminted: (state) =>
         state.modules.profile.userRecentUnminted,
-      userOwnedNFT: (state) =>
-        state.modules.profile.userOwnedNFT,
+      userOwnedNFT: (state) => state.modules.profile.userOwnedNFT,
     }),
   },
   mounted() {
@@ -178,6 +179,7 @@ export default {
     async initializeAssets() {
       this.$store.dispatch("modules/profile/GET_RECENT_UNMINTED_NFT");
       this.$store.dispatch("modules/profile/GET_USER_OWNED_NFT");
+      this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT");
     },
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/owned/${payload}`);
@@ -191,12 +193,9 @@ export default {
     goToAllUnminted() {
       this.$router.push("/nfts/unminted");
     },
-    goToAllOwned(){
+    goToAllOwned() {
       this.$router.push("/nfts/owned");
     },
-    testGet(){
-      this.$store.dispatch("modules/profile/CREATE_USER_AUCTION_NFT");
-    }
   },
 };
 </script>

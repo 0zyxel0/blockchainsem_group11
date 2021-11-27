@@ -17,8 +17,8 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap  v-for="(n, index) in biddingNFTAction" :key="index" >
-               <AuctionItemComponent
+            <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
+              <AuctionItemComponent
                 v-if="!n.ended"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
@@ -32,19 +32,18 @@
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    
                     <v-col
                       ><v-btn
                         color="primary"
                         block
-                         @click="bidOnItem(n.auctionId.toString(), bidPrice)">
+                        @click="bidOnItem(n.auctionId.toString(), bidPrice)"
+                      >
                         Bid
                       </v-btn></v-col
                     >
-                    
                   </v-row>
                 </template>
-              </AuctionItemComponent> 
+              </AuctionItemComponent>
             </v-row>
           </v-card-text>
         </v-card>
@@ -60,8 +59,8 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-           <v-row row wrap  v-for="(n, index) in biddingNFTAction" :key="index" >
-               <AuctionItemComponent
+            <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
+              <AuctionItemComponent
                 v-if="n.ended"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
@@ -75,11 +74,10 @@
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    <v-col></v-col
-                    >
+                    <v-col></v-col>
                   </v-row>
                 </template>
-              </AuctionItemComponent> 
+              </AuctionItemComponent>
             </v-row>
           </v-card-text>
         </v-card>
@@ -106,7 +104,7 @@ export default {
     },
     latestBlock() {
       return this.curBlockCount;
-    }
+    },
   },
   mounted() {
     this.getBlockCount();
@@ -119,7 +117,7 @@ export default {
   data() {
     return {
       curBlockCount: 0,
-      biddingNFT:[],
+      biddingNFT: [],
       bidPrice: 0,
     };
   },
@@ -139,17 +137,15 @@ export default {
         );
         let myResult = await contract.getAllAuctionsOwned();
         if (myResult) {
-          console.log(myResult[0])
-          this.biddingNFT=myResult
-          
+          console.log(myResult[0]);
+          this.biddingNFT = myResult;
         }
       } catch (err) {
         console.log(err);
       }
     },
-    async bidOnItem(auctionId, bidPrice)
-    {
-  try {
+    async bidOnItem(auctionId, bidPrice) {
+      try {
         let contract = new ethers.Contract(
           this.$config.NFT_AUCTION_CONTRACT,
           NFTAUCTION_CONTRACT_ABI.abi,
@@ -157,14 +153,12 @@ export default {
         );
         let myResult = await contract.BidOnAuctionItem(auctionId);
         if (myResult) {
-          console.log(myResult)
-          
+          console.log(myResult);
         }
       } catch (err) {
         console.log(err);
       }
     },
-    
   },
 };
 </script>

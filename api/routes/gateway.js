@@ -15,6 +15,7 @@ router.post("/v1/item/detail", checkToken, apiController.getItemMetadata);
 router.post("/v1/item/save", checkToken, apiController.saveUnmintedItem);
 router.post("/v1/items/getItems", checkToken, apiController.getNFTByTokenId);
 router.put("/v1/item/mint", checkToken, apiController.mintingAssets);
+router.post("/v1/nft/meta", checkToken, apiController.getNFTTokenDetails);
 // Authentication Routes
 router.post("/v1/auth/nonce", apiController.createUserNonce);
 router.post("/v1/auth/verification", apiController.verifyAuthentication);

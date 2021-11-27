@@ -4,8 +4,11 @@ export default () => ({
     userRecentUnminted:[], 
     userRecentMinted:[],
     userNFTUnminted:[],
+    userNFTInAuction:[],
+    unmintedItems:[],
     userNFTMinted:[],    
     userOwnedNFT:[],
+    curNFTMeta:{},
     user:null,
     token:null,
 });

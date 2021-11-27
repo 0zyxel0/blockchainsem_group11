@@ -54,6 +54,23 @@ export default {
     }
 
   },
+
+  async GET_NFT_METADATA({ commit, state }, tokenid) {
+    try {
+      let myResult = await this.$axios.$post("/api/v1/nft/meta", { tokenid: tokenid }, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (myResult) {
+        console.log(myResult);
+        commit("SET_NFT_CUR_META", myResult.payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
   async GET_USER_CREDITS({ commit }) {
     let currentBlock = await provider.getBlockNumber();
     console.log(currentBlock);
@@ -185,7 +202,6 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllNFTOwned();
       if (myResult) {
-        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
         });
@@ -234,4 +250,28 @@ export default {
       console.log(err);
     }
   },
+
+  async GET_USER_AUCTIONED_NFT({ commit, state }) {
+    try {
+      let contract = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider
+      );
+      let tempList = [];
+      let myResult = await contract.getAllAuctionsOwned();
+      if (myResult) {
+        
+        _.filter(myResult, function (filIterator) {        
+          tempList.push({tokenid:Web3.utils.hexToNumber(filIterator.nft.tokenId._hex),isEnded:filIterator.ended});
+        });
+        console.log(tempList);
+        
+        
+       
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };

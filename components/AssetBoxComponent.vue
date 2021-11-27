@@ -18,12 +18,12 @@
             color="grey lighten-5"
           ></v-progress-circular>
         </template>
-        <v-card-title>{{ assetTitle }}</v-card-title>
+      
       </v-img>
 
-      <v-card-subtitle class="pb-0"> Price </v-card-subtitle>
+      <v-card-subtitle class="pb-0"> {{ assetTitle }} </v-card-subtitle>
       <v-card-text class="text--primary">
-        <div>Some Details</div>
+        <div>{{assetDesc}}</div>
       </v-card-text>
       <v-card-actions>
         <slot name="asset-options">
@@ -41,6 +41,7 @@ export default {
   name: "AssetBoxComponent",
   props: {
     assetTitle: { type: String },
+    assetDesc: { type: String},
     imageUri: { type: String, required: true },
   },
 };

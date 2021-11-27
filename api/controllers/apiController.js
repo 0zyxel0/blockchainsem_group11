@@ -6,6 +6,7 @@ const axios = require("axios");
 // Import Schemas
 const NFTSchema = require("../models/NFTSchema");
 const UserSchema = require("../models/UserSchema");
+const NFTMetaSchema = require("../models/NFTMetaSchema");
 const logger = require("../logger");
 const { formResponse } = require("../helpers/formResponse");
 
@@ -49,9 +50,9 @@ module.exports.saveUnmintedItem = async function (req, res) {
     });
 
     let myResult = await myNFT.save();
+
     if (myResult) {
       logger.info("[saveUnmintedItem] Successfully Uploaded Item");
-      console.log(myResult);
       let ipfsResult = {
         id: myResult._id,
         owner: myResult.owner,
@@ -61,6 +62,17 @@ module.exports.saveUnmintedItem = async function (req, res) {
         isMarket: myResult.isMarket,
         createdAt: myResult.createdAt
       };
+
+      let myNFTMeta = new NFTMetaSchema({
+        nftid: myResult._id,
+        title: isValidated.value.title,
+        description: isValidated.value.description,
+        filename: req.body.filename,
+        nftUri: `https://${req.body.ipfsVal.value.cid}.ipfs.dweb.link/${req.body.filename}`,
+      });
+
+      let myMetaResult = await myNFTMeta.save();
+
       return res.status(201).json(formResponse("success", ipfsResult, null));
     }
   } catch (err) {
@@ -158,6 +170,7 @@ module.exports.getUserUnmintedItems = async function (req, res) {
 module.exports.mintingAssets = async function (req, res) {
   try {
     logger.info(`[mintingAssets] Updating Unmited User Status`);
+    console.log(req.body);
     // Create Validation Schema
     const mintValidationSchema = Joi.object({
       owner: Joi.string().required(),
@@ -184,8 +197,14 @@ module.exports.mintingAssets = async function (req, res) {
     let filterVal = { owner: isValidated.value.owner, _id: isValidated.value.nftid, isMinted: false };
     let updateVal = { isMinted: true, tokenid: isValidated.value.tokenid };
     let configVal = { new: true };
+
     let myResult = await NFTSchema.findOneAndUpdate(filterVal, updateVal, configVal);
     if (myResult) {
+      let metaFilter = { nftid: isValidated.value.nftid };
+      let metaUpdate = { tokenid: isValidated.value.tokenid };
+      let metaConfig = { new: true };
+      let myResultDetails = await NFTMetaSchema.findOneAndUpdate(metaFilter, metaUpdate, metaConfig);
+      console.log(myResultDetails);
       logger.info(`[mintingAssets] Successfully updated Unminted User Asset`);
       return res.status(200).json(formResponse("success", myResult, null));
     }
@@ -356,7 +375,7 @@ module.exports.getRecentUserMintedItems = async function (req, res) {
 
 module.exports.getNFTByTokenId = async function (req, res) {
   try {
-    let myResult = await NFTSchema.find({ tokenid: {$in: req.body.tokenList} });
+    let myResult = await NFTMetaSchema.find({ tokenid: { $in: req.body.tokenList } });
     if (myResult.length > 0) {
       logger.info("[getNFTByTokenId] Successfully retrieved NFT Items");
       return res.status(200).json(formResponse("success", myResult, null));
@@ -366,6 +385,20 @@ module.exports.getNFTByTokenId = async function (req, res) {
     }
   } catch (err) {
     logger.error("[getNFTByTokenId] Error in Retreiving NFT Items");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+module.exports.getNFTTokenDetails = async function (req, res) {
+  try {
+    let myResult = await NFTMetaSchema.findOne({ tokenid: req.body.tokenid });
+    if (myResult) {
+      logger.info("[getNFTTokenDetails] Successfully retrieved NFT Metadata");
+      return res.status(200).json(formResponse("success", myResult, null));
+    }
+  }
+  catch (err) {
+    logger.error("[getNFTTokenDetails] Error in Retreiving NFT Meta Data");
     return res.status(400).json(formResponse("error", null, err));
   }
 };

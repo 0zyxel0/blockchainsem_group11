@@ -35,10 +35,17 @@ export default {
         state.nftDetails = payload;
     },
     CLEAR_NFT_DETAILS(state, payload) {
-        state.nftDetails = payload;
+        state.nftDetails = {};
+        state.curNFTMeta = {};
     },
     SET_USER_OWNED_NFT(state, payload) {
         state.userOwnedNFT = payload;
+    },
+    SET_NFT_CUR_META(state, payload) {
+        state.curNFTMeta = payload;
+    },
+    SET_USER_UNMINTED_ITEMS(state, payload) {
+        state.unmintedItems = payload;
     }
 
 }

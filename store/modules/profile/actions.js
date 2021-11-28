@@ -273,7 +273,7 @@ export default {
           },
         });
         if (myMetaResults) {
-          console.log(myMetaResults.payload);
+          commit("SET_USER_AUCTIONED_NFT", myMetaResults.payload);
         }
       }
     } catch (err) {

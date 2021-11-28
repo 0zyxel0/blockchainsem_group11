@@ -1,4 +1,10 @@
 import { ethers } from 'ethers';
+const utils = require('ethers').utils;
+const Web3 = require('web3');
+const _ = require('lodash');
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const NFT_CONTRACT_ABI = require("./../../../build/contracts/NFT.json");
+const NFTAUCTION_CONTRACT_ABI = require("./../../../build/contracts/NFTAuction.json");
 export default {
   async GET_AUCTION_HOUSE_BIDDING_NFT({ commit, state }) {
     try {
@@ -14,6 +20,46 @@ export default {
     } catch (err) {
       console.log(err);
     }
+  },
+  async GET_MARKETPLACE_ITEMS({ state, commit }, { userToken }) {
+    try {
+      let contract = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider);
+      let tempList = [];
+      let myResult = await contract.getAllNFTItems();
+      if (myResult) {
+        _.filter(myResult, function (filIterator) {
+          if (!filIterator.ended == true)
+            tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
+        });
+        let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
+        if (myMetaResults) {
+          commit("SET_AVAILABLE_NFT_LISTS", myMetaResults.payload);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  async LIKE_NFT_ASSET({state, commit} ,{tokenId, userToken}) {
+    try {
+     
+      let myResult = await this.$axios.$post("/api/v1/item/like", { tokenid: tokenId }, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if(myResult){
+        this.toast.success("Successfully Liked The NFT");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
-  };
-  
+};

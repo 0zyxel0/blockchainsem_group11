@@ -46,6 +46,9 @@ export default {
     },
     SET_USER_UNMINTED_ITEMS(state, payload) {
         state.unmintedItems = payload;
-    }
+    },
+    SET_USER_AUCTIONED_NFT(state, payload) {
+        state.userNFTInAuction = payload;
+    },
 
 }

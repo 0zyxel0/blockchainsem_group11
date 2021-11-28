@@ -19,5 +19,8 @@ router.post("/v1/nft/meta", checkToken, apiController.getNFTTokenDetails);
 // Authentication Routes
 router.post("/v1/auth/nonce", apiController.createUserNonce);
 router.post("/v1/auth/verification", apiController.verifyAuthentication);
+
+router.post("/v1/item/like", checkToken, apiController.saveLikeNFTItem);
+router.post("/v1/item/dislike", checkToken, apiController.saveDislikeNFTItem);
 // Export modules
 module.exports = router;

@@ -1,3 +1,5 @@
 export default () => ({
-    biddingNFTAction:[], 
+    
+    biddingNFTAction: [],
+    availableNFTItems: [],
 });

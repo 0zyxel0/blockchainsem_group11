@@ -30,12 +30,7 @@
             <v-col><v-btn color="primary" block> Button </v-btn></v-col>
             <v-col><v-btn color="success" block> Button </v-btn></v-col>
           </v-row>
-        </slot>
-        <div v-if="likable">
-          <v-btn class="ma-2" color="red lighten-2" dark>
-            <v-icon>mdi-thumb-up</v-icon>
-          </v-btn>
-        </div>
+        </slot>        
       </v-card-actions>
     </v-card>
   </div>
@@ -47,7 +42,6 @@ export default {
     assetTitle: { type: String },
     assetDesc: { type: String },
     imageUri: { type: String, required: true },
-    likable: { type: Boolean },
   },
   methods: {
     likeNFT(tokenid) {

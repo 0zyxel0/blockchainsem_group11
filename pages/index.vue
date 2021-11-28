@@ -30,12 +30,13 @@
       <v-container>
         <div class="pa-7 pa-sm-12">
            <v-row justify="center">
-            <v-col cols="12" lg="9" xl="6">
+            <v-col cols="12" lg="9" md="6" xl="6">
               <v-btn @click="loginMetaMask()" x-large>
-                <v-avatar size="50px" left class="px-2">
+               
+                <v-avatar size="40px" left class="px-5">
                   <img src="/metamask.svg" />
-                </v-avatar>
-                Login With MetaMask
+                </v-avatar>     
+                 <span>Login With MetaMask</span>                            
               </v-btn>
             </v-col>
           </v-row>

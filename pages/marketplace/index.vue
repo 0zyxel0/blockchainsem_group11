@@ -6,9 +6,6 @@
     </v-row>
     <v-divider> </v-divider>
     <v-row>
-      <v-col> </v-col>
-    </v-row>
-    <v-row>
       <v-col>
         <v-card>
           <v-card-title
@@ -19,7 +16,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
+                v-if="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -27,15 +24,14 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
+                :ended="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
                 :tokenID="n.nft.tokenId"
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    <v-col align="center" justify="center" >
+                    <v-col align="center" justify="center">
                       <BiddingComponents
-                      
                         block
                         :auctionId="n.auctionId.toString()"
                         :highestBid="n.highestBid.toString()"
@@ -62,7 +58,7 @@
           <v-card-text>
             <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="getItemisEnded(n.auctionEndTime.toString(),n.ended)"
+                v-if="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -70,7 +66,7 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="!getItemisEnded(n.auctionEndTime.toString(),n.ended)"
+                :ended="!getItemisEnded(n.auctionEndTime.toString(), n.ended)"
                 :auctionEndTime="n.auctionEndTime.toString()"
                 :tokenID="n.nft.tokenId"
               >
@@ -85,6 +81,50 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title>Other NFTs</v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row row wrap v-if="availableNFTItems">
+              <ItemBox
+                v-for="n in availableNFTItems"
+                :key="n._id"
+                :assetTitle="n.title"
+                :assetDesc="n.description"
+                :imageUri="n.nftUri"
+              >
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col>
+                      <v-btn
+                        @click="goToAssetProfile(n.tokenid)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn>
+                    </v-col>
+                    <v-col>
+                      <v-btn
+                        color="red lighten-2"
+                        dark
+                        block
+                        @click="likeAsset(n.tokenid)"
+                      >
+                        <v-icon>mdi-thumb-up</v-icon>
+                      </v-btn></v-col
+                    >
+                  </v-row>
+                </template>
+              </ItemBox>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -92,6 +132,7 @@ import { ethers } from "ethers";
 import { mapState } from "vuex";
 import moment from "moment";
 import NavigationBar from "@/components/NavigationBar";
+import ItemBox from "@/components/AssetBoxComponent";
 import AssetBoxComponent from "@/components/AuctionItemComponent";
 import BiddingComponents from "@/components/BiddingComponents";
 
@@ -101,9 +142,16 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 export default {
   layout: "default",
   middleware: "checkWalletAddress",
+  components: {
+    NavigationBar: NavigationBar,
+    AssetBoxComponent: AssetBoxComponent,
+    BiddingComponents: BiddingComponents,
+    ItemBox: ItemBox,
+  },
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
+      availableNFTItems: (state) => state.modules.marketplace.availableNFTItems,
     }),
     biddingNFTAction() {
       return this.biddingNFT;
@@ -115,12 +163,9 @@ export default {
   mounted() {
     this.getBlockCount();
     this.getAuction();
+    this.getAvailableNFTs();
   },
-  components: {
-    NavigationBar: NavigationBar,
-    AssetBoxComponent: AssetBoxComponent,
-    BiddingComponents: BiddingComponents,
-  },
+
   data() {
     return {
       curBlockCount: 0,
@@ -128,6 +173,7 @@ export default {
     };
   },
   methods: {
+
     async getBlockCount() {
       let currentBlock = await provider.getBlockNumber();
       if (currentBlock) {
@@ -142,24 +188,41 @@ export default {
           provider.getSigner()
         );
         let myResult = await contract.getAllAuctions();
-
         if (myResult) {
-          console.log("Get All Auctions");
-          console.log(myResult);
           this.biddingNFT = myResult;
         }
       } catch (err) {
         console.log(err);
       }
     },
-    getItemisEnded(auctionEndTime,ended)
-    {
+    getItemisEnded(auctionEndTime, ended) {
       var auctionEnddate = new Date(auctionEndTime * 1000);
       var currentdate = new Date();
-     
-      return auctionEnddate>currentdate && !ended
-    
-    }
+
+      return auctionEnddate > currentdate && !ended;
+    },
+    getAvailableNFTs() {
+      try {
+        this.$store.dispatch("modules/marketplace/GET_MARKETPLACE_ITEMS", {
+          userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    goToAssetProfile(payload) {
+        this.$router.push(`/marketplace/${payload}`);
+    },
+    likeAsset(tokenid) {
+      try {
+        this.$store.dispatch("modules/marketplace/LIKE_NFT_ASSET", {
+          tokenId: tokenid,
+          userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
 };
 </script>

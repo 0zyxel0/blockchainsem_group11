@@ -443,7 +443,7 @@ module.exports.getUserMintedItems = async function (req, res) {
 module.exports.saveLikeNFTItem = async function (req, res) {
   try {
     let filterVal = { tokenid: req.body.tokenid };
-    let updateVal = { $inc: { likes: 1 } };
+    let updateVal = { likedBy: req.user.sub.walletAddr, $inc: { likes: 1 } };
     let configVal = { new: true };
     let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
     if (myResult) {
@@ -459,7 +459,7 @@ module.exports.saveLikeNFTItem = async function (req, res) {
 module.exports.saveDislikeNFTItem = async function (req, res) {
   try {
     let filterVal = { tokenid: req.body.tokenid };
-    let updateVal = { $inc: { likes: -1 } };
+    let updateVal = { $pull: { likedBy: req.user.sub.walletAddr }, $inc: { likes: -1 } };
     let configVal = { new: true };
     let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
     if (myResult) {

@@ -127,9 +127,9 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-if="userOwnedNFT">
+            <v-row row wrap v-if="userAuctionedNFT">
               <AssetBoxComponent
-                v-for="n in userOwnedNFT"
+                v-for="n in userAuctionedNFT"
                 :key="n._id"
                 :assetTitle="n.title"
                 :assetDesc="n.description"
@@ -195,6 +195,7 @@ export default {
       userRecentNFTUnminted: (state) =>
         state.modules.profile.userRecentUnminted,
       userOwnedNFT: (state) => state.modules.profile.userOwnedNFT,
+      userAuctionedNFT: (state) => state.modules.profile.userNFTInAuction
     }),
   },
   mounted() {

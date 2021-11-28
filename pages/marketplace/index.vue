@@ -38,6 +38,13 @@
                       >
                       </BiddingComponents>
                     </v-col>
+                    <v-col align="center" justify="center">
+                      <BuyConfirmationDialog
+                        :auctionId="n.auctionId.toString()"
+                        :buyBidPrice="n.highestBid.toString()"
+                      >
+                      </BuyConfirmationDialog>
+                    </v-col>
                   </v-row>
                 </template>
               </AuctionItemComponent>
@@ -130,11 +137,11 @@
 <script>
 import { ethers } from "ethers";
 import { mapState } from "vuex";
-import moment from "moment";
 import NavigationBar from "@/components/NavigationBar";
 import ItemBox from "@/components/AssetBoxComponent";
 import AssetBoxComponent from "@/components/AuctionItemComponent";
 import BiddingComponents from "@/components/BiddingComponents";
+import BuyConfirmationDialog from "@/components/BuyConfirmationDialog";
 
 const NFTAUCTION_CONTRACT_ABI = require("./../../build/contracts/NFTAuction.json");
 const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -147,6 +154,7 @@ export default {
     AssetBoxComponent: AssetBoxComponent,
     BiddingComponents: BiddingComponents,
     ItemBox: ItemBox,
+    BuyConfirmationDialog: BuyConfirmationDialog,
   },
   computed: {
     ...mapState({
@@ -173,7 +181,6 @@ export default {
     };
   },
   methods: {
-
     async getBlockCount() {
       let currentBlock = await provider.getBlockNumber();
       if (currentBlock) {
@@ -211,7 +218,7 @@ export default {
       }
     },
     goToAssetProfile(payload) {
-        this.$router.push(`/marketplace/${payload}`);
+      this.$router.push(`/marketplace/${payload}`);
     },
     likeAsset(tokenid) {
       try {

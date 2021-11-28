@@ -22,5 +22,6 @@ router.post("/v1/auth/verification", apiController.verifyAuthentication);
 
 router.post("/v1/item/like", checkToken, apiController.saveLikeNFTItem);
 router.post("/v1/item/dislike", checkToken, apiController.saveDislikeNFTItem);
+router.post("/v1/item/comment", checkToken, apiController.saveNFTComments);
 // Export modules
 module.exports = router;

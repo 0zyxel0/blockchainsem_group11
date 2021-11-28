@@ -17,7 +17,7 @@ const NFTMetaSchema = new Schema(
         nftUri: { type: String },
         likes: { type: Number, default: 0 },
         likedBy: [],
-        comments: metaComments
+        comments: [metaComments]
     },
     { timestamps: true },
     { collection: "ntf_metas" }

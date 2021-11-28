@@ -15,10 +15,16 @@
               :src="curNFTMeta.nftUri"
             />
             <v-card-actions>
-              <v-btn block>Add More Likes</v-btn>
+              <v-btn
+                color="pink lighten-1"
+                block
+                dark
+                @click="likeNFT(curNFTMeta.tokenid)"
+              >
+                <v-icon class="pr-5">mdi-thumb-up</v-icon> Like
+              </v-btn>
             </v-card-actions>
           </v-card-text>
-          
         </v-card>
       </v-col>
       <v-col cols="8">
@@ -66,12 +72,63 @@
                   <v-row>
                     <v-col>Comments</v-col>
                     <v-spacer></v-spacer>
-                    <v-col align="right"><v-btn color="primary">Add Comment</v-btn></v-col>
+                    <v-col align="right">
+                      <v-dialog v-model="dialog" persistent max-width="600px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                            Add Comments
+                          </v-btn>
+                        </template>
+                        <v-card>
+                          <v-card-title>
+                            <span class="text-h5">Comments</span>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-divider> </v-divider>
+                            <v-container>
+                              <v-row>
+                                <v-col>
+                                  <v-textarea
+                                    outlined
+                                    no-resize
+                                    v-model="commentVal"
+                                    hint="Add Comments Here"
+                                  ></v-textarea>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                              color="blue darken-1"
+                              text
+                              @click="dialog = false"
+                            >
+                              Close
+                            </v-btn>
+                            <v-btn
+                              color="blue darken-1"
+                              text
+                              @click="addNFTComments()"
+                            >
+                              Save
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog></v-col
+                    >
                   </v-row>
                 </v-card-title>
                 <v-divider></v-divider>
+                <CommentBox
+                  v-for="item in curNFTMeta.comments"
+                  :key="item._id"
+                  :username="item.by"
+                  :comment="item.comment"
+                  :timestamp="item.timestamp"
+                ></CommentBox>
               </v-card-text>
-              
             </v-card>
           </v-col>
         </v-row>
@@ -88,17 +145,20 @@
   </div>
 </template>
 <script>
-import { ethers } from "ethers";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
-const provider = new ethers.providers.Web3Provider(window.ethereum);
+import CommentBox from "@/components/CommentBoxComponent";
 export default {
   layout: "default",
   middleware: "checkWalletAddress",
+  components: {
+    NavigationBar: NavigationBar,
+    CommentBox: CommentBox,
+  },
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
-      curNFTMeta: (state) => state.modules.profile.curNFTMeta,
+      curNFTMeta: (state) => state.modules.marketplace.curNFTMeta,
     }),
   },
   mounted() {
@@ -107,11 +167,11 @@ export default {
   created() {
     this.initializeData();
   },
-  components: {
-    NavigationBar: NavigationBar,
-  },
+
   data() {
     return {
+      dialog: false,
+      commentVal: "",
       dataReady: false,
       isLoading: false,
       offerPrice: 0,
@@ -128,30 +188,16 @@ export default {
   },
   methods: {
     clearMetadata() {
-      this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
-    },
-    auctionNFT(nftId, offerPrice, bidDuration) {
-      try {
-        this.isLoading = true;
-        let payload = {
-          nftId: nftId,
-          startPrice: parseInt(offerPrice),
-          bidDuration: bidDuration,
-        };
-        this.$store
-          .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
-          .then((response) => {
-            this.isLoading = false;
-          });
-      } catch (err) {
-        console.log(err);
-      }
+      this.$store.dispatch("modules/marketplace/CLEAR_CURRENT_NFT_META");
     },
     initializeData() {
       try {
-        let payload = this.$route.params.id;
+        let payload = {
+          tokenid: this.$route.params.id,
+          userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+        };
         this.$store
-          .dispatch("modules/profile/GET_NFT_METADATA", payload)
+          .dispatch("modules/marketplace/GET_NFT_METADATA", payload)
           .then((response) => {
             if (this.curNFTMeta) {
               this.dataReady = true;
@@ -160,6 +206,27 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+    likeNFT() {
+      let payload = {
+        tokenid: this.$route.params.id,
+        userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+      };
+      this.$store.dispatch("modules/marketplace/LIKE_NFT_ASSET", payload);
+    },
+    addNFTComments() {
+      let payload = {
+        tokenid: this.$route.params.id,
+        userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+        comments: this.commentVal,
+      };
+
+      this.$store
+        .dispatch("modules/marketplace/ADD_NFT_COMMENTS", payload)
+        .then(() => {
+          this.dialog = false;
+          this.$toast.success("Successfully Added Comment");
+        });
     },
   },
 };

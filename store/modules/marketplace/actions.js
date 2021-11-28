@@ -46,17 +46,52 @@ export default {
       console.log(err);
     }
   },
-
-  async LIKE_NFT_ASSET({state, commit} ,{tokenId, userToken}) {
+  CLEAR_CURRENT_NFT_META({ commit }) {
+    commit("CLEAR_NFT_DETAILS");
+  },
+  async LIKE_NFT_ASSET({ state, commit }, { tokenid, userToken }) {
     try {
-     
-      let myResult = await this.$axios.$post("/api/v1/item/like", { tokenid: tokenId }, {
+
+      let myResult = await this.$axios.$post("/api/v1/item/like", { tokenid: tokenid }, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      if(myResult){
-        this.toast.success("Successfully Liked The NFT");
+      if (myResult) {
+        commit("SET_NFT_CUR_META", myResult.payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async GET_NFT_METADATA({ commit }, { tokenid, userToken }) {
+    try {
+      let myResult = await this.$axios.$post("/api/v1/nft/meta", { tokenid: tokenid }, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      if (myResult) {
+        console.log(myResult);
+        commit("SET_NFT_CUR_META", myResult.payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  async ADD_NFT_COMMENTS({ commit, state }, { tokenid, userToken, comments }) {
+    try {
+      let payload = { tokenid: tokenid, comment: comments };
+      let myResult = await this.$axios.$post("/api/v1/item/comment", payload, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if (myResult) {
+        console.log(myResult);
+        commit("SET_NFT_CUR_META", myResult.payload);
       }
     } catch (err) {
       console.log(err);

@@ -471,3 +471,19 @@ module.exports.saveDislikeNFTItem = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+module.exports.saveNFTComments = async function (req, res) {
+  try {
+    let filterVal = { tokenid: req.body.tokenid };
+    let updateVal = { comments: {by: req.user.sub.walletAddr, comment: req.body.comment} };
+    let configVal = { new: true };
+    let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info("[saveNFTComments] Successfully Updated Likes");
+      return res.status(201).json(formResponse("success", myResult, null));
+    }
+  } catch (err) {
+    logger.error("[saveNFTComments] Error in Addting Comment");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};

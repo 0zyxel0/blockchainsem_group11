@@ -6,28 +6,30 @@
     </v-row>
     <v-row v-if="dataReady">
       <v-col cols="4">
-        <v-card>
-          <v-card-text>
-            <v-img
-              max-height="400"
-              max-width="800"
-              contain
-              :src="curNFTMeta.nftUri"
-            />
-            <v-card-actions>
-              <v-btn
-                color="pink lighten-1"
-                block
-                dark
-                @click="likeNFT(curNFTMeta.tokenid)"
-              >
-                <v-icon class="pr-5">mdi-thumb-up</v-icon> Like
-              </v-btn>
-            </v-card-actions>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="8">
+        <v-row
+          ><v-col>
+            <v-card>
+              <v-card-text>
+                <v-img
+                  max-height="400"
+                  max-width="800"
+                  contain
+                  :src="curNFTMeta.nftUri"
+                />
+                <v-card-actions>
+                  <v-btn
+                    color="pink lighten-1"
+                    block
+                    dark
+                    @click="likeNFT(curNFTMeta.tokenid)"
+                  >
+                    <v-icon class="pr-5">mdi-thumb-up</v-icon> Like
+                  </v-btn>
+                </v-card-actions>
+              </v-card-text>
+            </v-card>
+          </v-col></v-row
+        >
         <v-row>
           <v-col>
             <v-card>
@@ -64,6 +66,44 @@
             </v-card>
           </v-col>
         </v-row>
+      </v-col>
+      <v-col cols="8">
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-title>NFT Auction Details</v-card-title>
+
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Auction End</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Bid Count</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Highest Bid</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Highest Bidder</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
         <v-row>
           <v-col>
             <v-card>

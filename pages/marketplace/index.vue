@@ -92,7 +92,7 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-card-title>Other NFTs</v-card-title>
+          <v-card-title>NFT on Display</v-card-title>
           <v-divider></v-divider>
           <v-card-text>
             <v-row row wrap v-if="availableNFTItems">

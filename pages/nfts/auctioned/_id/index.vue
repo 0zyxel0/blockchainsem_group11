@@ -6,37 +6,161 @@
     </v-row>
     <v-row v-if="dataReady">
       <v-col cols="4">
-        <v-card>
-          <v-card-text>
-            <v-img
-              max-height="400"
-              max-width="800"
-              contain
-              :src="curNFTMeta.nftUri"
-            />
-            <v-list-item three-line>
-              <v-list-item-content>
-                <v-list-item-title
-                  >Title : {{ curNFTMeta.title }}</v-list-item-title
-                >
-                <v-list-item-subtitle>
-                  Description : {{ curNFTMeta.description }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-card-text>
-        </v-card>
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-text>
+                <v-img
+                  max-height="400"
+                  max-width="800"
+                  contain
+                  :src="curNFTMeta.nftUri"
+                />
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-title>Details</v-card-title>
+
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Title</v-subheader>
+                  </v-col>
+                  <v-col cols="8">
+                    <v-subheader>{{ curNFTMeta.title }}</v-subheader>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Description</v-subheader>
+                  </v-col>
+                  <v-col cols="8">
+                    <v-subheader>{{ curNFTMeta.description }}</v-subheader>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Likes Count</v-subheader>
+                  </v-col>
+                  <v-col cols="8">
+                    <v-subheader>{{ curNFTMeta.likes }}</v-subheader>
+                  </v-col>
+                  <v-divider></v-divider>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col cols="8">
-        <v-card>
-          <v-card-title>NFT Auction Details</v-card-title>
+        <v-row
+          ><v-col>
+            <v-card>
+              <v-card-title>NFT Auction Details</v-card-title>
 
-          <v-divider></v-divider>
-          <v-card-text>
-
-     
-          </v-card-text>
-        </v-card>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Current Bid</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Highest Bidder</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Bid Count</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Auction End</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-text>
+                <v-card-title>
+                  <v-row>
+                    <v-col>Comments</v-col>
+                    <v-spacer></v-spacer>
+                    <v-col align="right">
+                      <v-dialog v-model="dialog" persistent max-width="600px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                            Add Comments
+                          </v-btn>
+                        </template>
+                        <v-card>
+                          <v-card-title>
+                            <span class="text-h5">Comments</span>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-divider> </v-divider>
+                            <v-container>
+                              <v-row>
+                                <v-col>
+                                  <v-textarea
+                                    outlined
+                                    no-resize
+                                    v-model="commentVal"
+                                    hint="Add Comments Here"
+                                  ></v-textarea>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                              color="blue darken-1"
+                              text
+                              @click="dialog = false"
+                            >
+                              Close
+                            </v-btn>
+                            <v-btn
+                              color="blue darken-1"
+                              text
+                              @click="addNFTComments()"
+                            >
+                              Save
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog></v-col
+                    >
+                  </v-row>
+                </v-card-title>
+                <v-divider></v-divider>
+                <CommentBox
+                  v-for="item in curNFTMeta.comments"
+                  :key="item._id"
+                  :username="item.by"
+                  :comment="item.comment"
+                  :timestamp="item.timestamp"
+                ></CommentBox>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-row v-else>
@@ -53,10 +177,15 @@
 import { ethers } from "ethers";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
+import CommentBox from "@/components/CommentBoxComponent";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 export default {
   layout: "default",
   middleware: "checkWalletAddress",
+  components: {
+    NavigationBar: NavigationBar,
+    CommentBox: CommentBox,
+  },
   computed: {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
@@ -68,10 +197,9 @@ export default {
   },
   created() {
     this.initializeData();
+    this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS");
   },
-  components: {
-    NavigationBar: NavigationBar,
-  },
+
   data() {
     return {
       dataReady: false,

@@ -226,7 +226,7 @@ export default {
     }
   },
 
-  async CREATE_USER_AUCTION_NFT({ state, commit }, { nftId, startPrice, bidDuration }) {
+  async CREATE_USER_AUCTION_NFT({ state, commit }, { nftId, startPrice, buyNowPrice, bidDuration }) {
     try {
       let contractViewer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
@@ -241,7 +241,8 @@ export default {
         console.log(`Current Auction Price : ${parseFloat(utils.formatEther(viewResult._hex))}`);
         let contractOptions = { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) };
         let weiPrice = utils.parseEther(startPrice);
-        let payContract = await contractPayer.createAuction(nftId, weiPrice, bidDuration, contractOptions);
+        let weiBuyNowPrice = utils.parseEther(buyNowPrice);
+        let payContract = await contractPayer.createAuction(nftId, weiPrice, weiBuyNowPrice, bidDuration, contractOptions);
         if (payContract) {
           console.log(payContract);
           this.$toast.success("Successfully Auctioned NFT");
@@ -253,7 +254,7 @@ export default {
     }
   },
 
-  async GET_USER_AUCTIONED_NFT({ commit, state }, {userWalletAddr}) {
+  async GET_USER_AUCTIONED_NFT({ commit, state }, { userWalletAddr }) {
     try {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
@@ -266,9 +267,9 @@ export default {
         _.filter(myResult, function (filIterator) {
           let previousOwner = filIterator[0].previousOwner;
           if (!filIterator.ended == true) {
-            if(previousOwner == userWalletAddr){
+            if (previousOwner == userWalletAddr) {
               tempList.push(Web3.utils.hexToNumber(filIterator.nft.tokenId._hex));
-            }            
+            }
           }
         });
         let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
@@ -286,7 +287,17 @@ export default {
   },
   async GET_USER_AUCTIONED_DETAILS({ commit, state }) {
     try {
-
+      let contract = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider
+      );
+      let tempList = [];
+      let myResult = await contract.getAllAuctionsOwned();
+      if (myResult) {
+        console.log("find details");
+        console.log(myResult);
+      }
     } catch (err) {
       console.log(err);
     }

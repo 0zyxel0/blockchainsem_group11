@@ -43,6 +43,14 @@
             </v-row>
             <v-row>
               <v-col cols="4">
+                <v-subheader>Auction Buy Now Price</v-subheader>
+              </v-col>
+              <v-col cols="8">
+                <v-text-field label="Price" v-model="buyPrice"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
                 <v-subheader>Auction End Time</v-subheader>
               </v-col>
               <v-col cols="8">
@@ -70,7 +78,12 @@
               block
               dark
               @click="
-                auctionNFT(curNFTMeta.tokenid, offerPrice, startOfferTime)
+                auctionNFT(
+                  curNFTMeta.tokenid,
+                  offerPrice,
+                  buyPrice,
+                  startOfferTime
+                )
               "
               >Auction Item</v-btn
             >
@@ -131,12 +144,13 @@ export default {
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
-    auctionNFT(nftId, offerPrice, bidDuration) {
+    auctionNFT(nftId, offerPrice, buyPrice, bidDuration) {
       try {
         this.isLoading = true;
         let payload = {
           nftId: nftId,
           startPrice: offerPrice,
+          buyNowPrice: buyPrice,
           bidDuration: bidDuration,
         };
         this.$store

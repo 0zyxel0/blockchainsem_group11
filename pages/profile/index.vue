@@ -195,7 +195,7 @@ export default {
       });
     },
     goToAssetProfile(payload) {
-      this.$router.push(`/nfts/owned/${payload}`);
+      this.$router.push(`/nfts/owned/view/${payload}`);
     },
     goToUnmintedAsset(payload) {
       this.$router.push(`/nfts/unminted/${payload}`);

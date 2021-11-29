@@ -218,7 +218,7 @@ export default {
       }
     },
     goToAssetProfile(payload) {
-      this.$router.push(`/marketplace/${payload}`);
+      this.$router.push(`/marketplace/view/${payload}`);
     },
     likeAsset(tokenid) {
       try {

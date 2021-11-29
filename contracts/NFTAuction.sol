@@ -43,6 +43,7 @@ contract NFTAuction is ReentrancyGuard {
         uint auctionId;
         address payable highestBidder;
         address payable winner;
+        uint buyNow;
         uint startPrice;
         uint highestBid;
         uint bids;
@@ -117,12 +118,15 @@ contract NFTAuction is ReentrancyGuard {
 
     // Create an Auction:
     // Make sure to approve the contract address before procedding:
-    function createAuction(uint _itemId, uint _startPrice, uint _biddingTime) public payable nonReentrant {
+    function createAuction(uint _itemId, uint _startPrice, uint _buyNow, uint _biddingTime) public payable nonReentrant {
         // Make sure plattform item exists:
         require(idToNFTItem[_itemId].owner == msg.sender, "You are not the owner of the Item!");
         require(_startPrice >= 0, "The starting Price must be bigger equal 0!");
+        require(_buyNow > 0, "The Buynow price must be bigger than 0!");
+        require(_buyNow > _startPrice, "The BuyNow price must be bigger than the starting price");
         require(_biddingTime > 0, "The bidding time must be bigger as 0 seconds!");
         require(msg.value == auctionPrice, "You need to pay the auction price!");
+
         
         _auctionIds.increment();
         uint auctionId = _auctionIds.current();
@@ -133,7 +137,7 @@ contract NFTAuction is ReentrancyGuard {
 
         // Creating an auction (winner = highestbidder = 0 address)
         uint endOfAuction = block.timestamp + _biddingTime;
-        idToAuction[auctionId] = Auction(idToNFTItem[_itemId], auctionId, payable(address(0)), payable(address(0)), _startPrice, 0, 0, endOfAuction, false);
+        idToAuction[auctionId] = Auction(idToNFTItem[_itemId], auctionId, payable(address(0)), payable(address(0)),_buyNow,_startPrice, 0, 0, endOfAuction, false);
 
         // Transfer Token to contract and pay fee to contract owner:
         ERC721(idToNFTItem[_itemId].nftContract).transferFrom(msg.sender, address(this), idToNFTItem[_itemId].tokenId);
@@ -255,6 +259,18 @@ contract NFTAuction is ReentrancyGuard {
             }
         }
         return items;
+    }
+    // This method needs to get called if someone wants to use the buy Now functionality:
+    function BuyNFTNow(uint _auctionId) public payable nonReentrant{
+           if (block.timestamp > idToAuction[_auctionId].auctionEndTime){
+            revert("The auction has ended, you cannot use the buy Now functionality!");
+        }
+        require(idToAuction[_auctionId].buyNow == msg.value, "The Buynow Price has not been paid!");
+        
+        // Setting the user as highest bidder + ending the auction by setting the endtime = Now:
+        idToAuction[_auctionId].highestBid = msg.value;
+        idToAuction[_auctionId].highestBidder = payable(msg.sender);
+        idToAuction[_auctionId].auctionEndTime = block.timestamp;
     }
 
     // Function for ending the Auction:

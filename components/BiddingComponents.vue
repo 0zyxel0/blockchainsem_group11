@@ -64,6 +64,7 @@ export default {
   props: {
     auctionId: { type: String },
     highestBid: { type: String },
+    startPrice:{ type: String },
   },
   data: () => ({
     dialog: false,
@@ -71,6 +72,7 @@ export default {
     inputErrormessage: "",
   }),
   methods: {
+    
     async bidOnItem(auctionId, bidPrice, highestBid) {
       try {
         //To check if the number is valid
@@ -79,13 +81,14 @@ export default {
           this.inputErrormessage = bidPrice + " is Invalid Price";
           return;
         }
-
-        //Check if the bidding amount is gretaer than last bid
-        if (parseFloat(bidPrice) <= parseFloat(highestBid)) {
-          console.log(`highestBid Price : ${parseFloat(highestBid)}`);
+        let checkValue=this.highestBid/Math.pow(10,18)!=0? this.highestBid/Math.pow(10,18): this.startPrice/Math.pow(10,18);
+       console.log(`checkValue Price : `+checkValue);
+       //Check if the bidding amount is gretaer than last bid
+        if (parseFloat(bidPrice) < checkValue ) {
+          console.log(`highestBid Price : ${parseFloat(checkValue)}`);
           this.inputErrormessage =
             "Bidding price should be greater than highest Bid " +
-            parseFloat(highestBid);
+            checkValue ;
           return;
         }
         let contract = new ethers.Contract(
@@ -94,7 +97,7 @@ export default {
           provider.getSigner()
         );
         console.log(
-          `Current Bid Price : ${parseFloat(utils.formatEther(bidPrice))}`
+          `Current Bid Price : ${parseFloat(bidPrice)}`
         );
         let myResult = await contract.BidOnAuctionItem(auctionId, {
           value: ethers.utils.parseEther(utils.formatEther(bidPrice)),
@@ -110,6 +113,7 @@ export default {
         this.$toast.error(err.data.message);
       }
     },
+    
   },
 };
 </script>

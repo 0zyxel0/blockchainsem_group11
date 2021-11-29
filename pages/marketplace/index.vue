@@ -14,9 +14,10 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
+             <v-row  >
+            <v-col row wrap  v-for="(n, index) in biddingNFTAction" :key="index" >
               <AuctionItemComponent
-                v-if="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
+                v-if=" getItemisEnded(n.auctionEndTime.toString()) "
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -24,30 +25,34 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
+                :ended="! n.ended"
                 :auctionEndTime="n.auctionEndTime.toString()"
                 :tokenID="n.nft.tokenId"
+                :buyBidPrice="n.buyNow.toString()"
               >
                 <template v-slot:asset-options>
-                  <v-row>
-                    <v-col align="center" justify="center">
+                  <v-row  class="pa-md-4 mx-lg-auto" align="center" justify="center">
+                    <v-col   cols="6" >
                       <BiddingComponents
                         block
+                        :startPrice="n.startPrice.toString()"
                         :auctionId="n.auctionId.toString()"
                         :highestBid="n.highestBid.toString()"
                       >
                       </BiddingComponents>
                     </v-col>
-                    <v-col align="center" justify="center">
+                    <v-col cols="6"  >
                       <BuyConfirmationDialog
                         :auctionId="n.auctionId.toString()"
-                        :buyBidPrice="n.highestBid.toString()"
+                        :buyBidPrice="n.buyNow.toString()"
                       >
                       </BuyConfirmationDialog>
                     </v-col>
                   </v-row>
+                  
                 </template>
               </AuctionItemComponent>
+               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -63,9 +68,10 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-for="(n, index) in biddingNFTAction" :key="index">
+            <v-row  >
+            <v-col row wrap v-for="(n, index) in biddingNFTAction" :key="index">
               <AuctionItemComponent
-                v-if="getItemisEnded(n.auctionEndTime.toString(), n.ended)"
+                 v-if=" !getItemisEnded(n.auctionEndTime.toString()) "
                 :key="n.auctionId.toString()"
                 :auctionTitle="n.nft.title"
                 :highestBidder="n.highestBidder"
@@ -73,9 +79,10 @@
                 :startPrice="n.startPrice.toString()"
                 :winner="n.winner.toString()"
                 :bids="n.bids.toString()"
-                :ended="!getItemisEnded(n.auctionEndTime.toString(), n.ended)"
+                :ended=" n.ended"
                 :auctionEndTime="n.auctionEndTime.toString()"
                 :tokenID="n.nft.tokenId"
+                :buyBidPrice="n.buyNow.toString()"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -83,6 +90,7 @@
                   </v-row>
                 </template>
               </AuctionItemComponent>
+             </v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -196,17 +204,12 @@ export default {
         );
         let myResult = await contract.getAllAuctions();
         if (myResult) {
+          console.log(myResult)
           this.biddingNFT = myResult;
         }
       } catch (err) {
         console.log(err);
       }
-    },
-    getItemisEnded(auctionEndTime, ended) {
-      var auctionEnddate = new Date(auctionEndTime * 1000);
-      var currentdate = new Date();
-
-      return auctionEnddate > currentdate && !ended;
     },
     getAvailableNFTs() {
       try {
@@ -229,6 +232,12 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+    getItemisEnded(auctionEndTime) {
+      var auctionEnddate = new Date(auctionEndTime * 1000);
+      var currentdate = new Date();
+      console.log( auctionEnddate ,currentdate)
+      return auctionEnddate > currentdate;
     },
   },
 };

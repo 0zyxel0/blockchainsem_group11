@@ -23,6 +23,8 @@
         <div v-if="ended">
           <no-ssr>
             <flip-countdown
+              countdownSize="25px"
+              labelSize="15px"
               :deadline="getEndDate()"
               :showDays="false"
             ></flip-countdown>
@@ -32,16 +34,16 @@
           <template v-slot:default>
             <tbody>
               <tr>
-                <td>Total number of Bids</td>
-                <td>{{ bids }}</td>
+                <td>Total number of Bids {{ bids }}</td>
+                <td>Buy now at {{ priceConversion(buyBidPrice) }}</td>
               </tr>
               <tr>
-                <td>Starting Price: {{ startPrice }}</td>
-                <td>Highest Price: {{ highestBid }}</td>
+                <td>Starting Price: {{ priceConversion(startPrice) }}</td>
+                <td>Highest Price: {{ priceConversion(highestBid) }}</td>
               </tr>
-              <tr v-if="!ended">
+              <tr>
                 <td>Auction EndTime</td>
-                <td>{{ getEndDate() }}</td>
+                <td>{{ getLocalEndDate() }}</td>
               </tr>
               <tr v-if="ended">
                 <td>Winnner Address</td>
@@ -90,6 +92,7 @@ export default {
     bids: { type: String },
     ended: { type: Boolean },
     tokenID: { type: Object },
+    buyBidPrice: { type: String },
   },
   mounted() {
     this.getImageURL(this.tokenID);
@@ -107,7 +110,14 @@ export default {
     },
     getEndDate() {
       var date = new Date(this.auctionEndTime * 1000);
-      return moment(String(date)).format("YYYY-MM-DD hh:mm:ss");
+      return moment(String(date)).format("YYYY-MM-DD HH:mm:ss");
+    },
+    getLocalEndDate() {
+      var date = new Date(this.auctionEndTime * 1000);
+      return moment(String(date)).format("lll");
+    },
+    priceConversion(price) {
+      return price / Math.pow(10, 18);
     },
     async getImageURL(tokenID) {
       let token = this.$nuxt.$store.app.store.state.modules.profile.token;

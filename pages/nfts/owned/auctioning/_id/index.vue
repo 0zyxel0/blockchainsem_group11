@@ -6,26 +6,19 @@
     </v-row>
     <v-row v-if="dataReady">
       <v-col cols="4">
-        <v-row>
-          <v-col>
-        <v-card>
-          <v-card-text>
-            <v-img
-              max-height="400"
-              max-width="800"
-              contain
-              :src="curNFTMeta.nftUri"
-            />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn block color="error" @click="goToSellNFTPage(curNFTMeta.tokenid)">Sell NFT</v-btn>
-          </v-card-actions>
-        </v-card>
-          </v-col>
-        </v-row>
-        
-      </v-col>
-      <v-col cols="8">
+        <v-row
+          ><v-col>
+            <v-card>
+              <v-card-text>
+                <v-img
+                  max-height="400"
+                  max-width="800"
+                  contain
+                  :src="curNFTMeta.nftUri"
+                />
+              </v-card-text>
+            </v-card> </v-col
+        ></v-row>
         <v-row>
           <v-col>
             <v-card>
@@ -59,6 +52,101 @@
                   <v-divider></v-divider>
                 </v-row>
               </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="8">
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-title>NFT Auction Details</v-card-title>
+
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-subheader>Auction Start Price</v-subheader>
+                    </v-col>
+                    <v-col cols="8">
+                      <v-text-field
+                        label="Price"
+                        hint="Starting Auction Bidding Price"
+                        v-model="offerPrice"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-subheader>Auction Buy Now Price</v-subheader>
+                    </v-col>
+                    <v-col cols="8">
+                      <v-text-field
+                        label="Price"
+                        hint="Buy Now Price Should be Larger than Start Price"
+                        v-model="buyPrice"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-subheader>Auction End Time</v-subheader>
+                    </v-col>
+                    <v-col cols="8">
+                      <v-select
+                        :items="items"
+                        item-text="timeslot"
+                        item-value="timeVal"
+                        v-model="startOfferTime"
+                        label="Set Auction Length"
+                        outlined
+                        required
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-row>
+                  <v-col v-if="isLoading">
+                    <v-btn color="primary" block>
+                      <v-progress-circular
+                        indeterminate
+                        color="red"
+                      ></v-progress-circular
+                    ></v-btn>
+                  </v-col>
+                  <v-col v-else
+                    ><v-btn
+                      v-if="validatingPrices()"                      
+                      color="red"                      
+                      block
+                      dark
+                      @click="showToast()"
+                      >Auction Item</v-btn
+                    >
+                    <v-btn
+                      v-else
+                      color="red"
+                      block                      
+                      dark
+                      @click="
+                        auctionNFT(
+                          curNFTMeta.tokenid,
+                          offerPrice,
+                          buyPrice,
+                          startOfferTime
+                        )
+                      "
+                      >Auction Item</v-btn
+                    >
+                    
+                  </v-col>
+                </v-row>
+              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
@@ -169,13 +257,19 @@ export default {
 
   data() {
     return {
+      myPriceCheck: false,
+      valid: true,
       dialog: false,
-      commentVal:"",
+      commentVal: "",
       dataReady: false,
       isLoading: false,
       offerPrice: 0,
+      buyPrice: 0,
       startOfferTime: 0,
       items: [
+        { timeslot: "5 MIN", timeVal: 300 },
+        { timeslot: "10 MINS", timeVal: 600 },
+        { timeslot: "30 MINS", timeVal: 1800 },
         { timeslot: "1 HR", timeVal: 3600 },
         { timeslot: "2 HRS", timeVal: 7200 },
         { timeslot: "5 HRS", timeVal: 18000 },
@@ -186,6 +280,17 @@ export default {
     };
   },
   methods: {
+      showToast(){
+          this.$toast.error("Please Check Start Price and Buy Now Price.");
+      },
+    validatingPrices() {
+        if(parseFloat(this.buyPrice) > parseFloat(this.offerPrice)){
+            return false;
+        }        
+        else{ 
+            return true;
+        }
+    },
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
@@ -221,8 +326,8 @@ export default {
         console.log(err);
       }
     },
-    addNFTComments(){
-       let payload = {
+    addNFTComments() {
+      let payload = {
         tokenid: this.$route.params.id,
         userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
         comments: this.commentVal,
@@ -234,12 +339,8 @@ export default {
           this.dialog = false;
           this.initializeData();
           this.$toast.success("Successfully Added Comment");
-
         });
     },
-    goToSellNFTPage(payload){
-      this.$router.push(`/nfts/owned/auctioning/${payload}`);
-    }
   },
 };
 </script>

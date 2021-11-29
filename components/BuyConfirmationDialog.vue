@@ -8,7 +8,7 @@
         <v-card-title class="text-h5"> Buy Now</v-card-title>
         <v-card-text>
           Are you sure do you want to buy NFT for
-          {{ buyBidPrice }} ETHs</v-card-text
+          {{  priceConversion(buyBidPrice) }} ETHs</v-card-text
         >
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -50,7 +50,7 @@ export default {
         );
        
        //TO change the Function as per contract
-        let myResult = await contract.buyAuctionItem(auctionId, {
+        let myResult = await contract.BuyNFTNow(auctionId, {
           value: ethers.utils.parseEther(utils.formatEther(buyBidPrice)),
         });
         if (myResult) {
@@ -63,6 +63,9 @@ export default {
         console.log(err);
         this.$toast.error(err.data.message);
       }
+    },
+    priceConversion(price) {
+      return price/Math.pow(10,18)
     },
   },
 };

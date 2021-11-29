@@ -9,6 +9,9 @@
 
 
 ## Prerequisite<a name="section1"></a>
+  - **[git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)**
+      (For cloning the Repo)
+      
   - **[truffle](https://trufflesuite.com/truffle)**
       (For Migrating the Contract)
   

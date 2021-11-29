@@ -154,6 +154,44 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title
+            >NFT To Claim
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="goToAllAuctioned()">See All</v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row row wrap v-if="userAuctionedNFT">
+              <AssetBoxComponent
+                v-for="n in userAuctionedNFT"
+                :key="n._id"
+                :assetTitle="n.title"
+                :assetDesc="n.description"
+                :imageUri="n.nftUri"
+              >
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col>
+                      <v-btn
+                        @click="goToAuctionDetails(n.tokenid)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn></v-col
+                    >
+                  </v-row>
+                </template>
+              </AssetBoxComponent>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>

@@ -474,8 +474,9 @@ module.exports.saveDislikeNFTItem = async function (req, res) {
 
 module.exports.saveNFTComments = async function (req, res) {
   try {
+
     let filterVal = { tokenid: req.body.tokenid };
-    let updateVal = { comments: {by: req.user.sub.walletAddr, comment: req.body.comment} };
+    let updateVal = { $push: { comments: { by: req.user.sub.walletAddr, comment: req.body.comment } } };
     let configVal = { new: true };
     let myResult = await NFTMetaSchema.findOneAndUpdate(filterVal, updateVal, configVal);
     if (myResult) {

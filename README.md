@@ -10,7 +10,7 @@
 
 ## Prerequisite<a name="section1"></a>
   - **[truffle](https://trufflesuite.com/truffle)**
-      (For Migrating the Contract) 
+      (For Migrating the Contract)
   
   - **[ganache](https://trufflesuite.com/ganache)**
        (Run the test  Ethereum blockchain)
@@ -20,6 +20,11 @@
 This repository is NFT minter and Auction house to sell and buy [UZHETH](https://gitlab.uzh.ch/luca.ambrosini/go-ethereum/-/wikis/home) ethereum NFT. 
 
 ## Launch & Deployment<a name="section3"></a>
+### Clone repository
+First of all, clone the repository of the project:
+```bash
+$ git clone https://github.com/0zyxel0/blockchainsem_group11.git
+```
 ### Install dependencies
 ```bash
 

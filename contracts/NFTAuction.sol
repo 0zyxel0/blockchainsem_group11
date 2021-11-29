@@ -61,6 +61,8 @@ contract NFTAuction is ReentrancyGuard {
     event AuctionCreated(uint auctionId, uint itemId, uint startPrice, uint auctionEndTime);
     // Event for showing a new highest bidder:
     event NewHighestBid(uint auctionId, address newBidder, uint newHighestBid);
+    // Event showing the buy now price was reached:
+    event BuyNowReached(uint auctionId, address buyer, uint endPrice);
 
 
     // Creating a Plattform Item:
@@ -216,7 +218,7 @@ contract NFTAuction is ReentrancyGuard {
             revert("There is already a higher or equal bid on the item!");
         }
         // Checks if the starting price was met or not:
-        if (idToAuction[_auctionId].highestBid == 0 && msg.value != idToAuction[_auctionId].startPrice){
+        if (idToAuction[_auctionId].highestBid == 0 && msg.value < idToAuction[_auctionId].startPrice){
             revert("You need to pay the starting Price!");
         }
          // We need to return the money to the old highestBidder:
@@ -228,6 +230,12 @@ contract NFTAuction is ReentrancyGuard {
         idToAuction[_auctionId].highestBid = msg.value;
         idToAuction[_auctionId].highestBidder = payable(msg.sender); 
         idToAuction[_auctionId].bids += 1;
+
+        // Check if highest bid == buy Now Price -> End Auction:
+        if (idToAuction[_auctionId].buyNow == msg.value) {
+            idToAuction[_auctionId].auctionEndTime = block.timestamp;
+
+        }
         emit NewHighestBid(_auctionId, msg.sender, msg.value);
     }
     
@@ -271,6 +279,7 @@ contract NFTAuction is ReentrancyGuard {
         idToAuction[_auctionId].highestBid = msg.value;
         idToAuction[_auctionId].highestBidder = payable(msg.sender);
         idToAuction[_auctionId].auctionEndTime = block.timestamp;
+        emit BuyNowReached(_auctionId, msg.sender, idToAuction[_auctionId].buyNow);
     }
 
     // Function for ending the Auction:

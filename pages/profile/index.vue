@@ -137,10 +137,9 @@
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    <v-col
-                      >              
+                    <v-col>
                       <v-btn
-                        @click="goToAssetProfile(n.tokenid)"
+                        @click="goToAuctionDetails(n.tokenid)"
                         color="primary"
                         block
                       >
@@ -195,7 +194,7 @@ export default {
       userRecentNFTUnminted: (state) =>
         state.modules.profile.userRecentUnminted,
       userOwnedNFT: (state) => state.modules.profile.userOwnedNFT,
-      userAuctionedNFT: (state) => state.modules.profile.userNFTInAuction
+      userAuctionedNFT: (state) => state.modules.profile.userNFTInAuction,
     }),
   },
   mounted() {
@@ -221,6 +220,9 @@ export default {
     },
     goToAllOwned() {
       this.$router.push("/nfts/owned");
+    },
+    goToAuctionDetails(payload) {
+      this.$router.push(`/nfts/auctioned/${payload}`);
     },
   },
 };

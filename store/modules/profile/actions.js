@@ -240,7 +240,8 @@ export default {
       if (viewResult) {
         console.log(`Current Auction Price : ${parseFloat(utils.formatEther(viewResult._hex))}`);
         let contractOptions = { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) };
-        let payContract = await contractPayer.createAuction(nftId, startPrice, bidDuration, contractOptions);
+        let weiPrice = utils.parseEther(startPrice);
+        let payContract = await contractPayer.createAuction(nftId, weiPrice, bidDuration, contractOptions);
         if (payContract) {
           console.log(payContract);
           this.$toast.success("Successfully Auctioned NFT");
@@ -276,6 +277,13 @@ export default {
           commit("SET_USER_AUCTIONED_NFT", myMetaResults.payload);
         }
       }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async GET_USER_AUCTIONED_DETAILS({ commit, state }) {
+    try {
+
     } catch (err) {
       console.log(err);
     }

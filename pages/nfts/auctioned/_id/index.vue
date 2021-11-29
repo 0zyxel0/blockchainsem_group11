@@ -2,7 +2,7 @@
   <div id="nftMeta">
     <NavigationBar></NavigationBar>
     <v-row>
-      <v-col><h1>NFT Details</h1></v-col>
+      <v-col><h1>Auction NFT Details</h1></v-col>
     </v-row>
     <v-row v-if="dataReady">
       <v-col cols="4">
@@ -33,48 +33,9 @@
 
           <v-divider></v-divider>
           <v-card-text>
-            <v-row>
-              <v-col cols="4">
-                <v-subheader>Auction Start Price</v-subheader>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field label="Price" v-model="offerPrice"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-subheader>Auction End Time</v-subheader>
-              </v-col>
-              <v-col cols="8">
-                <v-select
-                  :items="items"
-                  item-text="timeslot"
-                  item-value="timeVal"
-                  v-model="startOfferTime"
-                  label="Set Auction Length"
-                  outlined
-                ></v-select>
-              </v-col>
-            </v-row>
+
+     
           </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" block v-if="isLoading">
-              <v-progress-circular
-                indeterminate
-                color="red"
-              ></v-progress-circular
-            ></v-btn>
-            <v-btn
-              v-else
-              color="red"
-              block
-              dark
-              @click="
-                auctionNFT(curNFTMeta.tokenid, offerPrice, startOfferTime)
-              "
-              >Auction Item</v-btn
-            >
-          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -130,23 +91,6 @@ export default {
   methods: {
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
-    },
-    auctionNFT(nftId, offerPrice, bidDuration) {
-      try {
-        this.isLoading = true;
-        let payload = {
-          nftId: nftId,
-          startPrice: offerPrice,
-          bidDuration: bidDuration,
-        };
-        this.$store
-          .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
-          .then((response) => {
-            this.isLoading = false;
-          });
-      } catch (err) {
-        console.log(err);
-      }
     },
     initializeData() {
       try {

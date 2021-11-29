@@ -123,7 +123,7 @@
           <v-card-title
             >NFT in Auction
             <v-spacer></v-spacer>
-            <v-btn color="primary">See All</v-btn>
+            <v-btn color="primary" @click="goToAllAuctioned()">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
@@ -154,20 +154,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- 
-        <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title
-            >NFT You Are Bidding On
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="testGet()">See All</v-btn>
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text></v-card-text>
-        </v-card>
-      </v-col>
-    </v-row> -->
   </div>
 </template>
 <script>
@@ -204,7 +190,9 @@ export default {
     async initializeAssets() {
       this.$store.dispatch("modules/profile/GET_RECENT_UNMINTED_NFT");
       this.$store.dispatch("modules/profile/GET_USER_OWNED_NFT");
-      this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT");
+      this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT", {
+        userWalletAddr: this.userWalletAddress,
+      });
     },
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/owned/${payload}`);
@@ -220,6 +208,9 @@ export default {
     },
     goToAllOwned() {
       this.$router.push("/nfts/owned");
+    },
+    goToAllAuctioned(){
+      this.$router.push("/nfts/auctioned");
     },
     goToAuctionDetails(payload) {
       this.$router.push(`/nfts/auctioned/${payload}`);

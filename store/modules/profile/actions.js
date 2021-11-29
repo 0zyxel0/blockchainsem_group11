@@ -253,7 +253,7 @@ export default {
     }
   },
 
-  async GET_USER_AUCTIONED_NFT({ commit, state }) {
+  async GET_USER_AUCTIONED_NFT({ commit, state }, {userWalletAddr}) {
     try {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
@@ -263,10 +263,13 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllAuctionsOwned();
       if (myResult) {
-
         _.filter(myResult, function (filIterator) {
-          if (!filIterator.ended == true)
-            tempList.push(Web3.utils.hexToNumber(filIterator.nft.tokenId._hex));
+          let previousOwner = filIterator[0].previousOwner;
+          if (!filIterator.ended == true) {
+            if(previousOwner == userWalletAddr){
+              tempList.push(Web3.utils.hexToNumber(filIterator.nft.tokenId._hex));
+            }            
+          }
         });
         let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
           headers: {

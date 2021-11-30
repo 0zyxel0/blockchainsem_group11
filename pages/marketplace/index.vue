@@ -14,45 +14,55 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-             <v-row  >
-            <v-col row wrap  v-for="(n, index) in biddingNFTAction" :key="index" >
-              <AuctionItemComponent
-                v-if=" getItemisEnded(n.auctionEndTime.toString()) "
-                :key="n.auctionId.toString()"
-                :auctionTitle="n.nft.title"
-                :highestBidder="n.highestBidder"
-                :highestBid="n.highestBid.toString()"
-                :startPrice="n.startPrice.toString()"
-                :winner="n.winner.toString()"
-                :bids="n.bids.toString()"
-                :ended="! n.ended"
-                :auctionEndTime="n.auctionEndTime.toString()"
-                :tokenID="n.nft.tokenId"
-                :buyBidPrice="n.buyNow.toString()"
+            <v-row>
+              <v-col
+                row
+                wrap
+                v-for="(n, index) in biddingNFTAction"
+                :key="index"
               >
-                <template v-slot:asset-options>
-                  <v-row  class="pa-md-4 mx-lg-auto" align="center" justify="center">
-                    <v-col   cols="6" >
-                      <BiddingComponents
-                        block
-                        :startPrice="n.startPrice.toString()"
-                        :auctionId="n.auctionId.toString()"
-                        :highestBid="n.highestBid.toString()"
-                      >
-                      </BiddingComponents>
-                    </v-col>
-                    <v-col cols="6"  >
-                      <BuyConfirmationDialog
-                        :auctionId="n.auctionId.toString()"
-                        :buyBidPrice="n.buyNow.toString()"
-                      >
-                      </BuyConfirmationDialog>
-                    </v-col>
-                  </v-row>
-                  
-                </template>
-              </AuctionItemComponent>
-               </v-col>
+                <AuctionItemComponent
+                  v-if="getItemisEnded(n.auctionEndTime.toString())"
+                  :key="n.auctionId.toString()"
+                  :auctionTitle="n.nft.title"
+                  :highestBidder="n.highestBidder"
+                  :highestBid="n.highestBid.toString()"
+                  :startPrice="n.startPrice.toString()"
+                  :winner="n.winner.toString()"
+                  :bids="n.bids.toString()"
+                  :ended="!n.ended"
+                  :auctionEndTime="n.auctionEndTime.toString()"
+                  :tokenID="n.nft.tokenId"
+                  :buyBidPrice="n.buyNow.toString()"
+                >
+                  <template v-slot:asset-options>
+                    <v-row
+                      class="pa-md-4 mx-lg-auto"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-col cols="6">
+                        <BiddingComponents
+                          block
+                          :startPrice="n.startPrice.toString()"
+                          :auctionId="n.auctionId.toString()"
+                          :highestBid="n.highestBid.toString()"
+                          :callbackgetAuction="getAuction"
+                        >
+                        </BiddingComponents>
+                      </v-col>
+                      <v-col cols="6">
+                        <BuyConfirmationDialog
+                          :auctionId="n.auctionId.toString()"
+                          :buyBidPrice="n.buyNow.toString()"
+                          :callbackgetAuction="getAuction"
+                        >
+                        </BuyConfirmationDialog>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </AuctionItemComponent>
+              </v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -68,29 +78,34 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row  >
-            <v-col row wrap v-for="(n, index) in biddingNFTAction" :key="index">
-              <AuctionItemComponent
-                 v-if=" !getItemisEnded(n.auctionEndTime.toString()) "
-                :key="n.auctionId.toString()"
-                :auctionTitle="n.nft.title"
-                :highestBidder="n.highestBidder"
-                :highestBid="n.highestBid.toString()"
-                :startPrice="n.startPrice.toString()"
-                :winner="n.winner.toString()"
-                :bids="n.bids.toString()"
-                :ended=" n.ended"
-                :auctionEndTime="n.auctionEndTime.toString()"
-                :tokenID="n.nft.tokenId"
-                :buyBidPrice="n.buyNow.toString()"
+            <v-row>
+              <v-col
+                row
+                wrap
+                v-for="(n, index) in biddingNFTEnded"
+                :key="index"
               >
-                <template v-slot:asset-options>
-                  <v-row>
-                    <v-col></v-col>
-                  </v-row>
-                </template>
-              </AuctionItemComponent>
-             </v-col>
+                <AuctionItemComponent
+                  v-if="!getItemisEnded(n.auctionEndTime.toString())"
+                  :key="n.auctionId.toString()"
+                  :auctionTitle="n.nft.title"
+                  :highestBidder="n.highestBidder"
+                  :highestBid="n.highestBid.toString()"
+                  :startPrice="n.startPrice.toString()"
+                  :winner="n.winner.toString()"
+                  :bids="n.bids.toString()"
+                  :ended="n.ended"
+                  :auctionEndTime="n.auctionEndTime.toString()"
+                  :tokenID="n.nft.tokenId"
+                  :buyBidPrice="n.buyNow.toString()"
+                >
+                  <template v-slot:asset-options>
+                    <v-row>
+                      <v-col></v-col>
+                    </v-row>
+                  </template>
+                </AuctionItemComponent>
+              </v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -186,6 +201,7 @@ export default {
     return {
       curBlockCount: 0,
       biddingNFT: [],
+      biddingNFTEnded: [],
     };
   },
   methods: {
@@ -205,8 +221,9 @@ export default {
         let myResult = await contract.getAllAuctions();
         if (myResult) {
           console.log("GET_ALL_AUCTION");
-          console.log(myResult)
-          this.biddingNFT = myResult;
+          console.log(myResult);
+          this.biddingNFT = this.filterAuctionitem(myResult, false);
+          this.biddingNFTEnded = this.filterAuctionitem(myResult, true);
         }
       } catch (err) {
         console.log(err);
@@ -237,8 +254,24 @@ export default {
     getItemisEnded(auctionEndTime) {
       var auctionEnddate = new Date(auctionEndTime * 1000);
       var currentdate = new Date();
-      console.log( auctionEnddate ,currentdate)
+      console.log(auctionEnddate, currentdate);
       return auctionEnddate > currentdate;
+    },
+    filterAuctionitem(biddingNFT, ended) {
+      let tempList = [];
+      if (ended) {
+        tempList = biddingNFT.filter(
+          (biddingNFT) =>
+            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) == false
+        );
+      } else {
+        tempList = biddingNFT.filter(
+          (biddingNFT) =>
+            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) ==
+              true 
+        );
+      }
+      return tempList;
     },
   },
 };

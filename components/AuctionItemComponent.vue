@@ -24,7 +24,7 @@
           <no-ssr>
             <flip-countdown
               countdownSize="25px"
-              labelSize="15px"
+              labelSize="10px"
               :deadline="getEndDate()"
               :showDays="false"
             ></flip-countdown>
@@ -45,7 +45,7 @@
                 <td>Auction EndTime</td>
                 <td>{{ getLocalEndDate() }}</td>
               </tr>
-              <tr v-if="!ended">
+              <tr v-if="!ended && checkValidAddress(winner)">
                 <td>Winnner Address</td>
                 <td>
                   <span :title="winner" class="v-truncate">{{ winner }}</span>

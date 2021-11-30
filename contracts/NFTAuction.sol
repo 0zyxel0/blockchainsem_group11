@@ -309,5 +309,26 @@ contract NFTAuction is ReentrancyGuard {
             payable(idToAuction[_auctionId].nft.previousOwner).transfer(idToAuction[_auctionId].highestBid);
         }
     }
+
+    // Function for getting back the item if no one has bid yet and the auction is still running:
+    function endAuction(uint _auctionId) public{
+        if (msg.sender != idToAuction[_auctionId].nft.previousOwner){
+            revert("You cannot get back the NFT, as you are not the previous Owner!");
+        }
+        if (idToAuction[_auctionId].nft.owner != payable(address(this))){
+            revert("You cannot get the Item back, there is a new owner of the NFT!");
+        }
+        if (idToAuction[_auctionId].highestBidder != payable(address(0))){
+            revert("You cannot get the item back. Some users have allready bid on it!");
+        }
+        if (idToAuction[_auctionId].auctionEndTime < block.timestamp){
+            revert("The auction has allready ended. You cannot get your item back");
+        }
+        // Setting the owner:
+        idToNFTItem[idToAuction[_auctionId].nft.itemId].owner = idToAuction[_auctionId].nft.previousOwner;
+        idToAuction[_auctionId].winner =  idToAuction[_auctionId].nft.previousOwner;
+        ERC721(idToAuction[_auctionId].nft.nftContract).transferFrom(address(this),idToAuction[_auctionId].nft.previousOwner, idToAuction[_auctionId].nft.tokenId);
+
+    }
   
 }

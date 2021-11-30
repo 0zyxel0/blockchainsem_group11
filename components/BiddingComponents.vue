@@ -65,6 +65,9 @@ export default {
     auctionId: { type: String },
     highestBid: { type: String },
     startPrice:{ type: String },
+     callbackgetAuction: {
+      type: Function,
+    },
   },
   data: () => ({
     dialog: false,
@@ -97,15 +100,16 @@ export default {
           provider.getSigner()
         );
         console.log(
-          `Current Bid Price : ${parseFloat(bidPrice)}`
+          `Current Bid Price : ${utils.formatEther(bidPrice)}`
         );
         let myResult = await contract.BidOnAuctionItem(auctionId, {
-          value: ethers.utils.parseEther(utils.formatEther(bidPrice)),
+          value: ethers.utils.parseUnits(bidPrice,'ether'),
         });
         if (myResult) {
           console.log(myResult);
           this.$toast.success("Successfully Bidded");
           this.dialog = false;
+          this.callbackgetAuction();
         }
       } catch (err) {
         console.log(err);

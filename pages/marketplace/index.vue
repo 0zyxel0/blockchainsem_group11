@@ -38,6 +38,7 @@
                         :startPrice="n.startPrice.toString()"
                         :auctionId="n.auctionId.toString()"
                         :highestBid="n.highestBid.toString()"
+                        :callbackgetAuction="getAuction"
                       >
                       </BiddingComponents>
                     </v-col>
@@ -45,6 +46,7 @@
                       <BuyConfirmationDialog
                         :auctionId="n.auctionId.toString()"
                         :buyBidPrice="n.buyNow.toString()"
+                        :callbackgetAuction="getAuction"
                       >
                       </BuyConfirmationDialog>
                     </v-col>

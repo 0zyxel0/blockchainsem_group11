@@ -33,6 +33,9 @@ export default {
   props: {
     auctionId: { type: String },
     buyBidPrice: { type: String },
+     callbackgetAuction: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -57,6 +60,7 @@ export default {
           console.log(myResult);
           this.$toast.success("successful buy NFT");
           this.dialog = false;
+          this.callbackgetAuction();
         }
         
       } catch (err) {

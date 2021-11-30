@@ -201,7 +201,10 @@ export default {
       );
       let tempList = [];
       let myResult = await contract.getAllNFTOwned();
-      if (myResult) {
+      console.log("GET_USER_OWNED_NFT");    
+    
+      if (myResult) {    
+        console.log(myResult);    
         _.filter(myResult, function (filIterator) {
           tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
         });
@@ -301,5 +304,22 @@ export default {
     } catch (err) {
       console.log(err);
     }
-  }
+  },
+  async GET_USER_WON_AUCTION({ commit, state }, { userWalletAddr }) {
+    try {
+      let contract = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider
+      );
+      let tempList = [];
+      let myResult = await contract.getAllAuctions();
+      if (myResult) {
+        console.log("Find winning Auction");
+        console.log(myResult);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
 };

@@ -204,6 +204,7 @@ export default {
         );
         let myResult = await contract.getAllAuctions();
         if (myResult) {
+          console.log("GET_ALL_AUCTION");
           console.log(myResult)
           this.biddingNFT = myResult;
         }

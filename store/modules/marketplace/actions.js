@@ -29,6 +29,8 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
+        console.log("GET_MARKETPLACE_ITEMS");
+        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           if (!filIterator.ended == true)
             tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));

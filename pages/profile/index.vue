@@ -161,33 +161,11 @@
           <v-card-title
             >NFT To Claim
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="goToAllAuctioned()">See All</v-btn>
+            <v-btn color="primary" @click="goToAllNFTClaim()">See All</v-btn>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-if="userAuctionedNFT">
-              <AssetBoxComponent
-                v-for="n in userAuctionedNFT"
-                :key="n._id"
-                :assetTitle="n.title"
-                :assetDesc="n.description"
-                :imageUri="n.nftUri"
-              >
-                <template v-slot:asset-options>
-                  <v-row>
-                    <v-col>
-                      <v-btn
-                        @click="goToAuctionDetails(n.tokenid)"
-                        color="primary"
-                        block
-                      >
-                        View
-                      </v-btn></v-col
-                    >
-                  </v-row>
-                </template>
-              </AssetBoxComponent>
-            </v-row>
+          
           </v-card-text>
         </v-card>
       </v-col>
@@ -223,6 +201,9 @@ export default {
   },
   mounted() {
     this.initializeAssets();
+     this.$store.dispatch("modules/profile/GET_USER_WON_AUCTION", {
+        userWalletAddr: this.userWalletAddress,
+      });
   },
   methods: {
     async initializeAssets() {
@@ -231,6 +212,7 @@ export default {
       this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT", {
         userWalletAddr: this.userWalletAddress,
       });
+     
     },
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/owned/view/${payload}`);
@@ -247,11 +229,14 @@ export default {
     goToAllOwned() {
       this.$router.push("/nfts/owned");
     },
-    goToAllAuctioned(){
+    goToAllAuctioned() {
       this.$router.push("/nfts/auctioned");
     },
     goToAuctionDetails(payload) {
       this.$router.push(`/nfts/auctioned/${payload}`);
+    },
+    goToAllNFTClaim() {
+      this.$router.push("/nfts/claim");
     },
   },
 };

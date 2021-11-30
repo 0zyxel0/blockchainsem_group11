@@ -254,7 +254,6 @@ export default {
     getItemisEnded(auctionEndTime) {
       var auctionEnddate = new Date(auctionEndTime * 1000);
       var currentdate = new Date();
-      console.log(auctionEnddate, currentdate);
       return auctionEnddate > currentdate;
     },
     filterAuctionitem(biddingNFT, ended) {

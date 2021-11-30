@@ -100,7 +100,7 @@ export default {
           provider.getSigner()
         );
         console.log(
-          `Current Bid Price : ${utils.formatEther(bidPrice)}`
+          `Current Bid Price : ${ethers.utils.parseUnits(bidPrice,'ether')}`
         );
         let myResult = await contract.BidOnAuctionItem(auctionId, {
           value: ethers.utils.parseUnits(bidPrice,'ether'),
@@ -108,8 +108,9 @@ export default {
         if (myResult) {
           console.log(myResult);
           this.$toast.success("Successfully Bidded");
+           this.callbackgetAuction();
           this.dialog = false;
-          this.callbackgetAuction();
+         
         }
       } catch (err) {
         console.log(err);

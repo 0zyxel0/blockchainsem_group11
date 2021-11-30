@@ -15,7 +15,10 @@
           <v-btn color="green darken-1" text @click="dialog = false">
             Cancel
           </v-btn>
-          <v-btn color="green darken-1" text   @click="buyNow(auctionId, buyBidPrice)">
+           <v-btn  color="green darken-1" text   v-if="isLoading">
+            <v-progress-circular indeterminate color="red"></v-progress-circular
+          ></v-btn >
+          <v-btn  v-else color="green darken-1" text   @click="buyNow(auctionId, buyBidPrice)">
             Buy
           </v-btn>
         </v-card-actions>
@@ -40,12 +43,13 @@ export default {
   data() {
     return {
       dialog: false,
+      loading:false,
     };
   },
   methods: {
     async buyNow(auctionId, buyBidPrice) {
       try {
-       
+       this.isLoading=true;
         let contract = new ethers.Contract(
           this.$config.NFT_AUCTION_CONTRACT,
           NFTAUCTION_CONTRACT_ABI.abi,
@@ -61,11 +65,13 @@ export default {
           this.$toast.success("successful buy NFT");
           this.dialog = false;
           this.callbackgetAuction();
+          this.isLoading=false;
         }
         
       } catch (err) {
         console.log(err);
         this.$toast.error(err.data.message);
+        this.isLoading=false;
       }
     },
     priceConversion(price) {

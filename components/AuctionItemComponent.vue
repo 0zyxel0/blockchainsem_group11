@@ -45,13 +45,13 @@
                 <td>Auction EndTime</td>
                 <td>{{ getLocalEndDate() }}</td>
               </tr>
-              <tr v-if="ended">
+              <tr v-if="!ended">
                 <td>Winnner Address</td>
                 <td>
                   <span :title="winner" class="v-truncate">{{ winner }}</span>
                 </td>
               </tr>
-              <tr v-if="!ended && checkValidAddress(highestBidder)">
+              <tr v-if="ended && checkValidAddress(highestBidder)">
                 <td>Highest Bidder Address</td>
                 <td>
                   <span :title="highestBidder" class="v-truncate">{{

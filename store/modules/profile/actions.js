@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
-const utils = require('ethers').utils;
-const Web3 = require('web3');
-const _ = require('lodash');
+import { ethers } from "ethers";
+const utils = require("ethers").utils;
+const Web3 = require("web3");
+const _ = require("lodash");
 import jwt_decode from "jwt-decode";
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const NFT_CONTRACT_ABI = require("./../../../build/contracts/NFT.json");
@@ -16,34 +16,40 @@ export default {
       console.log("No Accounts Found");
       return;
     } else {
-
-      let myResult = await this.$axios.$post("/api/v1/auth/nonce", { walletAddr: walletAddr });
+      let myResult = await this.$axios.$post("/api/v1/auth/nonce", {
+        walletAddr: walletAddr,
+      });
       if (myResult) {
         const signature = await signer.signMessage(myResult.payload.nonce);
         const payload = {
           walletAddr: walletAddr,
           userNonce: myResult.payload.nonce,
-          userSignature: signature
+          userSignature: signature,
         };
-        let myVerification = await this.$axios.$post("/api/v1/auth/verification", payload);
+        let myVerification = await this.$axios.$post(
+          "/api/v1/auth/verification",
+          payload
+        );
         if (myVerification) {
           commit("SET_USER_DATA", jwt_decode(myVerification.payload.token));
           commit("SET_USER_TOKEN", myVerification.payload.token);
           commit("SET_USER_WALLETADDRESS", walletAddr);
-          this.$router.push('/marketplace');
+          this.$router.push("/marketplace");
         }
-
-
       }
     }
   },
   async GET_NFT_DETAILS({ commit, state }, nftid) {
     try {
-      let myResult = await this.$axios.$post("/api/v1/item/detail", { nftid: nftid }, {
-        headers: {
-          Authorization: `Bearer ${state.token}`,
-        },
-      });
+      let myResult = await this.$axios.$post(
+        "/api/v1/item/detail",
+        { nftid: nftid },
+        {
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
 
       if (myResult) {
         console.log(myResult);
@@ -52,16 +58,19 @@ export default {
     } catch (err) {
       console.error(err);
     }
-
   },
 
   async GET_NFT_METADATA({ commit, state }, tokenid) {
     try {
-      let myResult = await this.$axios.$post("/api/v1/nft/meta", { tokenid: tokenid }, {
-        headers: {
-          Authorization: `Bearer ${state.token}`,
-        },
-      });
+      let myResult = await this.$axios.$post(
+        "/api/v1/nft/meta",
+        { tokenid: tokenid },
+        {
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
 
       if (myResult) {
         console.log(myResult);
@@ -104,12 +113,15 @@ export default {
   SIGNOUT_USER_WALLETADDRESS({ commit }) {
     window.userWalletAddress = null;
     commit("CLEAR_USER_WALLETADDRESS");
-    this.$router.push('/');
+    this.$router.push("/");
   },
   UPDATE_DISPLAY_NAME({ commit }, { displayName }) {
     commit("SET_USER_DISPLAY_NAME", displayName);
   },
-  async MINT_USER_ASSET({ state }, { nftid, userFileURI, nftTitle, nftDescription }) {
+  async MINT_USER_ASSET(
+    { state },
+    { nftid, userFileURI, nftTitle, nftDescription }
+  ) {
     try {
       let contract = new ethers.Contract(
         this.$config.NFT_MINTING_CONTRACT,
@@ -123,9 +135,18 @@ export default {
         await provider.waitForTransaction(myResult.hash);
         const receipt = await provider.getTransactionReceipt(myResult.hash);
         let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
-        let platformItem = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT, NFTAUCTION_CONTRACT_ABI.abi, provider.getSigner());
+        let platformItem = new ethers.Contract(
+          this.$config.NFT_AUCTION_CONTRACT,
+          NFTAUCTION_CONTRACT_ABI.abi,
+          provider.getSigner()
+        );
         console.log(myResult.to);
-        let platformResult = await platformItem.createItem(myResult.to, lastTokenId, nftTitle, nftDescription);
+        let platformResult = await platformItem.createItem(
+          myResult.to,
+          lastTokenId,
+          nftTitle,
+          nftDescription
+        );
         if (platformResult) {
           // Update Backend Unminted Record
           console.log("Creating Platform Asset");
@@ -186,7 +207,6 @@ export default {
 
   async UPDATE_USER_DISPLAY_NAME({ commit, state }) {
     try {
-
     } catch (err) {
       console.log(err);
     }
@@ -201,51 +221,71 @@ export default {
       );
       let tempList = [];
       let myResult = await contract.getAllNFTOwned();
-      console.log("GET_USER_OWNED_NFT");    
-    
-      if (myResult) {    
-        console.log(myResult);    
+      console.log("GET_USER_OWNED_NFT");
+
+      if (myResult) {
+        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
         });
 
-        let propagationResult = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
-          headers: {
-            Authorization: `Bearer ${state.token}`,
-          },
-        });
+        let propagationResult = await this.$axios.$post(
+          "/api/v1/items/getItems",
+          { tokenList: tempList },
+          {
+            headers: {
+              Authorization: `Bearer ${state.token}`,
+            },
+          }
+        );
 
         if (propagationResult.payload.length > 0) {
           commit("SET_USER_OWNED_NFT", propagationResult.payload);
-        }
-        else {
+        } else {
           commit("SET_USER_OWNED_NFT", []);
         }
       }
-
-
     } catch (err) {
       console.log(err);
     }
   },
 
-  async CREATE_USER_AUCTION_NFT({ state, commit }, { nftId, startPrice, buyNowPrice, bidDuration }) {
+  async CREATE_USER_AUCTION_NFT(
+    { state, commit },
+    { nftId, startPrice, buyNowPrice, bidDuration }
+  ) {
     try {
-      let contractViewer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+      let contractViewer = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider.getSigner());
+        provider.getSigner()
+      );
 
-      let contractPayer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+      let contractPayer = new ethers.Contract(
+        this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider.getSigner());
+        provider.getSigner()
+      );
 
       let viewResult = await contractViewer.getAuctionPrice();
       if (viewResult) {
-        console.log(`Current Auction Price : ${parseFloat(utils.formatEther(viewResult._hex))}`);
-        let contractOptions = { value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)) };
+        console.log(
+          `Current Auction Price : ${parseFloat(
+            utils.formatEther(viewResult._hex)
+          )}`
+        );
+        let contractOptions = {
+          value: ethers.utils.parseEther(utils.formatEther(viewResult._hex)),
+        };
         let weiPrice = utils.parseEther(startPrice);
         let weiBuyNowPrice = utils.parseEther(buyNowPrice);
-        let payContract = await contractPayer.createAuction(nftId, weiPrice, weiBuyNowPrice, bidDuration, contractOptions);
+        let payContract = await contractPayer.createAuction(
+          nftId,
+          weiPrice,
+          weiBuyNowPrice,
+          bidDuration,
+          contractOptions
+        );
         if (payContract) {
           console.log(payContract);
           this.$toast.success("Successfully Auctioned NFT");
@@ -271,15 +311,21 @@ export default {
           let previousOwner = filIterator[0].previousOwner;
           if (!filIterator.ended == true) {
             if (previousOwner == userWalletAddr) {
-              tempList.push(Web3.utils.hexToNumber(filIterator.nft.tokenId._hex));
+              tempList.push(
+                Web3.utils.hexToNumber(filIterator.nft.tokenId._hex)
+              );
             }
           }
         });
-        let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
-          headers: {
-            Authorization: `Bearer ${state.token}`,
-          },
-        });
+        let myMetaResults = await this.$axios.$post(
+          "/api/v1/items/getItems",
+          { tokenList: tempList },
+          {
+            headers: {
+              Authorization: `Bearer ${state.token}`,
+            },
+          }
+        );
         if (myMetaResults) {
           commit("SET_USER_AUCTIONED_NFT", myMetaResults.payload);
         }
@@ -313,11 +359,20 @@ export default {
         provider.getSigner()
       );
       let tempList = [];
+      let tokenList = [];
       let myResult = await contract.getAllAuctionHighestBidder();
-      if (myResult) {        
+      if (myResult) {
         _.filter(myResult, function (filIterator) {
-        console.log(filIterator);
+          let payload = {
+            auctionid: Web3.utils.hexToNumber(filIterator.auctionId._hex),
+            endtime: filIterator.auctionEndTime.toString(),
+            highestBidder: filIterator.highestBidder,
+            tokenid: Web3.utils.hexToNumber(filIterator.nft.tokenId._hex),
+          };
+          tempList.push(payload);         
         });
+          commit("SET_USER_WON_AUCTION", tempList);
+        
       }
     } catch (err) {
       console.log(err);

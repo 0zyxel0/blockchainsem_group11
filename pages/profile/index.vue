@@ -165,7 +165,27 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-          
+            <v-row>
+              <AssetBoxComponent
+                v-for="n in userToClaimAuction"
+                :key="n.auctionid"
+                :imageUri="getTokenImage(n.tokenid)"
+              >
+                <template v-slot:asset-options>
+                  <v-row>
+                    <v-col>
+                      <v-btn
+                        @click="goToAuctionDetails(n.tokenid)"
+                        color="primary"
+                        block
+                      >
+                        View
+                      </v-btn></v-col
+                    >
+                  </v-row>
+                </template>
+              </AssetBoxComponent>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -197,13 +217,12 @@ export default {
         state.modules.profile.userRecentUnminted,
       userOwnedNFT: (state) => state.modules.profile.userOwnedNFT,
       userAuctionedNFT: (state) => state.modules.profile.userNFTInAuction,
+      userToClaimAuction: (state) => state.modules.profile.userNFTWonAutction,
     }),
   },
   mounted() {
     this.initializeAssets();
-     this.$store.dispatch("modules/profile/GET_USER_WON_AUCTION", {
-        userWalletAddr: this.userWalletAddress,
-      });
+    this.getTokenImage(2);
   },
   methods: {
     async initializeAssets() {
@@ -212,8 +231,30 @@ export default {
       this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT", {
         userWalletAddr: this.userWalletAddress,
       });
-     
+      this.$store.dispatch("modules/profile/GET_USER_WON_AUCTION", {
+        userWalletAddr: this.userWalletAddress,
+      });
     },
+    async getTokenImage(tokenid) {
+      try {
+        console.log(tokenid);
+        let myImage = await this.$axios.$post(
+          "/api/v1/nft/meta",
+          { tokenid: tokenid },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$nuxt.$store.app.store.state.modules.profile.token}`,
+            },
+          }
+        );
+        if (myImage) {
+          return myImage.payload.nftUri;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/owned/view/${payload}`);
     },

@@ -197,7 +197,7 @@ export default {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider
+        provider.getSigner()
       );
       let tempList = [];
       let myResult = await contract.getAllNFTOwned();
@@ -233,7 +233,7 @@ export default {
     try {
       let contractViewer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider);
+        provider.getSigner());
 
       let contractPayer = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
@@ -262,7 +262,7 @@ export default {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider
+        provider.getSigner()
       );
       let tempList = [];
       let myResult = await contract.getAllAuctionsOwned();
@@ -293,7 +293,7 @@ export default {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider
+        provider.getSigner()
       );
       let tempList = [];
       let myResult = await contract.getAllAuctionsOwned();
@@ -310,13 +310,14 @@ export default {
       let contract = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
-        provider
+        provider.getSigner()
       );
       let tempList = [];
-      let myResult = await contract.getAllAuctions();
-      if (myResult) {
-        console.log("Find winning Auction");
-        console.log(myResult);
+      let myResult = await contract.getAllAuctionHighestBidder();
+      if (myResult) {        
+        _.filter(myResult, function (filIterator) {
+        console.log(filIterator);
+        });
       }
     } catch (err) {
       console.log(err);

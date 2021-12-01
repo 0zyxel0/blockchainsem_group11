@@ -48,15 +48,20 @@
               <tr v-if="!ended && checkValidAddress(winner)">
                 <td>Winnner Address</td>
                 <td>
-                  <span :title="winner" class="v-truncate">{{ winner }}</span>
+                  <span  @click="copyText(winner)" :title="winner" class="v-truncate">{{ winner }}</span>
                 </td>
               </tr>
               <tr v-if="ended && checkValidAddress(highestBidder)">
                 <td>Highest Bidder Address</td>
                 <td>
-                  <span :title="highestBidder" class="v-truncate">{{
-                    highestBidder
-                  }}</span>
+                  <span
+                    @click="copyText(highestBidder)"
+                    :title="highestBidder"
+                    class="v-truncate"
+                    >{{ highestBidder }}
+                   </span
+                  >
+                   
                 </td>
               </tr>
             </tbody>
@@ -111,6 +116,9 @@ export default {
     },
     priceConversion(price) {
       return price / Math.pow(10, 18);
+    },
+    copyText(text) {
+      navigator.clipboard.writeText(text);
     },
   },
 };

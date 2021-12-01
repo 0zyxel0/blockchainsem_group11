@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       dialog: false,
-      loading:false,
+      isLoading:false,
     };
   },
   methods: {

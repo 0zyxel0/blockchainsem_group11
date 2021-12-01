@@ -34,6 +34,7 @@
                   :auctionEndTime="n.auctionEndTime.toString()"
                   :tokenID="n.nft.tokenId"
                   :buyBidPrice="n.buyNow.toString()"
+                  :tokenUri="n.nft.tokenUri"
                 >
                   <template v-slot:asset-options>
                     <v-row
@@ -98,6 +99,7 @@
                   :auctionEndTime="n.auctionEndTime.toString()"
                   :tokenID="n.nft.tokenId"
                   :buyBidPrice="n.buyNow.toString()"
+                  :tokenUri="n.nft.tokenUri"
                 >
                   <template v-slot:asset-options>
                     <v-row>

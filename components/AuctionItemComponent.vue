@@ -2,8 +2,8 @@
   <div id="item-box-component">
     <v-card class="mx-1" max-width="400">
       <v-img
-        :src="nftUri"
-        :lazy-src="nftUri"
+        :src="tokenUri"
+        :lazy-src="tokenUri"
         aspect-ratio="1"
         contain
         max-height="200"
@@ -93,14 +93,7 @@ export default {
     ended: { type: Boolean },
     tokenID: { type: Object },
     buyBidPrice: { type: String },
-  },
-  mounted() {
-    this.getImageURL(this.tokenID);
-  },
-  data() {
-    return {
-      nftUri: "",
-    };
+    tokenUri: { type: String },
   },
   methods: {
     checkValidAddress(address) {
@@ -118,24 +111,6 @@ export default {
     },
     priceConversion(price) {
       return price / Math.pow(10, 18);
-    },
-    async getImageURL(tokenID) {
-      let token = this.$nuxt.$store.app.store.state.modules.profile.token;
-
-      let myResult = await this.$axios.$post(
-        "/api/v1/nft/meta",
-        { tokenid: Web3.utils.hexToNumber(tokenID._hex) },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log(myResult);
-      if (myResult.payload) {
-        this.nftUri = myResult.payload.nftUri;
-      }
     },
   },
 };

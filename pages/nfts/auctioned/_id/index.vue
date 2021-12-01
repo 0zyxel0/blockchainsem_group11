@@ -32,7 +32,7 @@
                     <v-subheader>Title</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-subheader>{{ curNFTMeta.title }}</v-subheader>
+                    <v-subheader>{{ curNFTAuctionedData.title }}</v-subheader>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -40,7 +40,7 @@
                     <v-subheader>Description</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-subheader>{{ curNFTMeta.description }}</v-subheader>
+                    <v-subheader>{{ curNFTAuctionedData.description }}</v-subheader>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -64,30 +64,33 @@
               <v-card-title>NFT Auction Details</v-card-title>
 
               <v-divider></v-divider>
-              <v-card-text>
+              <v-card-text v-if="curNFTAuctionedData">
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Current Bid</v-subheader>
                   </v-col>
-                  <v-col cols="8"> </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="4">
-                    <v-subheader>Highest Bidder</v-subheader>
-                  </v-col>
-                  <v-col cols="8"> </v-col>
+                  <v-col cols="8">{{ deHex(curNFTAuctionedData.highestBid) }} </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Bid Count</v-subheader>
                   </v-col>
-                  <v-col cols="8"> </v-col>
+                  <v-col cols="8"> {{ curNFTAuctionedData.bidCount }}</v-col>
+                </v-row>
+
+                <v-row>
+                  <v-col cols="4">
+                    <v-subheader>Start Price</v-subheader>
+                  </v-col>
+                  <v-col cols="8"> {{ curNFTAuctionedData.startPrice }} </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Auction End</v-subheader>
                   </v-col>
-                  <v-col cols="8"> </v-col>
+                  <v-col cols="8">
+                    {{ curNFTAuctionedData.auctionEndTime }}</v-col
+                  >
                 </v-row>
               </v-card-text>
             </v-card>
@@ -174,6 +177,7 @@
   </div>
 </template>
 <script>
+const hexConverter = require("hex2dec");
 import { ethers } from "ethers";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
@@ -190,6 +194,7 @@ export default {
     ...mapState({
       userWalletAddress: (state) => state.modules.profile.userWalletAddress,
       curNFTMeta: (state) => state.modules.profile.curNFTMeta,
+      curNFTAuctionedData: (state) => state.modules.profile.curNFTAuctionedData,
     }),
   },
   mounted() {
@@ -197,11 +202,13 @@ export default {
   },
   created() {
     this.initializeData();
-    this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS");
+    
   },
 
   data() {
     return {
+      commentVal: "",
+      dialog: false,
       dataReady: false,
       isLoading: false,
       offerPrice: 0,
@@ -217,19 +224,29 @@ export default {
     };
   },
   methods: {
+    deHex(payload) {
+      return hexConverter.hexToDec(payload);
+    },
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
     initializeData() {
       try {
-        let payload = this.$route.params.id;
+        this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS").then((response)=>{          
+          this.dataReady = true;
+
+        console.log(response);
+        let payload = hexConverter.hexToDec(response.tokenid);
         this.$store
           .dispatch("modules/profile/GET_NFT_METADATA", payload)
-          .then((response) => {
+          .then(() => {
             if (this.curNFTMeta) {
               this.dataReady = true;
             }
           });
+
+        });
+        
       } catch (err) {
         console.log(err);
       }

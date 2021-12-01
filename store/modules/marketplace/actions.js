@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 const utils = require('ethers').utils;
+const hexConverter = require("hex2dec");
 const Web3 = require('web3');
 const _ = require('lodash');
 const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -21,7 +22,7 @@ export default {
       console.log(err);
     }
   },
-  async GET_MARKETPLACE_ITEMS({ state, commit }, { userToken }) {
+  async GET_MARKETPLACE_ITEMS({ state, commit }) {
     try {
       let contract = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
@@ -29,20 +30,18 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
-        console.log("GET_MARKETPLACE_ITEMS");
-        console.log(myResult);
         _.filter(myResult, function (filIterator) {
-          if (!filIterator.ended == true)
-            tempList.push(Web3.utils.hexToNumber(filIterator.tokenId._hex));
+          let payload = {
+            title: filIterator.title,
+            description: filIterator.description,
+            tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
+            tokenUri: filIterator.tokenUri
+          };
+
+          tempList.push(payload);
         });
-        let myMetaResults = await this.$axios.$post("/api/v1/items/getItems", { tokenList: tempList }, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-        if (myMetaResults) {
-          commit("SET_AVAILABLE_NFT_LISTS", myMetaResults.payload);
-        }
+
+        commit("SET_AVAILABLE_NFT_LISTS", tempList);
       }
     } catch (err) {
       console.log(err);

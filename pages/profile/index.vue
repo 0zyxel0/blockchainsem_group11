@@ -95,7 +95,7 @@
                 :key="n._id"
                 :assetTitle="n.title"
                 :assetDesc="n.description"
-                :imageUri="n.nftUri"
+                :imageUri="n.tokenUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -127,13 +127,13 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row row wrap v-if="userAuctionedNFT">
+            <v-row row wrap v-if="userAuctionedList">
               <AssetBoxComponent
-                v-for="n in userAuctionedNFT"
-                :key="n._id"
+                v-for="n in userAuctionedList"
+                :key="n.auctionid"
                 :assetTitle="n.title"
                 :assetDesc="n.description"
-                :imageUri="n.nftUri"
+                :imageUri="n.tokenUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -165,21 +165,24 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-row>
+            <v-row row wrap v-if="userToClaimAuction">
               <AssetBoxComponent
                 v-for="n in userToClaimAuction"
                 :key="n.auctionid"
-                :imageUri="getTokenImage(n.tokenid)"
+                :assetTitle="n.title"
+                :assetDesc="n.description"
+                :imageUri="n.tokenUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
                     <v-col>
                       <v-btn
-                        @click="goToAuctionDetails(n.tokenid)"
-                        color="primary"
+                        @click="goToAllNFTClaim(2)"
+                        color="success darken-1"
                         block
+                        dark
                       >
-                        View
+                        Claim NFT
                       </v-btn></v-col
                     >
                   </v-row>
@@ -217,44 +220,26 @@ export default {
         state.modules.profile.userRecentUnminted,
       userOwnedNFT: (state) => state.modules.profile.userOwnedNFT,
       userAuctionedNFT: (state) => state.modules.profile.userNFTInAuction,
-      userToClaimAuction: (state) => state.modules.profile.userNFTWonAutction,
+      userToClaimAuction: (state) => state.modules.profile.userNFTWonAuction,
+      userAuctionedList: (state) => state.modules.profile.userAuctionedList,
     }),
   },
   mounted() {
     this.initializeAssets();
-    this.getTokenImage(2);
   },
   methods: {
     async initializeAssets() {
       this.$store.dispatch("modules/profile/GET_RECENT_UNMINTED_NFT");
       this.$store.dispatch("modules/profile/GET_USER_OWNED_NFT");
-      this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT", {
-        userWalletAddr: this.userWalletAddress,
-      });
+      this.$store
+        .dispatch("modules/profile/GET_USER_AUCTIONED_NFT")
+        .then((response) => {
+          console.log(response);
+        });
       this.$store.dispatch("modules/profile/GET_USER_WON_AUCTION", {
         userWalletAddr: this.userWalletAddress,
       });
     },
-    async getTokenImage(tokenid) {
-      try {
-        console.log(tokenid);
-        let myImage = await this.$axios.$post(
-          "/api/v1/nft/meta",
-          { tokenid: tokenid },
-          {
-            headers: {
-              Authorization: `Bearer ${this.$nuxt.$store.app.store.state.modules.profile.token}`,
-            },
-          }
-        );
-        if (myImage) {
-          return myImage.payload.nftUri;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/owned/view/${payload}`);
     },
@@ -276,8 +261,27 @@ export default {
     goToAuctionDetails(payload) {
       this.$router.push(`/nfts/auctioned/${payload}`);
     },
-    goToAllNFTClaim() {
-      this.$router.push("/nfts/claim");
+    goToAllNFTClaim(payload) {
+      this.$router.push(`/nfts/claim/${payload}`);
+    },
+    async getTokenImage(payload) {
+      try {
+        let propagationResult = await this.$axios.$post(
+          "/api/v1/items/getItems",
+          { tokenList: [payload] },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$nuxt.$store.app.store.state.modules.profile.token}`,
+            },
+          }
+        );
+        if (propagationResult) {
+          console.log(propagationResult.payload.nftUri);
+          return propagationResult.payload.nftUri;
+        }
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 };

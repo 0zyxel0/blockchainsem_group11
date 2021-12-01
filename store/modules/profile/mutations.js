@@ -53,4 +53,10 @@ export default {
   SET_USER_WON_AUCTION(state, payload) {
     state.userNFTWonAutction = payload;
   },
+  SET_CUR_NFT_AUCTIONED(state, payload) {
+    state.curNFTAuctionedData = payload;
+  },
+  SET_USER_AUCTIONED_LIST(state, payload) {
+    state.userAuctionedList = payload;
+  }
 };

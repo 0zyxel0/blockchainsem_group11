@@ -32,6 +32,7 @@ contract NFTAuction is ReentrancyGuard {
         uint tokenId;
         string title;
         string description;
+        string tokenUri;
         address nftContract;
         address payable owner;
         address payable previousOwner;
@@ -66,11 +67,11 @@ contract NFTAuction is ReentrancyGuard {
 
 
     // Creating a Plattform Item:
-    function createItem(address _nftContract, uint _tokenId, string memory _title, string memory _description) public nonReentrant{
+    function createItem(address _nftContract, uint _tokenId, string memory _title, string memory _description, string memory _tokenUri) public nonReentrant{
         require(ERC721(_nftContract).ownerOf(_tokenId) == msg.sender, "You are not the owner of the NFT!");
         _tokenIds.increment();
         uint itemId = _tokenIds.current();
-        idToNFTItem[itemId] = NFTItem(itemId,_tokenId, _title, _description,_nftContract, payable(msg.sender), payable(msg.sender));
+        idToNFTItem[itemId] = NFTItem(itemId, _tokenId, _title, _description, _tokenUri, _nftContract, payable(msg.sender), payable(msg.sender));
         emit NFTCreated(itemId, _tokenId, _nftContract, msg.sender);
     }
 

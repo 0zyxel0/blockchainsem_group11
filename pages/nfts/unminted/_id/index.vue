@@ -106,7 +106,7 @@ export default {
           nftid,
           userFileURI,
           nftTitle,
-          nftDescription,
+          nftDescription          
         })
         .then((response) => {
           this.isLoading = false;

@@ -124,7 +124,7 @@
                 :key="n._id"
                 :assetTitle="n.title"
                 :assetDesc="n.description"
-                :imageUri="n.nftUri"
+                :imageUri="n.tokenUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -231,9 +231,7 @@ export default {
     },
     getAvailableNFTs() {
       try {
-        this.$store.dispatch("modules/marketplace/GET_MARKETPLACE_ITEMS", {
-          userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
-        });
+        this.$store.dispatch("modules/marketplace/GET_MARKETPLACE_ITEMS");
       } catch (err) {
         console.log(err);
       }
@@ -266,8 +264,7 @@ export default {
       } else {
         tempList = biddingNFT.filter(
           (biddingNFT) =>
-            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) ==
-              true 
+            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) == true
         );
       }
       return tempList;

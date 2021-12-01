@@ -121,9 +121,8 @@ export default {
         }
       } catch (err) {
         console.log(err);
-        this.inputErrormessage = err.data.message;
-        this.$toast.error(err.data.message);
-         this.isLoading=false;
+        this.inputErrormessage = err.data!=undefined?err.data.message:'';
+        this.isLoading=false;
       }
     },
   },

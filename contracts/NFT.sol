@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 
 /// This contracts mints new NFTS 
 contract NFT is ERC721URIStorage {
-    // Creating a tokenid counter starting at 0:
+    // Creating a tokenid counter starting at id = 1:
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -26,7 +26,8 @@ contract NFT is ERC721URIStorage {
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        // Approval is given to the operator (AuctionHouse) to 
+        // Approval is given to the operator (AuctionHouse)
+        // Allows the AuctionHouse to transfer all of the tokens
         setApprovalForAll(NFTAuction, true);
         return newItemId;
     }

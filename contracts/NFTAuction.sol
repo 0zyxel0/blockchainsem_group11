@@ -8,11 +8,12 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 
 contract NFTAuction is ReentrancyGuard {
     
-    // Wallet that deploys the contract should receive ether for listing an auction:
+    // Initialize Counters to count the Plattformitems + Auctionitems:
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     Counters.Counter private _auctionIds;
 
+    // Sets the owner of the NFTAuction House Contract:
     address payable owner;
     uint256 auctionPrice = 0.045 ether;
       constructor() {
@@ -24,10 +25,9 @@ contract NFTAuction is ReentrancyGuard {
         return auctionPrice;
     }
 
-    // Platform Item:
-    // title + Desctiption
-    // Previous owner 
+    // Plattform Item:
     struct NFTItem {
+        bool exists;
         uint itemId;
         uint tokenId;
         string title;
@@ -38,8 +38,9 @@ contract NFTAuction is ReentrancyGuard {
         address payable previousOwner;
     }
 
-    // Auction of Platform Item:
+    // Auction Item (Platform Item gets auctioned off)
     struct Auction {
+        bool exists;
         NFTItem nft;
         uint auctionId;
         address payable highestBidder;
@@ -51,7 +52,9 @@ contract NFTAuction is ReentrancyGuard {
         uint auctionEndTime;
         bool ended;
     }
-    // Mappings:
+    // Mappings
+    // 1. Get the PlattformItem from the itemId
+    // 2. Get the AuctionItem from the auctionId
     mapping(uint256 => NFTItem) private idToNFTItem;
     mapping (uint256 => Auction) private idToAuction;
 
@@ -66,16 +69,17 @@ contract NFTAuction is ReentrancyGuard {
     event BuyNowReached(uint auctionId, address buyer, uint endPrice);
 
 
-    // Creating a Plattform Item:
+    // Creating a Plattform Item
+    // At this point the NFT is allready minted:
     function createItem(address _nftContract, uint _tokenId, string memory _title, string memory _description, string memory _tokenUri) public nonReentrant{
         require(ERC721(_nftContract).ownerOf(_tokenId) == msg.sender, "You are not the owner of the NFT!");
         _tokenIds.increment();
         uint itemId = _tokenIds.current();
-        idToNFTItem[itemId] = NFTItem(itemId, _tokenId, _title, _description, _tokenUri, _nftContract, payable(msg.sender), payable(msg.sender));
+        idToNFTItem[itemId] = NFTItem(true, itemId, _tokenId, _title, _description, _tokenUri, _nftContract, payable(msg.sender), payable(msg.sender));
         emit NFTCreated(itemId, _tokenId, _nftContract, msg.sender);
     }
 
-    // Get all the Platform Items (ALL):
+    // Get all the Plattform Items (ALL):
     function getAllNFTItems() public view returns(NFTItem[] memory){
         uint totalItemCount = _tokenIds.current();
         uint currentIndex = 0;
@@ -98,7 +102,7 @@ contract NFTAuction is ReentrancyGuard {
         uint currentId = 0;
         uint lenght_items = 0;
 
-        // Calculate the lenght of the items array:
+        // Calculate the lenght of the array of all the NFT Items owned:
          for(uint i = 0; i < totalItemCount; i++) {
             currentId = i + 1;
             NFTItem storage currentItem = idToNFTItem[currentId];
@@ -120,17 +124,17 @@ contract NFTAuction is ReentrancyGuard {
     }
 
     // Create an Auction:
-    // Make sure to approve the contract address before procedding:
+    // User needs to have an NFT Item to create an auction:
     function createAuction(uint _itemId, uint _startPrice, uint _buyNow, uint _biddingTime) public payable nonReentrant {
-        // Make sure plattform item exists:
+        require(idToNFTItem[_itemId].exists, "The NFT item does not exist!");
         require(idToNFTItem[_itemId].owner == msg.sender, "You are not the owner of the Item!");
-        require(_startPrice >= 0, "The starting Price must be bigger equal 0!");
+        require(_startPrice > 0, "The starting Price must be bigger than 0!");
         require(_buyNow > 0, "The Buynow price must be bigger than 0!");
         require(_buyNow > _startPrice, "The BuyNow price must be bigger than the starting price");
         require(_biddingTime > 0, "The bidding time must be bigger as 0 seconds!");
         require(msg.value == auctionPrice, "You need to pay the auction price!");
 
-        
+        // Creates the auctionId:
         _auctionIds.increment();
         uint auctionId = _auctionIds.current();
 
@@ -140,7 +144,7 @@ contract NFTAuction is ReentrancyGuard {
 
         // Creating an auction (winner = highestbidder = 0 address)
         uint endOfAuction = block.timestamp + _biddingTime;
-        idToAuction[auctionId] = Auction(idToNFTItem[_itemId], auctionId, payable(address(0)), payable(address(0)),_buyNow,_startPrice, 0, 0, endOfAuction, false);
+        idToAuction[auctionId] = Auction(true, idToNFTItem[_itemId], auctionId, payable(address(0)), payable(address(0)),_buyNow,_startPrice, 0, 0, endOfAuction, false);
 
         // Transfer Token to contract and pay fee to contract owner:
         ERC721(idToNFTItem[_itemId].nftContract).transferFrom(msg.sender, address(this), idToNFTItem[_itemId].tokenId);
@@ -212,6 +216,9 @@ contract NFTAuction is ReentrancyGuard {
 
     // Allows a user to bid on an auction Item:
     function BidOnAuctionItem(uint _auctionId) public payable nonReentrant{
+        if (idToAuction[_auctionId].exists != true){
+            revert("The auction does not exist and you cannot bid on it!");
+        }
          if (block.timestamp > idToAuction[_auctionId].auctionEndTime){
             revert("The auction has allready ended, you cannot bid anymore!");
         }
@@ -235,12 +242,14 @@ contract NFTAuction is ReentrancyGuard {
         // Check if highest bid == buy Now Price -> End Auction:
         if (idToAuction[_auctionId].buyNow == msg.value) {
             idToAuction[_auctionId].auctionEndTime = block.timestamp;
+            idToAuction[_auctionId].winner = payable(msg.sender);
+            emit BuyNowReached(_auctionId, idToAuction[_auctionId].winner,idToAuction[_auctionId].highestBid);
+        }else {
+            emit NewHighestBid(_auctionId, msg.sender, msg.value);
 
         }
-        emit NewHighestBid(_auctionId, msg.sender, msg.value);
     }
     
-
     // Get all the auctions, where you are the highest Bidder, but not the previous owner (ended and not ended):
     function getAllAuctionHighestBidder() public view returns(Auction[] memory){
         uint totalItemCount = _auctionIds.current();
@@ -271,7 +280,10 @@ contract NFTAuction is ReentrancyGuard {
     }
     // This method needs to get called if someone wants to use the buy Now functionality:
     function BuyNFTNow(uint _auctionId) public payable nonReentrant{
-           if (block.timestamp > idToAuction[_auctionId].auctionEndTime){
+         if (idToAuction[_auctionId].exists != true){
+            revert("The auction does not exist and you cannot use the buy now feature!");
+        }
+        if (block.timestamp > idToAuction[_auctionId].auctionEndTime){
             revert("The auction has ended, you cannot use the buy Now functionality!");
         }
         require(idToAuction[_auctionId].buyNow == msg.value, "The Buynow Price has not been paid!");
@@ -279,12 +291,16 @@ contract NFTAuction is ReentrancyGuard {
         // Setting the user as highest bidder + ending the auction by setting the endtime = Now:
         idToAuction[_auctionId].highestBid = msg.value;
         idToAuction[_auctionId].highestBidder = payable(msg.sender);
+        idToAuction[_auctionId].winner = payable(msg.sender);
         idToAuction[_auctionId].auctionEndTime = block.timestamp;
         emit BuyNowReached(_auctionId, msg.sender, idToAuction[_auctionId].buyNow);
     }
 
     // Function for ending the Auction:
     function transferNFTandFunds(uint _auctionId) public {
+        if (idToAuction[_auctionId].exists != true){
+            revert("The auction does not exist and you cannot transfer anything!");
+        }
         if (block.timestamp < idToAuction[_auctionId].auctionEndTime){
             revert("The auction has not ended yet!");
         }
@@ -313,6 +329,9 @@ contract NFTAuction is ReentrancyGuard {
 
     // Function for getting back the item if no one has bid yet and the auction is still running:
     function endAuction(uint _auctionId) public{
+         if (idToAuction[_auctionId].exists != true){
+            revert("The auction does not exist and you cannot be ended!");
+        }
         if (msg.sender != idToAuction[_auctionId].nft.previousOwner){
             revert("You cannot get back the NFT, as you are not the previous Owner!");
         }
@@ -328,6 +347,8 @@ contract NFTAuction is ReentrancyGuard {
         // Setting the owner:
         idToNFTItem[idToAuction[_auctionId].nft.itemId].owner = idToAuction[_auctionId].nft.previousOwner;
         idToAuction[_auctionId].winner =  idToAuction[_auctionId].nft.previousOwner;
+        idToAuction[_auctionId].auctionEndTime = block.timestamp;
+        idToAuction[_auctionId].ended = true;
         ERC721(idToAuction[_auctionId].nft.nftContract).transferFrom(address(this),idToAuction[_auctionId].nft.previousOwner, idToAuction[_auctionId].nft.tokenId);
 
     }

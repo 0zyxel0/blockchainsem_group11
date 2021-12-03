@@ -359,15 +359,17 @@ export default {
       if (myResult) {
         console.log(myResult);
         _.filter(myResult, function (filIterator) {
-          let payload = {
-            auctionid: hexConverter.hexToDec(filIterator.auctionId._hex),
-            title: filIterator.nft.title,
-            description: filIterator.nft.description,
-            highestBidder: filIterator.highestBidder,
-            tokenid: hexConverter.hexToDec(filIterator.nft.tokenId._hex),
-            tokenUri: filIterator.nft.tokenUri
-          };
-          tempList.push(payload);
+          if(filIterator.ended == false){
+            let payload = {
+              auctionid: hexConverter.hexToDec(filIterator.auctionId._hex),
+              title: filIterator.nft.title,
+              description: filIterator.nft.description,
+              highestBidder: filIterator.highestBidder,
+              tokenid: hexConverter.hexToDec(filIterator.nft.tokenId._hex),
+              tokenUri: filIterator.nft.tokenUri
+            };
+            tempList.push(payload);
+          }
         });
         commit("SET_USER_WON_AUCTION", tempList);
       }

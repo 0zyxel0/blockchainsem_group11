@@ -177,7 +177,7 @@
                   <v-row>
                     <v-col>
                       <v-btn
-                        @click="goToAllNFTClaim(2)"
+                        @click="goToAllNFTClaim(n.auctionid)"
                         color="success darken-1"
                         block
                         dark
@@ -262,26 +262,9 @@ export default {
       this.$router.push(`/nfts/auctioned/${payload}`);
     },
     goToAllNFTClaim(payload) {
-      this.$router.push(`/nfts/claim/${payload}`);
-    },
-    async getTokenImage(payload) {
-      try {
-        let propagationResult = await this.$axios.$post(
-          "/api/v1/items/getItems",
-          { tokenList: [payload] },
-          {
-            headers: {
-              Authorization: `Bearer ${this.$nuxt.$store.app.store.state.modules.profile.token}`,
-            },
-          }
-        );
-        if (propagationResult) {
-          console.log(propagationResult.payload.nftUri);
-          return propagationResult.payload.nftUri;
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      this.$store.dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT", {
+        auctionid: payload,
+      });   
     },
   },
 };

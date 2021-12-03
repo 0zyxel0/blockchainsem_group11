@@ -357,11 +357,12 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllAuctionHighestBidder();
       if (myResult) {
+        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           let payload = {
             auctionid: hexConverter.hexToDec(filIterator.auctionId._hex),
             title: filIterator.nft.title,
-            description: filIterator.nft.description,            
+            description: filIterator.nft.description,
             highestBidder: filIterator.highestBidder,
             tokenid: hexConverter.hexToDec(filIterator.nft.tokenId._hex),
             tokenUri: filIterator.nft.tokenUri
@@ -374,4 +375,28 @@ export default {
       console.log(err);
     }
   },
+  async CLAIM_WINNING_AUCTIONED_NFT({ commit, state }, { auctionid }) {
+    try {
+
+      console.log(auctionid);
+      // let contract = new ethers.Contract(
+      //   this.$config.NFT_AUCTION_CONTRACT,
+      //   NFTAUCTION_CONTRACT_ABI.abi,
+      //   provider.getSigner()
+      // );
+      // let myResult = await contract.transferNFTandFunds(auctionid);
+      // if (myResult) {
+      //   console.log(myResult);
+      //   let tempList = [];
+      //   _.filter(myResult, function (filIterator) {
+      //     if (filIterator.auctionid !== auctionid) {
+      //       tempList.push(filIterator);
+      //     }
+      //   })
+      //   commit("SET_USER_WON_AUCTION", tempList);
+      // }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };

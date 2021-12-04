@@ -73,6 +73,7 @@ export default {
     },
     APP_VERSION: process.env.APP_VERSION || "no version",
     NTF_IPFS_TOKEN: process.env.NTF_IPFS_TOKEN || "",
+    PINATA_IPFS_TOKEN: process.env.PINATA_IPFS_TOKEN || "",
     NFT_MINTING_CONTRACT: process.env.NFT_MINTING_CONTRACT || "",
     NFT_AUCTION_CONTRACT: process.env.NFT_AUCTION_CONTRACT || "",
   },

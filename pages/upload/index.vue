@@ -56,7 +56,14 @@
             <v-card>
               <v-card-title>Create an NFT</v-card-title>
               <v-card-text>
-                <v-file-input v-model="imageData" label="Choose your Image" />
+                <v-file-input
+                  v-model="imageData"
+                  :rules="rules"
+                  show-size
+                  hint="Recommended Image Size 2MB"
+                  accept="image/jpg, image/jpeg, image/png, image/PNG, image/gif"
+                  label="Choose your Image"
+                />
               </v-card-text>
             </v-card>
           </v-col>
@@ -90,7 +97,7 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-        
+
                 <v-row>
                   <v-col>
                     <v-row
@@ -114,10 +121,21 @@
                                   @click="uploadFileToIPFS(imageData)"
                                   >Upload</v-btn
                                 >
+
+                                <!-- <v-btn
+                                  v-else
+                                  block
+                                  color="primary"
+                                  @click="uploadToPinata(imageData)"
+                                  >Upload</v-btn> -->
                               </v-col> </v-row
                             ><v-row v-if="uploadedSuccessfully">
                               <v-col>
-                                <v-btn color="primary" block v-if="isMintLoading">
+                                <v-btn
+                                  color="primary"
+                                  block
+                                  v-if="isMintLoading"
+                                >
                                   <v-progress-circular
                                     indeterminate
                                     color="red"
@@ -167,9 +185,13 @@ export default {
   middleware: "checkWalletAddress",
   data() {
     return {
+      rules: [
+        (v) =>
+          !v || v.size > 2_097_152 || "Image size should be less than 2 MB",
+      ],
       imageData: null,
       isLoading: false,
-      isMintLoading:false,
+      isMintLoading: false,
       uploadedSuccessfully: false,
       currentMetadata: {},
       imageUploadDetails: {
@@ -210,7 +232,7 @@ export default {
           let payloadVal = {
             title: this.imageUploadDetails.title,
             description: this.imageUploadDetails.description,
-  
+
             filename: this.imageData.name,
             ipfsVal: myResults,
           };
@@ -229,23 +251,75 @@ export default {
             this.isLoading = false;
             this.uploadedSuccessfully = true;
             this.currentMetadata = userItem.payload;
-          }         
+          }
         }
       } catch (err) {
         console.log(err);
       }
     },
+    async uploadToPinata(payload) {
+      this.isLoading = true;
+      let formData = new FormData();
+      formData.append("file", payload);
+      try {
+        let myResults = await this.$axios.$post(
+          "https://api.pinata.cloud/pinning/pinFileToIPFS",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${this.$config.PINATA_IPFS_TOKEN}`,
+            },
+          }
+        );
+        if (myResults) {
+          let payloadVal = {
+            title: this.imageUploadDetails.title,
+            description: this.imageUploadDetails.description,
+            filename: this.imageData.name,
+            ipfsVal: myResults,
+            IpfsHash: myResults.ipfsHash,
+          };
+          console.log("RAW INPUT");
+          console.log(payloadVal);
+          let app = this;
+          let userItem = await this.$axios.$post(
+            `/v1/item/pinata/save`,
+            payloadVal,
+            {
+              headers: {
+                Authorization: `Bearer ${app.userToken}`,
+              },
+            }
+          );
+          if (userItem) {
+            console.log("returns");
+            console.log(userItem.payload);
+            this.$toast.success("Successfully Uploaded File");
+            this.isLoading = false;
+            this.uploadedSuccessfully = true;
+            this.currentMetadata = userItem.payload;
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        this.$toast.error(err.message);
+      }
+    },
+
     async mintUserNFT(nftid, userFileURI, nftTitle, nftDescription) {
       this.isMintLoading = true;
-      this.$store.dispatch("modules/profile/MINT_USER_ASSET", {
-        nftid,
-        userFileURI,
-        nftTitle, 
-        nftDescription
-      }).then(response => {
-        this.isMintLoading = false;
-        this.$router.push("/profile");
-      });
+      this.$store
+        .dispatch("modules/profile/MINT_USER_ASSET", {
+          nftid,
+          userFileURI,
+          nftTitle,
+          nftDescription,
+        })
+        .then((response) => {
+          this.isMintLoading = false;
+          this.$router.push("/profile");
+        });
     },
   },
 };

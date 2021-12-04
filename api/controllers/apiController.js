@@ -10,6 +10,7 @@ const NFTMetaSchema = require("../models/NFTMetaSchema");
 const logger = require("../logger");
 const { formResponse } = require("../helpers/formResponse");
 
+// This Endpoint Uses NFT Storage IPFS
 module.exports.saveUnmintedItem = async function (req, res) {
   logger.info(`[saveUnmintedItem] Saving Unminted Item`)
   // Create Validation Schema
@@ -80,6 +81,79 @@ module.exports.saveUnmintedItem = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+// This Endpoint Uses Pinata IPFS
+module.exports.saveUnmintedItemPinata = async function (req, res) {
+  logger.info(`[saveUnmintedItemPinata] Saving Unminted Item`)
+  // Create Validation Schema
+  const mintValidationSchema = Joi.object({
+    owner: Joi.string().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+  });
+
+  const isValidated = mintValidationSchema.validate({
+    owner: req.user.sub.walletAddr,
+    title: req.body.title,
+    description: req.body.description,
+  });
+
+  // Throw validation error
+  if (isValidated.error != null) {
+    logger.error(
+      `[saveUnmintedItemPinata] ${JSON.stringify(isValidated.error.details)}`
+    );
+    return res
+      .status(400)
+      .json(formResponse("fail", null, isValidated.error.details));
+  }
+  try {
+    // logger.info(`Saving Unminted Item For User : ${req.user.walletAddr}`);
+    let myNFT = new NFTSchema({
+      owner: isValidated.value.owner,
+      nftval: req.body.IpfsHash,
+      nftUri: `https://gateway.pinata.cloud/ipfs/${req.body.IpfsHash}`,
+      filename: req.body.filename,
+      meta: {
+        title: isValidated.value.title,
+        description: isValidated.value.description,
+      },
+      isMinted: false,
+      isMarket: false
+    });
+
+    let myResult = await myNFT.save();
+
+    if (myResult) {
+      logger.info("[saveUnmintedItemPinata] Successfully Uploaded Item");
+      let ipfsResult = {
+        id: myResult._id,
+        owner: myResult.owner,
+        nftUri: myResult.nftUri,
+        meta: myResult.meta,
+        isMinted: myResult.isMinted,
+        isMarket: myResult.isMarket,
+        createdAt: myResult.createdAt
+      };
+
+      let myNFTMeta = new NFTMetaSchema({
+        nftid: myResult._id,
+        title: isValidated.value.title,
+        description: isValidated.value.description,
+        filename: req.body.filename,
+        nftUri: `https://gateway.pinata.cloud/ipfs/${req.body.IpfsHash}`,
+      });
+      let myMetaResult = await myNFTMeta.save();
+      return res.status(201).json(formResponse("success", ipfsResult, null));
+    }
+  } catch (err) {
+    logger.error(err);
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};
+
+
+
 
 module.exports.getItemMetadata = async function (req, res) {
   try {

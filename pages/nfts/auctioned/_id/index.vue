@@ -40,12 +40,14 @@
                     <v-subheader>Description</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    <v-subheader>{{ curNFTAuctionedData.description }}</v-subheader>
+                    <v-subheader>{{
+                      curNFTAuctionedData.description
+                    }}</v-subheader>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
-                    <v-subheader>Likes Count</v-subheader>
+                    <v-subheader>Likes</v-subheader>
                   </v-col>
                   <v-col cols="8">
                     <v-subheader>{{ curNFTMeta.likes }}</v-subheader>
@@ -69,28 +71,56 @@
                   <v-col cols="4">
                     <v-subheader>Current Bid</v-subheader>
                   </v-col>
-                  <v-col cols="8">{{ deHex(curNFTAuctionedData.highestBid) }} </v-col>
+                  <v-col cols="8">
+                    <v-text-field
+                      label="Amount"
+                      outlined
+                      disabled="true"
+                      :value="convertWeiToETH(curNFTAuctionedData.highestBid)"
+                      suffix="ETH"
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Bid Count</v-subheader>
                   </v-col>
-                  <v-col cols="8"> {{ curNFTAuctionedData.bidCount }}</v-col>
+                  <v-col cols="8">
+                    <v-text-field
+                      outlined
+                      disabled="true"
+                      :value="curNFTAuctionedData.bidCount"
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
 
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Start Price</v-subheader>
                   </v-col>
-                  <v-col cols="8"> {{ curNFTAuctionedData.startPrice }} </v-col>
+                  <v-col cols="8">
+                    <v-text-field
+                      outlined
+                      disabled="true"
+                      :value="convertWeiToETH(curNFTAuctionedData.startPrice)"
+                      suffix="ETH"
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
                     <v-subheader>Auction End</v-subheader>
                   </v-col>
                   <v-col cols="8">
-                    {{ curNFTAuctionedData.auctionEndTime }}</v-col
-                  >
+                    <v-text-field
+                      disabled="true"
+                      :value="
+                        convertToReadableTime(
+                          curNFTAuctionedData.auctionEndTime
+                        )
+                      "
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
               </v-card-text>
             </v-card>
@@ -179,6 +209,8 @@
 <script>
 const hexConverter = require("hex2dec");
 import { ethers } from "ethers";
+const _ = require("lodash");
+import moment from "moment";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
 import CommentBox from "@/components/CommentBoxComponent";
@@ -202,7 +234,6 @@ export default {
   },
   created() {
     this.initializeData();
-    
   },
 
   data() {
@@ -227,26 +258,51 @@ export default {
     deHex(payload) {
       return hexConverter.hexToDec(payload);
     },
+    convertWeiToETH(payload) {
+      return ethers.utils.formatEther(payload);
+    },
+    convertToReadableTime(payload) {
+      let date = new Date(payload * 1000);
+      return moment(String(date)).format("YYYY-MM-DD HH:mm:ss");
+    },
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
     initializeData() {
       try {
-        this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS").then((response)=>{          
-          this.dataReady = true;
+        console.log(this.$route.params.id);
 
-        console.log(response);
-        let payload = hexConverter.hexToDec(response.tokenid);
         this.$store
-          .dispatch("modules/profile/GET_NFT_METADATA", payload)
-          .then(() => {
-            if (this.curNFTMeta) {
-              this.dataReady = true;
-            }
+          .dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS", {
+            tokenid: this.$route.params.id,
+          })
+          .then((response) => {
+            console.log("Chain Response");
+            console.log();
+            this.$store
+              .dispatch("modules/profile/GET_NFT_METADATA", response.tokenid)
+              .then(() => {
+                if (this.curNFTMeta) {
+                  this.dataReady = true;
+                }
+              });
           });
 
-        });
-        
+        // this.$store
+        //   .dispatch("modules/profile/GET_USER_AUCTIONED_DETAILS")
+        //   .then((response) => {
+        //     this.dataReady = true;
+
+        //     console.log(response);
+        //     let payload = hexConverter.hexToDec(response.tokenid);
+        //     this.$store
+        //       .dispatch("modules/profile/GET_NFT_METADATA", payload)
+        //       .then(() => {
+        //         if (this.curNFTMeta) {
+        //           this.dataReady = true;
+        //         }
+        //       });
+        //   });
       } catch (err) {
         console.log(err);
       }

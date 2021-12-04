@@ -260,6 +260,7 @@ export default {
       this.$router.push("/nfts/auctioned");
     },
     goToAuctionDetails(payload) {
+      console.log(payload);
       this.$router.push(`/nfts/auctioned/${payload}`);
     },
     goToAllNFTClaim(payload) {

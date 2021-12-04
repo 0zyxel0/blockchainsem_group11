@@ -6,7 +6,9 @@
         :lazy-src="tokenUri"
         aspect-ratio="1"
         contain
-        max-height="200"
+        min-height="220"
+        max-height="220"
+        min-width="400"
         max-width="400"
         class="grey lighten-2"
       >

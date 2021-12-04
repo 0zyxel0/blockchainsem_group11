@@ -1,6 +1,6 @@
 <template>
   <div id="item-box-component">
-    <v-card class="mx-1" max-width="250">
+    <v-card class="mx-1 my-1" min-height="250" max-width="250">
       <v-img
         :src="imageUri"
         :lazy-src="imageUri"
@@ -20,17 +20,16 @@
         </template>
       </v-img>
 
-      <v-card-subtitle class="pb-0"> {{ assetTitle }} </v-card-subtitle>
-      <v-card-text class="text--primary">
-        <div>{{ assetDesc }}</div>
-      </v-card-text>
+  
+        <v-card-title  class="justify-center"> {{ assetTitle }} </v-card-title>
+   
       <v-card-actions>
-        <slot name="asset-options">
-          <v-row>
-            <v-col><v-btn color="primary" block> Button </v-btn></v-col>
-            <v-col><v-btn color="success" block> Button </v-btn></v-col>
-          </v-row>
-        </slot>        
+        <v-col>
+          <slot name="asset-options">
+            <v-btn color="primary" block> Button </v-btn>
+            <v-btn color="success" block> Button </v-btn>
+          </slot>
+        </v-col>
       </v-card-actions>
     </v-card>
   </div>
@@ -46,7 +45,6 @@ export default {
   methods: {
     likeNFT(tokenid) {
       try {
-        
       } catch (err) {
         console.log(err);
       }

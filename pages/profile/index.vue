@@ -234,6 +234,7 @@ export default {
       this.$store
         .dispatch("modules/profile/GET_USER_AUCTIONED_NFT")
         .then((response) => {
+          console.log("Auctioned  List")
           console.log(response);
         });
       this.$store.dispatch("modules/profile/GET_USER_WON_AUCTION", {
@@ -264,7 +265,7 @@ export default {
     goToAllNFTClaim(payload) {
       this.$store.dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT", {
         auctionid: payload,
-      });   
+      });
     },
   },
 };

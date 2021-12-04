@@ -1,10 +1,9 @@
 // Author : 0zyxel0
 /**
- * 
  * The formResponse function provides a formatted json string for responses of http requests.
- * @param {*} statusName This will contain status like ["success", "fail","error"]
- * @param {*} payloadVal This will contain the payload data if process was successful.
- * @param {*} errorVal This will contain failed and error data if process was unsuccessful.
+ * @param {String} statusName This will contain status like ["success", "fail","error"]
+ * @param {Object} payloadVal This will contain the payload data if process was successful.
+ * @param {Object} errorVal This will contain failed and error data if process was unsuccessful.
  * @returns {Object} Returns a formatted JSON Object.
  */
 const logger = require("./../logger");

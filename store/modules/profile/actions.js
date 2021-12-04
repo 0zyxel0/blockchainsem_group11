@@ -359,7 +359,7 @@ export default {
       if (myResult) {
         console.log(myResult);
         _.filter(myResult, function (filIterator) {
-          if(filIterator.ended == false){
+          if (filIterator.ended == false) {
             let payload = {
               auctionid: hexConverter.hexToDec(filIterator.auctionId._hex),
               title: filIterator.nft.title,
@@ -397,6 +397,20 @@ export default {
       //   })
       //   commit("SET_USER_WON_AUCTION", tempList);
       // }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async UPDATE_USER_THEME({ commit, state }, { themeOption }) {
+    try {
+      let myResult = await this.$axios.$post("/api/v1/user/theme", { isDark: themeOption }, {
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+      if (myResult) {
+        commit("SET_USER_THEME", myResult.payload.isDark);
+      }
     } catch (err) {
       console.log(err);
     }

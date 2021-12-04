@@ -7,7 +7,7 @@
         clipped
         :mini-variant="miniVariant"
         floating
-        app
+        app        
         id="main-sidebar"
       >
         <!-- USer Area -->
@@ -128,6 +128,7 @@
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -153,17 +154,23 @@ export default {
       versionNo: this.$config.APP_VERSION,
     };
   },
-  mounted() {},
+  computed: {
+    ...mapState({
+      userTheme: (state) => state.modules.profile.userTheme,
+    }),
+  },
+  created() {
+    this.$vuetify.theme.dark = this.userTheme;
+  },
   methods: {
     logoutUser() {
       this.$store.dispatch("modules/profile/SIGNOUT_USER_WALLETADDRESS");
     },
-
-    switchTheme() {
+    async switchTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-      let payload = {
-        is_dark: this.$vuetify.theme.dark,
-      };
+      this.$store.dispatch("modules/profile/UPDATE_USER_THEME", {
+        themeOption: this.$vuetify.theme.dark,
+      });
     },
   },
 };

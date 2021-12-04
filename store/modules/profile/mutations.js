@@ -9,6 +9,7 @@ export default {
   },
   SET_USER_DATA(state, payload) {
     state.user = payload;
+    state.userTheme = payload.sub.isDark;
   },
   SET_USER_DISPLAY_NAME(state, payload) {
     state.user.sub.displayName = payload;
@@ -58,5 +59,8 @@ export default {
   },
   SET_USER_AUCTIONED_LIST(state, payload) {
     state.userAuctionedList = payload;
+  },
+  SET_USER_THEME(state, payload) {
+    state.userTheme = payload;
   }
 };

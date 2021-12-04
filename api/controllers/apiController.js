@@ -488,3 +488,19 @@ module.exports.saveNFTComments = async function (req, res) {
     return res.status(400).json(formResponse("error", null, err));
   }
 };
+
+module.exports.updateUserTheme = async function (req, res) {
+  try {
+    let filterVal = { walletAddr: req.user.sub.walletAddr };
+    let updateVal = { isDark: req.body.isDark };
+    let configVal = { new: true };
+    let myResult = await UserSchema.findOneAndUpdate(filterVal, updateVal, configVal);
+    if (myResult) {
+      logger.info("[updateUserTheme] Successfully updated User Theme");
+      return res.status(201).json(formResponse("success", myResult, null));
+    }
+  } catch (err) {
+    logger.error("[updateUserTheme] Error in Updating User Theme");
+    return res.status(400).json(formResponse("error", null, err));
+  }
+};

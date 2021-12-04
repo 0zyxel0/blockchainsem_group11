@@ -14,4 +14,5 @@ export default () => ({
     userAuctionedList:[],
     user:null,
     token:null,
+    userTheme:null,
 });

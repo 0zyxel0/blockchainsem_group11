@@ -178,11 +178,11 @@
                     <v-col>
                       <v-btn
                         @click="goToAllNFTClaim(n.auctionid)"
-                        color="success darken-1"
+                        color="primary"
                         block
                         dark
                       >
-                        Claim NFT
+                        View
                       </v-btn></v-col
                     >
                   </v-row>
@@ -264,9 +264,7 @@ export default {
       this.$router.push(`/nfts/auctioned/${payload}`);
     },
     goToAllNFTClaim(payload) {
-      this.$store.dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT", {
-        auctionid: payload,
-      });
+    this.$router.push("/nfts/claim");
     },
   },
 };

@@ -366,7 +366,7 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllAuctionHighestBidder();
       if (myResult) {
-        console.log(myResult);
+        console.log(myResult);        
         _.filter(myResult, function (filIterator) {
           if (filIterator.ended == false) {
             let payload = {
@@ -397,7 +397,9 @@ export default {
       );
       let myResult = await contract.transferNFTandFunds(auctionid);
       if (myResult) {
-        console.log(myResult);
+        await myResult.wait();
+        console.log("Transaction Successfully Mined.");
+        this.$router.push("/profile");
         //   let tempList = [];
         //   _.filter(myResult, function (filIterator) {
         //     if (filIterator.auctionid !== auctionid) {

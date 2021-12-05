@@ -7,13 +7,13 @@
           <v-card-title>My NFT in Auction</v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <!-- <v-row row wrap v-if="userOwnedNFT">
+            <v-row row wrap v-if="userAuctionedList">
               <AssetBoxComponent
-                v-for="n in userOwnedNFT"
+                v-for="n in userAuctionedList"
                 :key="n._id"
                 :assetTitle="n.title"
                 :assetDesc="n.description"
-                :imageUri="n.nftUri"
+                :imageUri="n.tokenUri"
               >
                 <template v-slot:asset-options>
                   <v-row>
@@ -29,7 +29,7 @@
                   </v-row>
                 </template>
               </AssetBoxComponent>
-            </v-row> -->
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -49,7 +49,8 @@ export default {
   middleware: "checkWalletAddress",
   computed: {
     ...mapState({
-      userWalletAddress: (state) => state.modules.profile.userWalletAddress,    
+      userWalletAddress: (state) => state.modules.profile.userWalletAddress,
+      userAuctionedList: (state) => state.modules.profile.userAuctionedList,
     }),
   },
   mounted() {
@@ -61,7 +62,12 @@ export default {
   },
   methods: {
     initializeData() {
-      this.$store.dispatch("modules/profile/GET_USER_AUCTIONED_NFT");
+      this.$store
+        .dispatch("modules/profile/GET_USER_AUCTIONED_NFT")
+        .then((response) => {
+          console.log("Auctioned  List");
+          console.log(response);
+        });
     },
     goToAssetProfile(payload) {
       this.$router.push(`/nfts/auctioned/${payload}`);

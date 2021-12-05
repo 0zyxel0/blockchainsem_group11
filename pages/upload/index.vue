@@ -187,7 +187,7 @@ export default {
     return {
       rules: [
         (v) =>
-          !v || v.size > 2_097_152 || "Image size should be less than 2 MB",
+          !v || v.size < 2_097_152 || "Image size should be less than 2 MB",
       ],
       imageData: null,
       isLoading: false,

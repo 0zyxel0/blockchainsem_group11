@@ -113,6 +113,7 @@ export default {
           value: ethers.utils.parseUnits(bidPrice, "ether"),
         });
         if (myResult) {
+          await myResult.wait();
           console.log(myResult);
           this.$toast.success("Successfully Bidded");
           this.callbackgetAuction();

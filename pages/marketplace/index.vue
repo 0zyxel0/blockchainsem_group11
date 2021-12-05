@@ -117,7 +117,12 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-card-title>NFT on Display</v-card-title>
+          <v-card-title
+            >NFT on Display<v-spacer></v-spacer>
+            <v-btn color="primary" @click="goToAllNFT()"
+              >See All</v-btn
+            ></v-card-title
+          >
           <v-divider></v-divider>
           <v-card-text>
             <v-row row wrap v-if="availableNFTItems">
@@ -233,7 +238,7 @@ export default {
     },
     getAvailableNFTs() {
       try {
-        this.$store.dispatch("modules/marketplace/GET_MARKETPLACE_ITEMS");
+        this.$store.dispatch("modules/marketplace/RECENT_MARKETPLACE_ITEMS");
       } catch (err) {
         console.log(err);
       }
@@ -256,28 +261,31 @@ export default {
       var currentdate = new Date();
       return auctionEnddate > currentdate;
     },
-     getItemisEndedLessDay(auctionEndTime) {
+    getItemisEndedLessDay(auctionEndTime) {
       var auctionEnddate = new Date(auctionEndTime * 1000);
       var currentdate = new Date();
       var currentdateLessDay = new Date();
       currentdateLessDay.setDate(currentdate.getDate() - 1);
-        return auctionEnddate < currentdate && auctionEnddate >currentdateLessDay;
+      return (
+        auctionEnddate < currentdate && auctionEnddate > currentdateLessDay
+      );
     },
     filterAuctionitem(biddingNFT, ended) {
       let tempList = [];
       if (ended) {
-        tempList = biddingNFT.filter(
-          (biddingNFT) =>
-            this.getItemisEndedLessDay(biddingNFT.auctionEndTime.toString()) 
+        tempList = biddingNFT.filter((biddingNFT) =>
+          this.getItemisEndedLessDay(biddingNFT.auctionEndTime.toString())
         );
       } else {
-        tempList = biddingNFT.filter(
-          (biddingNFT) =>
-            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) 
+        tempList = biddingNFT.filter((biddingNFT) =>
+          this.getItemisEnded(biddingNFT.auctionEndTime.toString())
         );
       }
       return tempList;
     },
+    goToAllNFT(){
+      this.$router.push("/marketplace/list");
+    }
   },
 };
 </script>

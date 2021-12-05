@@ -405,6 +405,7 @@ export default {
       let myResult = await contract.transferNFTandFunds(auctionid);
       if (myResult) {
         await myResult.wait();
+        return myResult;
         // console.log("Transaction Successfully Mined.");
         //   let tempList = [];
         //   _.filter(myResult, function (filIterator) {

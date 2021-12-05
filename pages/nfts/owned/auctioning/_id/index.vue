@@ -4,23 +4,23 @@
     <v-row>
       <v-col><h1>NFT Details</h1></v-col>
     </v-row>
-      <v-dialog
-          v-model="auctionDialogLoading"
-          hide-overlay
-          persistent
-          width="300"
-        >
-          <v-card color="primary" dark>
-            <v-card-text>
-              <h3>Processing NFT Auction Post</h3>
-              <v-progress-linear
-                indeterminate
-                color="white"
-                class="mb-0"
-              ></v-progress-linear>
-            </v-card-text>
-          </v-card>
-        </v-dialog>
+    <v-dialog
+      v-model="auctionDialogLoading"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card color="primary" dark>
+        <v-card-text>
+          <h3>Processing NFT Auction Post</h3>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-row v-if="dataReady">
       <v-col cols="4">
         <v-row>
@@ -138,8 +138,8 @@
                   </v-col>
                   <v-col v-else
                     ><v-btn
-                      v-if="validatingPrices()"                      
-                      color="red"                      
+                      v-if="validatingPrices()"
+                      color="red"
                       block
                       dark
                       @click="showToast()"
@@ -148,7 +148,7 @@
                     <v-btn
                       v-else
                       color="red"
-                      block                      
+                      block
                       dark
                       @click="
                         auctionNFT(
@@ -160,7 +160,6 @@
                       "
                       >Auction Item</v-btn
                     >
-                    
                   </v-col>
                 </v-row>
               </v-card-actions>
@@ -295,23 +294,22 @@ export default {
     };
   },
   methods: {
-      showToast(){
-          this.$toast.error("Please Check Start Price and Buy Now Price.");
-      },
+    showToast() {
+      this.$toast.error("Please Check Start Price and Buy Now Price.");
+    },
     validatingPrices() {
-        if(parseFloat(this.buyPrice) > parseFloat(this.offerPrice)){
-            return false;
-        }        
-        else{ 
-            return true;
-        }
+      if (parseFloat(this.buyPrice) > parseFloat(this.offerPrice)) {
+        return false;
+      } else {
+        return true;
+      }
     },
     clearMetadata() {
       this.$store.dispatch("modules/profile/CLEAR_CURRENT_NFT_META");
     },
     auctionNFT(nftId, offerPrice, buyPrice, bidDuration) {
       try {
-        this.auctionDialogLoading= true;
+        this.auctionDialogLoading = true;
         this.isLoading = true;
         let payload = {
           nftId: nftId,

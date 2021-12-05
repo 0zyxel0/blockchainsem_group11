@@ -22,7 +22,34 @@ export default {
       console.log(err);
     }
   },
-  async GET_MARKETPLACE_ITEMS({ state, commit }) {
+  async RECENT_MARKETPLACE_ITEMS({ state, commit }) {
+    try {
+      let contract = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
+        NFTAUCTION_CONTRACT_ABI.abi,
+        provider);
+      let tempList = [];
+      let myResult = await contract.getAllNFTItems();
+      if (myResult) {
+        let itemCount = 0;
+        _.filter(myResult, function (filIterator) {
+          if(itemCount < 10){
+            let payload = {
+              title: filIterator.title,
+              description: filIterator.description,
+              tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
+              tokenUri: filIterator.tokenUri
+            };
+            tempList.push(payload);
+            itemCount++;
+          }        
+        });
+        commit("SET_AVAILABLE_NFT_LISTS", tempList);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async GET_ALL_MARKETPLACE_ITEMS({ state, commit }) {
     try {
       let contract = new ethers.Contract(this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
@@ -31,16 +58,14 @@ export default {
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
         _.filter(myResult, function (filIterator) {
-          let payload = {
-            title: filIterator.title,
-            description: filIterator.description,
-            tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
-            tokenUri: filIterator.tokenUri
-          };
-
-          tempList.push(payload);
+            let payload = {
+              title: filIterator.title,
+              description: filIterator.description,
+              tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
+              tokenUri: filIterator.tokenUri
+            };
+            tempList.push(payload);     
         });
-
         commit("SET_AVAILABLE_NFT_LISTS", tempList);
       }
     } catch (err) {

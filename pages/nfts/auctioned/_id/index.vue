@@ -122,6 +122,18 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
+                <v-row>
+                  <v-col>
+                    <v-btn
+                      block
+                      color="error"
+                      v-if="checkForClaiming(curNFTAuctionedData)"
+                      @click="claimNFTBack(curNFTAuctionedData)"
+                    >
+                      Claim NFT Back</v-btn
+                    >
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
           </v-col>
@@ -204,6 +216,19 @@
         <v-skeleton-loader class="mx-auto" type="card"></v-skeleton-loader>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="claimDialogLoading" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
+        <v-card-text>
+          <h3>Processing NFT Claim</h3>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -238,6 +263,7 @@ export default {
 
   data() {
     return {
+      claimDialogLoading: false,
       commentVal: "",
       dialog: false,
       dataReady: false,
@@ -255,6 +281,38 @@ export default {
     };
   },
   methods: {
+    claimNFTBack(payload) {
+      this.claimDialogLoading = true;
+      console.log("My Audition");
+      console.log(payload);
+      this.$store
+        .dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT", {
+          auctionid: payload.auctionid,
+        })
+        .then((response) => {
+          this.claimDialogLoading = false;
+          console.log(response);
+          this.$router.push("/profile");
+        });
+    },
+    checkForClaiming(payload) {
+      let dateEnd = new Date(payload.auctionEndTime * 1000);
+      let endTime = moment(String(dateEnd)).format("YYYY-MM-DD HH:mm:ss");
+      let current = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+      let checkDates = moment(current).isAfter(endTime);
+
+      console.log("Current Moment");
+      console.log(current);
+      console.log("End Time");
+      console.log(endTime);
+      console.log(checkDates);
+      return checkDates;
+      // if ( > payload.auctionEndTime) {
+      //   console.log(payload);
+      //   console.log(moment.now());
+      //   return true;
+      // }
+    },
     deHex(payload) {
       return hexConverter.hexToDec(payload);
     },

@@ -3,6 +3,23 @@
     <NavigationBar></NavigationBar>
     <v-row>
       <v-col>
+        <v-dialog
+          v-model="claimDialogLoading"
+          hide-overlay
+          persistent
+          width="300"
+        >
+          <v-card color="primary" dark>
+            <v-card-text>
+              <h3>Processing NFT Claim</h3>
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
         <v-card>
           <v-card-title>NFTs For Claiming</v-card-title>
           <v-divider></v-divider>
@@ -58,7 +75,9 @@ export default {
   },
 
   data() {
-    return {};
+    return {
+      claimDialogLoading: false,
+    };
   },
   methods: {
     initializeData() {
@@ -66,12 +85,18 @@ export default {
         userWalletAddr: this.userWalletAddress,
       });
     },
-    claimNftAsset(payload){
-    this.$store.dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT",{auctionid:payload}).then(()=>{
-      console.log("Claimed NFT");
-      this.$toast.success("Successfully Claimed NFT");
-    })
-    }
+    claimNftAsset(payload) {
+      this.claimDialogLoading = true;
+      this.$store
+        .dispatch("modules/profile/CLAIM_WINNING_AUCTIONED_NFT", {
+          auctionid: payload,
+        })
+        .then(() => {
+          this.claimDialogLoading = false;
+          this.$toast.success("Successfully Claimed NFT");
+          this.$router.push("/profile");
+        });
+    },
   },
 };
 </script>

@@ -75,7 +75,7 @@
                     <v-text-field
                       label="Amount"
                       outlined
-                      disabled="true"
+                      disabled
                       :value="convertWeiToETH(curNFTAuctionedData.highestBid)"
                       suffix="ETH"
                     ></v-text-field>
@@ -88,7 +88,7 @@
                   <v-col cols="8">
                     <v-text-field
                       outlined
-                      disabled="true"
+                      disabled
                       :value="curNFTAuctionedData.bidCount"
                     ></v-text-field>
                   </v-col>
@@ -101,7 +101,7 @@
                   <v-col cols="8">
                     <v-text-field
                       outlined
-                      disabled="true"
+                      disabled
                       :value="convertWeiToETH(curNFTAuctionedData.startPrice)"
                       suffix="ETH"
                     ></v-text-field>
@@ -113,7 +113,7 @@
                   </v-col>
                   <v-col cols="8">
                     <v-text-field
-                      disabled="true"
+                      disabled
                       :value="
                         convertToReadableTime(
                           curNFTAuctionedData.auctionEndTime

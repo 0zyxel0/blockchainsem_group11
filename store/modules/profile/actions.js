@@ -162,10 +162,10 @@ export default {
               },
             }
           );
+          await platformResult.wait();
           if (backendResult) {
             return "Success";
           }
-          this.$router.push("/profile");
         }
       }
     } catch (err) {
@@ -278,9 +278,10 @@ export default {
           bidDuration,
           contractOptions
         );
-        if (payContract) {
+        await payContract.wait();
+        if (payContract) {          
           this.$toast.success("Successfully Auctioned NFT");
-          this.$router.push("/profile");
+          return payContract;
         }
       }
     } catch (err) {
@@ -365,8 +366,14 @@ export default {
       );
       let tempList = [];
       let myResult = await contract.getAllAuctionHighestBidder();
-      if (myResult) {
-        console.log(myResult);        
+
+        let testinter = await contract.getAllAuctionsOwned();
+        if(testinter){
+          console.log("my stuff that was not sold");
+          console.log(testinter);
+        }
+
+      if (myResult) {    
         _.filter(myResult, function (filIterator) {
           if (filIterator.ended == false) {
             let payload = {
@@ -398,8 +405,7 @@ export default {
       let myResult = await contract.transferNFTandFunds(auctionid);
       if (myResult) {
         await myResult.wait();
-        console.log("Transaction Successfully Mined.");
-        this.$router.push("/profile");
+        // console.log("Transaction Successfully Mined.");
         //   let tempList = [];
         //   _.filter(myResult, function (filIterator) {
         //     if (filIterator.auctionid !== auctionid) {

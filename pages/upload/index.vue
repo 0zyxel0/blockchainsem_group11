@@ -170,6 +170,18 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-dialog v-model="minterDialogLoading" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
+        <v-card-text>
+          <h3>Processing NFT Minting</h3>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -185,6 +197,7 @@ export default {
   middleware: "checkWalletAddress",
   data() {
     return {
+      minterDialogLoading: false,
       rules: [
         (v) =>
           !v || v.size < 2_097_152 || "Image size should be less than 2 MB",
@@ -309,6 +322,7 @@ export default {
 
     async mintUserNFT(nftid, userFileURI, nftTitle, nftDescription) {
       this.isMintLoading = true;
+      this.minterDialogLoading = true;
       this.$store
         .dispatch("modules/profile/MINT_USER_ASSET", {
           nftid,
@@ -317,6 +331,7 @@ export default {
           nftDescription,
         })
         .then((response) => {
+          this.minterDialogLoading = false;
           this.isMintLoading = false;
           this.$router.push("/profile");
         });

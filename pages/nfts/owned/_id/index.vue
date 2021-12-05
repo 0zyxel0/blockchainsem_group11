@@ -99,6 +99,18 @@
         <v-skeleton-loader class="mx-auto" type="card"></v-skeleton-loader>
       </v-col>
     </v-row>
+    <v-dialog v-model="auctioningDialogLoading" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
+        <v-card-text>
+          <h3>Processing NFT Auction Item</h3>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -126,6 +138,7 @@ export default {
   },
   data() {
     return {
+      auctioningDialogLoading: false,
       dataReady: false,
       isLoading: false,
       offerPrice: 0,
@@ -146,6 +159,7 @@ export default {
     },
     auctionNFT(nftId, offerPrice, buyPrice, bidDuration) {
       try {
+        this.auctioningDialogLoading = true;
         this.isLoading = true;
         let payload = {
           nftId: nftId,
@@ -157,6 +171,8 @@ export default {
           .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
           .then((response) => {
             this.isLoading = false;
+            this.auctioningDialogLoading = false;
+            this.$router.push("/profile");
           });
       } catch (err) {
         console.log(err);

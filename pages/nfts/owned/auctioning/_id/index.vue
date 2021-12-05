@@ -4,10 +4,27 @@
     <v-row>
       <v-col><h1>NFT Details</h1></v-col>
     </v-row>
+      <v-dialog
+          v-model="auctionDialogLoading"
+          hide-overlay
+          persistent
+          width="300"
+        >
+          <v-card color="primary" dark>
+            <v-card-text>
+              <h3>Processing NFT Auction Post</h3>
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
     <v-row v-if="dataReady">
       <v-col cols="4">
-        <v-row
-          ><v-col>
+        <v-row>
+          <v-col>
             <v-card>
               <v-card-text>
                 <v-img
@@ -257,6 +274,7 @@ export default {
 
   data() {
     return {
+      auctionDialogLoading: false,
       myPriceCheck: false,
       valid: true,
       dialog: false,
@@ -267,9 +285,6 @@ export default {
       buyPrice: 0,
       startOfferTime: 0,
       items: [
-        { timeslot: "5 MIN", timeVal: 300 },
-        { timeslot: "10 MINS", timeVal: 600 },
-        { timeslot: "30 MINS", timeVal: 1800 },
         { timeslot: "1 HR", timeVal: 3600 },
         { timeslot: "2 HRS", timeVal: 7200 },
         { timeslot: "5 HRS", timeVal: 18000 },
@@ -296,6 +311,7 @@ export default {
     },
     auctionNFT(nftId, offerPrice, buyPrice, bidDuration) {
       try {
+        this.auctionDialogLoading= true;
         this.isLoading = true;
         let payload = {
           nftId: nftId,
@@ -306,7 +322,9 @@ export default {
         this.$store
           .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
           .then((response) => {
+            this.auctionDialogLoading = false;
             this.isLoading = false;
+            this.$router.push("/profile");
           });
       } catch (err) {
         console.log(err);

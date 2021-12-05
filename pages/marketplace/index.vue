@@ -256,17 +256,24 @@ export default {
       var currentdate = new Date();
       return auctionEnddate > currentdate;
     },
+     getItemisEndedLessDay(auctionEndTime) {
+      var auctionEnddate = new Date(auctionEndTime * 1000);
+      var currentdate = new Date();
+      var currentdateLessDay = new Date();
+      currentdateLessDay.setDate(currentdate.getDate() - 1);
+        return auctionEnddate < currentdate && auctionEnddate >currentdateLessDay;
+    },
     filterAuctionitem(biddingNFT, ended) {
       let tempList = [];
       if (ended) {
         tempList = biddingNFT.filter(
           (biddingNFT) =>
-            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) == false
+            this.getItemisEndedLessDay(biddingNFT.auctionEndTime.toString()) 
         );
       } else {
         tempList = biddingNFT.filter(
           (biddingNFT) =>
-            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) == true
+            this.getItemisEnded(biddingNFT.auctionEndTime.toString()) 
         );
       }
       return tempList;

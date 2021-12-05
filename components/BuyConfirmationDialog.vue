@@ -66,6 +66,7 @@ export default {
           value: ethers.utils.parseEther(utils.formatEther(buyBidPrice)),
         });
         if (myResult) {
+          await myResult.wait();
           console.log(myResult);
           this.$toast.success("successful buy NFT");
           this.dialog = false;

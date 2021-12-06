@@ -73,8 +73,8 @@ contract NFTAuction is ReentrancyGuard {
     // At this point the NFT is allready minted:
     function createItem(address _nftContract, uint _tokenId, string memory _title, string memory _description, string memory _tokenUri) public nonReentrant{
         require(ERC721(_nftContract).ownerOf(_tokenId) == msg.sender, "You are not the owner of the NFT!");
+        uint itemId = _tokenId;
         _tokenIds.increment();
-        uint itemId = _tokenIds.current();
         idToNFTItem[itemId] = NFTItem(true, itemId, _tokenId, _title, _description, _tokenUri, _nftContract, payable(msg.sender), payable(msg.sender));
         emit NFTCreated(itemId, _tokenId, _nftContract, msg.sender);
     }

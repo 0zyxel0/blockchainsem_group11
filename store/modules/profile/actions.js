@@ -131,17 +131,17 @@ export default {
       );
       let myResult = await contract.mintToken(userFileURI);
       if (myResult) {
-        console.log("Minted Results");
-        console.log(myResult);
+      
         await provider.waitForTransaction(myResult.hash);
         const receipt = await provider.getTransactionReceipt(myResult.hash);
         let lastTokenId = Web3.utils.hexToNumber(receipt.logs[0].topics[3]);
+        console.log("Last Minted Token ID");
+        console.log(lastTokenId);
         let platformItem = new ethers.Contract(
           this.$config.NFT_AUCTION_CONTRACT,
           NFTAUCTION_CONTRACT_ABI.abi,
           provider.getSigner()
         );
-        console.log(myResult.to);
         let platformResult = await platformItem.createItem(
           myResult.to,
           lastTokenId,
@@ -163,6 +163,8 @@ export default {
             }
           );
           await platformResult.wait();
+          console.log("Creating Platform Asset");
+          console.log(platformResult);
           if (backendResult) {
             return "Success";
           }

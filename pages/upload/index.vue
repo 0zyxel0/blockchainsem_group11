@@ -264,6 +264,7 @@ export default {
             this.isLoading = false;
             this.uploadedSuccessfully = true;
             this.currentMetadata = userItem.payload;
+            console.log(userItem.payload);
           }
         }
       } catch (err) {

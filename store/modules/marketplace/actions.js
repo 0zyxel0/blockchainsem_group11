@@ -60,6 +60,7 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
+        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           let payload = {
             title: filIterator.title,

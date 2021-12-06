@@ -31,8 +31,11 @@ export default {
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
         let itemCount = 0;
-        _.filter(myResult, function (filIterator) {
-          if(itemCount < 10){
+        // Get length of list
+        console.log("Length of List: " + myResult.length);
+        // Start from last going up
+        _.eachRight(myResult, function (filIterator) {
+          if (itemCount < 10) {
             let payload = {
               title: filIterator.title,
               description: filIterator.description,
@@ -41,8 +44,8 @@ export default {
             };
             tempList.push(payload);
             itemCount++;
-          }        
-        });
+          }
+        })
         commit("SET_AVAILABLE_NFT_LISTS", tempList);
       }
     } catch (err) {
@@ -58,13 +61,13 @@ export default {
       let myResult = await contract.getAllNFTItems();
       if (myResult) {
         _.filter(myResult, function (filIterator) {
-            let payload = {
-              title: filIterator.title,
-              description: filIterator.description,
-              tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
-              tokenUri: filIterator.tokenUri
-            };
-            tempList.push(payload);     
+          let payload = {
+            title: filIterator.title,
+            description: filIterator.description,
+            tokenid: hexConverter.hexToDec(filIterator.tokenId._hex),
+            tokenUri: filIterator.tokenUri
+          };
+          tempList.push(payload);
         });
         commit("SET_AVAILABLE_NFT_LISTS", tempList);
       }
@@ -85,6 +88,7 @@ export default {
       });
       if (myResult) {
         commit("SET_NFT_CUR_META", myResult.payload);
+        return "Successfully Sent Likes To The NFT";
       }
     } catch (err) {
       console.log(err);

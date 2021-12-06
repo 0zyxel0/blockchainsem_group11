@@ -91,6 +91,7 @@
                         label="Price"
                         hint="Starting Auction Bidding Price"
                         v-model="offerPrice"
+                        :rules="priceRules"
                         required
                       ></v-text-field>
                     </v-col>
@@ -103,6 +104,7 @@
                       <v-text-field
                         label="Price"
                         hint="Buy Now Price Should be Larger than Start Price"
+                        :rules="buyNowRules"
                         v-model="buyPrice"
                         required
                       ></v-text-field>
@@ -273,6 +275,12 @@ export default {
 
   data() {
     return {
+      priceRules: [
+        (v) => !v || v != 0 || "Start Price Should Be Larger Than 0",
+      ],
+      buyNowRules: [
+        (v) => !v || v > this.offerPrice || `Buy Now Price Should Be Larger Than ${this.offerPrice}`,
+      ],
       auctionDialogLoading: false,
       myPriceCheck: false,
       valid: true,

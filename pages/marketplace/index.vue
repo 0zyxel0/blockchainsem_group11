@@ -118,7 +118,7 @@
       <v-col>
         <v-card>
           <v-card-title
-            >NFT on Display<v-spacer></v-spacer>
+            >Recent Minted NFTs<v-spacer></v-spacer>
             <v-btn color="primary" @click="goToAllNFT()"
               >See All</v-btn
             ></v-card-title
@@ -143,17 +143,7 @@
                       >
                         View
                       </v-btn>
-                    </v-col>
-                    <v-col>
-                      <v-btn
-                        color="red lighten-2"
-                        dark
-                        block
-                        @click="likeAsset(n.tokenid)"
-                      >
-                        <v-icon>mdi-thumb-up</v-icon>
-                      </v-btn></v-col
-                    >
+                    </v-col>                 
                   </v-row>
                 </template>
               </ItemBox>
@@ -251,6 +241,8 @@ export default {
         this.$store.dispatch("modules/marketplace/LIKE_NFT_ASSET", {
           tokenId: tokenid,
           userToken: this.$nuxt.$store.app.store.state.modules.profile.token,
+        }).then(() => {
+          this.$toast.success("Successfully Sent Likes on NFT");
         });
       } catch (err) {
         console.log(err);

@@ -35,13 +35,17 @@
                 <template v-slot:asset-options>
                   <v-row>
                     <v-col
-                      ><v-btn
-                        @click="claimNftAsset(n.auctionid)"
-                        color="success darken-1"
+                      >  <v-btn
+                        v-if="checkClaimButton(n.auctionEndTime)"
+                        @click="goToAllNFTClaim(n.auctionid)"
+                        color="success"
                         block
+                        dark
                       >
                         Claim
-                      </v-btn></v-col
+                      </v-btn>
+                      <v-btn v-else disabled block>ON GOING</v-btn>
+                      </v-col
                     >
                   </v-row>
                 </template>
@@ -54,6 +58,7 @@
   </div>
 </template>
 <script>
+import moment from "moment";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
 import AssetBoxComponent from "@/components/AssetBoxComponent";
@@ -97,6 +102,13 @@ export default {
           this.$router.push("/profile");
         });
     },
+    checkClaimButton(payload){
+      let auction_time = new Date(payload*1000);     
+      let cur_time = new Date();      
+      let check = moment(cur_time).isSame(auction_time);
+      // console.log(check);
+      return check;
+    }
   },
 };
 </script>

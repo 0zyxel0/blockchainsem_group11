@@ -400,17 +400,17 @@ export default {
       let tempList = [];
       let myResult = await contract.getAllAuctionHighestBidder();
 
-      let testinter = await contract.getAllAuctionsOwned();
-      if (testinter) {
-        console.log("my stuff that was not sold");
-        console.log(testinter);
-      }
+      // let testinter = await contract.getAllAuctionsOwned();
+      // if (testinter) {
+      //   console.log("my stuff that was not sold");
+      //   console.log(testinter);
+      // }
 
       if (myResult) {
         console.log("GET_USER_WON_AUCTION");
         console.log(myResult);
         _.filter(myResult, function (filIterator) {
-          if (filIterator.ended == false) {
+          if (filIterator.ended == false) {           
             let payload = {
               auctionid: hexConverter.hexToDec(filIterator.auctionId._hex),
               title: filIterator.nft.title,
@@ -418,6 +418,7 @@ export default {
               highestBidder: filIterator.highestBidder,
               tokenid: hexConverter.hexToDec(filIterator.nft.tokenId._hex),
               tokenUri: filIterator.nft.tokenUri,
+              auctionEndTime : hexConverter.hexToDec(filIterator.auctionEndTime._hex),
             };
             tempList.push(payload);
           }

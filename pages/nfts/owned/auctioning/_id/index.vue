@@ -280,8 +280,8 @@ export default {
       ],
       buyNowRules: [
         (v) =>
-          !v ||
-          v > this.offerPrice ||
+          !parseFloat(v) ||
+          parseFloat(v) > this.offerPrice ||
           `Buy Now Price Should Be Larger Than ${this.offerPrice}`,
       ],
       auctionDialogLoading: false,

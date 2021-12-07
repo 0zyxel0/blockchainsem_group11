@@ -159,7 +159,7 @@
       <v-col>
         <v-card>
           <v-card-title
-            >NFT To Claim
+            >NFT Winning Bids
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="goToAllNFTClaim()">See All</v-btn>
           </v-card-title>
@@ -177,13 +177,17 @@
                   <v-row>
                     <v-col>
                       <v-btn
+                        v-if="checkClaimButton(n.auctionEndTime)"
                         @click="goToAllNFTClaim(n.auctionid)"
                         color="primary"
                         block
                         dark
                       >
                         View
-                      </v-btn></v-col
+                      </v-btn>
+                      <v-btn v-else disabled block>ON GOING</v-btn>
+                      
+                      </v-col
                     >
                   </v-row>
                 </template>
@@ -196,6 +200,7 @@
   </div>
 </template>
 <script>
+import moment from "moment";
 import { mapState } from "vuex";
 import NavigationBar from "@/components/NavigationBar";
 import UserProfileBox from "@/components/UserProfileBox";
@@ -266,6 +271,13 @@ export default {
     goToAllNFTClaim(payload) {
     this.$router.push("/nfts/claim");
     },
+    checkClaimButton(payload){      
+      let auction_time = new Date(payload*1000);     
+      let cur_time = new Date();      
+      let check = moment(cur_time).isSame(auction_time);
+      // console.log(check);
+      return check;
+    }
   },
 };
 </script>

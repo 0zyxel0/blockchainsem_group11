@@ -32,7 +32,7 @@
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2">
-            <p class="overline text-center">version {{ versionNo }}</p>
+            <p class="overline text-center">{{ versionNo }}</p>
           </div>
         </template>
       </v-navigation-drawer>

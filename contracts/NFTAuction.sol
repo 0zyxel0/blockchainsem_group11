@@ -225,6 +225,9 @@ contract NFTAuction is ReentrancyGuard {
          if (msg.value <=  idToAuction[_auctionId].highestBid){
             revert("There is already a higher or equal bid on the item!");
         }
+        if (msg.value > idToAuction[_auctionId].buyNow){
+            revert("You cannot bid more then the buy now price, pay the buy Now price!");
+        }
         // Checks if the starting price was met or not:
         if (idToAuction[_auctionId].highestBid == 0 && msg.value < idToAuction[_auctionId].startPrice){
             revert("You need to pay the starting Price!");
@@ -243,6 +246,7 @@ contract NFTAuction is ReentrancyGuard {
         if (idToAuction[_auctionId].buyNow == msg.value) {
             idToAuction[_auctionId].auctionEndTime = block.timestamp;
             idToAuction[_auctionId].winner = payable(msg.sender);
+            transferNFTandFunds(_auctionId);
             emit BuyNowReached(_auctionId, idToAuction[_auctionId].winner,idToAuction[_auctionId].highestBid);
         }else {
             emit NewHighestBid(_auctionId, msg.sender, msg.value);
@@ -293,6 +297,7 @@ contract NFTAuction is ReentrancyGuard {
         idToAuction[_auctionId].highestBidder = payable(msg.sender);
         idToAuction[_auctionId].winner = payable(msg.sender);
         idToAuction[_auctionId].auctionEndTime = block.timestamp;
+        transferNFTandFunds(_auctionId);
         emit BuyNowReached(_auctionId, msg.sender, idToAuction[_auctionId].buyNow);
     }
 

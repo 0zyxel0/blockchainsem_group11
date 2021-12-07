@@ -334,6 +334,7 @@ export default {
             tokenId: nftId,
           })
           .then((response) => {
+            console.log("Token Approval Successful")
             console.log(response);
             this.$store
               .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)

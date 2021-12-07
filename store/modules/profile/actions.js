@@ -407,6 +407,8 @@ export default {
       }
 
       if (myResult) {
+        console.log("GET_USER_WON_AUCTION");
+        console.log(myResult);
         _.filter(myResult, function (filIterator) {
           if (filIterator.ended == false) {
             let payload = {

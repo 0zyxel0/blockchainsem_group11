@@ -77,7 +77,7 @@
           >
         </v-list-item>
         <hr />
-        <v-row class="mt-2">
+        <!-- <v-row class="mt-2">
           <v-col>
             <div class="text-center subtitle-2">LANGUAGE SELECTOR</div>
           </v-col>
@@ -95,7 +95,7 @@
               </template>
             </v-combobox>
           </v-col>
-        </v-row>
+        </v-row> -->
         <v-divider></v-divider>
         <v-row>
           <v-col>

@@ -61,7 +61,7 @@
                   :rules="rules"
                   show-size
                   hint="Recommended Image Size 2MB"
-                  accept="image/jpg, image/jpeg, image/png, image/PNG, image/gif"
+                  accept="image/*"
                   label="Choose your Image"
                 />
               </v-card-text>

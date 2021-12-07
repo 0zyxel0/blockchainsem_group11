@@ -40,7 +40,7 @@
                         color="success darken-1"
                         block
                       >
-                        Claim NFT
+                        Claim
                       </v-btn></v-col
                     >
                   </v-row>

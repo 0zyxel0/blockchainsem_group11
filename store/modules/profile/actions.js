@@ -73,6 +73,11 @@ export default {
         }
       );
 
+        console.log("get metadata", tokenid);
+
+        
+
+
       if (myResult) {
         console.log(myResult);
         commit("SET_NFT_CUR_META", myResult.payload);
@@ -242,18 +247,35 @@ export default {
       console.log(err);
     }
   },
+  async APPROVE_NFT_FOR_CONTRACT({commit, state}, {tokenId}) {
+    try {
+      console.log(`[APPROVE_NFT_FOR_CONTRACT] ${tokenId}`);
+      let contractNFT = new ethers.Contract(
+        this.$config.NFT_MINTING_CONTRACT,
+        NFT_CONTRACT_ABI.abi,
+        provider.getSigner()
+      );
+
+      let transferContract = await contractNFT.approve(
+        this.$config.NFT_MINTING_CONTRACT,
+        tokenId
+      );
+      if(transferContract){
+        await transferContract.wait();
+        console.log("Transfer Contract Results");
+        console.log(transferContract);
+        return transferContract;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
 
   async CREATE_USER_AUCTION_NFT(
     { state, commit },
     { nftId, startPrice, buyNowPrice, bidDuration }
   ) {
     try {
-      let contractNFT = new ethers.Contract(
-        this.$config.NFT_AUCTION_CONTRACT,
-        NFTAUCTION_CONTRACT_ABI.abi,
-        provider.getSigner()
-      );
-
       let contractViewer = new ethers.Contract(
         this.$config.NFT_AUCTION_CONTRACT,
         NFTAUCTION_CONTRACT_ABI.abi,
@@ -278,24 +300,18 @@ export default {
         };
         let weiPrice = utils.parseEther(startPrice);
         let weiBuyNowPrice = utils.parseEther(buyNowPrice);
-        let transferContract = await contractNFT.approve(
-          this.$config.NFT_AUCTION_CONTRACT,
-          nftId
+
+        let payContract = await contractPayer.createAuction(
+          nftId,
+          weiPrice,
+          weiBuyNowPrice,
+          bidDuration,
+          contractOptions
         );
-        if (transferContract) {
-          await transferContract.wait();
-          let payContract = await contractPayer.createAuction(
-            nftId,
-            weiPrice,
-            weiBuyNowPrice,
-            bidDuration,
-            contractOptions
-          );
-          await payContract.wait();
-          if (payContract) {
-            this.$toast.success("Successfully Auctioned NFT");
-            return payContract;
-          }
+        await payContract.wait();
+        if (payContract) {
+          this.$toast.success("Successfully Auctioned NFT");
+          return payContract;
         }
       }
     } catch (err) {

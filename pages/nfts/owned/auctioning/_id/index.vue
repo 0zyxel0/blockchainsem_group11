@@ -279,7 +279,10 @@ export default {
         (v) => !v || v != 0 || "Start Price Should Be Larger Than 0",
       ],
       buyNowRules: [
-        (v) => !v || v > this.offerPrice || `Buy Now Price Should Be Larger Than ${this.offerPrice}`,
+        (v) =>
+          !v ||
+          v > this.offerPrice ||
+          `Buy Now Price Should Be Larger Than ${this.offerPrice}`,
       ],
       auctionDialogLoading: false,
       myPriceCheck: false,
@@ -325,12 +328,20 @@ export default {
           buyNowPrice: buyPrice,
           bidDuration: bidDuration,
         };
+        // Approve the Contract to Auction the Tokenid or NFT
         this.$store
-          .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
+          .dispatch("modules/profile/APPROVE_NFT_FOR_CONTRACT", {
+            tokenId: nftId,
+          })
           .then((response) => {
-            this.auctionDialogLoading = false;
-            this.isLoading = false;
-            this.$router.push("/profile");
+            console.log(response);
+            this.$store
+              .dispatch("modules/profile/CREATE_USER_AUCTION_NFT", payload)
+              .then((response) => {
+                this.auctionDialogLoading = false;
+                this.isLoading = false;
+                this.$router.push("/profile");
+              });
           });
       } catch (err) {
         console.log(err);

@@ -130,7 +130,7 @@
                       v-if="checkForClaiming(curNFTAuctionedData)"
                       @click="claimNFTBack(curNFTAuctionedData)"
                     >
-                      Claim NFT Back</v-btn
+                      Claim</v-btn
                     >
                   </v-col>
                 </v-row>

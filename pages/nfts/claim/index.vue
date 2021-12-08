@@ -34,10 +34,10 @@
               >
                 <template v-slot:asset-options>
                   <v-row>
-                    <v-col
-                      >  <v-btn
+                    <v-col>
+                      <v-btn
                         v-if="checkClaimButton(n.auctionEndTime)"
-                        @click="goToAllNFTClaim(n.auctionid)"
+                        @click="claimNftAsset(n.auctionid)"
                         color="success"
                         block
                         dark
@@ -45,8 +45,7 @@
                         Claim
                       </v-btn>
                       <v-btn v-else disabled block>ON GOING</v-btn>
-                      </v-col
-                    >
+                    </v-col>
                   </v-row>
                 </template>
               </AssetBoxComponent>
@@ -102,13 +101,15 @@ export default {
           this.$router.push("/profile");
         });
     },
-    checkClaimButton(payload){
-      let auction_time = new Date(payload*1000);     
-      let cur_time = new Date();      
-      let check = moment(cur_time).isSame(auction_time);
-      // console.log(check);
+    checkClaimButton(payload) {
+      let auction_time = new Date(payload * 1000);
+      let cur_time = new Date();
+      let check = moment(cur_time).isAfter(auction_time);
+      console.log("Claim Check");
+      console.log(auction_time, cur_time);
+      console.log(check);
       return check;
-    }
+    },
   },
 };
 </script>

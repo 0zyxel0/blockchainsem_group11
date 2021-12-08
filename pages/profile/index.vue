@@ -274,8 +274,10 @@ export default {
     checkClaimButton(payload){      
       let auction_time = new Date(payload*1000);     
       let cur_time = new Date();      
-      let check = moment(cur_time).isSame(auction_time);
-      // console.log(check);
+      let check = moment(cur_time).isAfter(auction_time);
+      console.log("Claim Check");
+      console.log(auction_time, cur_time)
+      console.log(check);
       return check;
     }
   },
